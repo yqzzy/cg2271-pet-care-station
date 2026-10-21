@@ -1,0 +1,33 @@
+# Local secrets
+secrets.h
+.env
+.env.*
+!.env.example
+*.key
+*.p12
+*.pfx
+# Build and generated outputs
+build/
+Debug/
+Release/
+.pio/
+*.o
+*.obj
+*.elf
+*.axf
+*.bin
+*.hex
+*.map
+# IDE-local workspace data (keep deliberate project configuration)
+.metadata/
+*.launch
+*.code-workspace
+# Temporary files
+tmp/
+__pycache__/
+*.pyc
+*.log
+~$*
+.DS_Store
+Thumbs.db
+__MACOSX/
