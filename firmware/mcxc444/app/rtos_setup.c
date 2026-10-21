@@ -12,6 +12,8 @@
  *
  * TODO:
  * - Create button, actuator and telemetry queues and state mutex.
+ * - Agree actuator command/queue interface with Member 1 and all producers.
+ * - Register task entry points implemented/tested by each subsystem owner; do not duplicate their task logic.
  * - Choose depths, priorities and stack sizes; check allocation failures.
  * - Enable pre-emption/time-slicing; disable unused features..
  * - Agree concrete types, units, errors and timing with consumers before coding.

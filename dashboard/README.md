@@ -2,7 +2,7 @@
 
 [Back to project README](../README.md)
 
-Owner: Member 5. Create exports here after configuration; no dashboard export exists yet.
+Owner: Member 5, also responsible for [environmental sensing](../firmware/esp32/pet_care_station/environment.cpp) and its task. Create exports here after configuration; no dashboard export exists yet.
 
 ## Display
 

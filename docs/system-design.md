@@ -37,19 +37,21 @@ The MCXC444 remains responsible for local sensing and actuator deadlines. ESP32 
 | FoodSensor_Task | 2 | Periodic, readiness-bounded HX711 reads; calibration/tare/filtering; update state and request feeding |
 | WaterSensor_Task | 2 | Periodic ADC reads; low-water interpretation and state update |
 | Button_Task | 3 | Block on ISR event queue; debounce, request acknowledgement, enqueue notification |
-| Actuator_Task | 3 | Block until a command or next output deadline; own motor/buzzer/light execution |
+| Actuator_Task | 1 | Block until a command or next output deadline; own motor/buzzer/light execution |
 | UartLink_Task | 4 | Bounded event wait, periodic snapshots and buffered RX processing |
-| Environment_Task | 4 | Periodic temperature/humidity reads, validity checks and alert thresholds |
+| Environment_Task | 5 | Periodic temperature/humidity reads, validity checks and alert thresholds |
 | UartBridge_Task | 4 | Decode local telemetry and forward cloud light commands/results |
 | Cloud_Task | 5 | MQTT service, telemetry, commands and bounded reconnect attempts |
 
 Enable pre-emption and time-slicing. Use periodic delays rather than spinning. Actuator deadlines and local button response have priority over bulk telemetry; exact priorities and periods are TODOs to validate on hardware. Network failures must not block environmental sampling or local actuator operation.
 
+Each member implements/tests their owned task entry points. Member 3 creates MCXC444 tasks and shared RTOS objects; Members 4 and 5 coordinate ESP32 task setup. Member 1 owns actuator command handling and deadlines, using Member 3's buzzer/light functions.
+
 ## Synchronisation
 
 - Button ISR clears its hardware flag, timestamps the event, uses `xQueueSendFromISR()` and requests a context switch if appropriate for the port. It checks queue-full failure and never debounces, sounds the buzzer or transmits.
 - A dedicated button task consumes ISR events. It sends local feedback and owner notifications to separate queues, so UART delays do not hold up acknowledgement.
-- The actuator command queue carries dispense, buzzer and light requests. The actuator task alone calls output drivers and checks its next deadline even during command bursts.
+- Member 3 defines/creates the actuator command queue with Member 1; it carries dispense, buzzer and light requests. The actuator task alone calls output drivers and checks its next deadline even during command bursts.
 - The telemetry event queue carries discrete events/results. Sensor readings use a latest-state buffer rather than filling the event queue every sample.
 - A mutex protects shared-state updates and brief snapshot copies. Release it before serial/network I/O or waits; never use it in an ISR. ESP32 uses its own local buffers/synchronisation, not the MCXC444 mutex.
 - A separate binary semaphore is unnecessary because queues already provide event signalling.

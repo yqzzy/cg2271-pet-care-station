@@ -1,6 +1,6 @@
 /*
  * File: actuator_task.c
- * Provisional owner: Member 3
+ * Provisional owner: Member 1
  * Status: COMMENT-ONLY TEMPLATE - not implemented or buildable.
  * Responsibility: Single owner of actuator execution.
  * Dependencies/consumers: Dispenser; feedback; actuator queue; shared state.
@@ -13,7 +13,9 @@
  *   void Actuator_Task(void *argument);
  *
  * TODO:
- * - Define ActuatorCommand.
+ * - Agree ActuatorCommand and queue interface with Member 3, who creates the queue.
+ * - Consume commands and own execution deadlines; call Member 3's feedback functions.
+ * - Implement/test this task; Member 3 integrates its central task creation.
  * - Enqueue requests; bound queue waits.
  * - Wait for next command OR nearest output deadline, servicing deadlines even under queue load.
  * - Update output state and report command result.

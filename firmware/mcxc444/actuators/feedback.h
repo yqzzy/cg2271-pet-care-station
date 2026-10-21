@@ -3,7 +3,8 @@
  * Provisional owner: Member 3
  * Status: COMMENT-ONLY TEMPLATE - not implemented or buildable.
  * Responsibility: Own buzzer patterns and light output driver.
- * Dependencies/consumers: Timer/PWM and GPIO; actuator task.
+ * Dependencies/consumers: Timer/PWM and GPIO; Member 1's actuator task.
+ * Ownership boundary: Member 3 supplies these functions; Member 1 coordinates their calls/deadlines.
  * Template role: Public interface agreement; do not duplicate implementation here.
  *
  * Proposed functions/types (all intentionally commented):

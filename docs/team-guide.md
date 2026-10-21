@@ -8,13 +8,15 @@ Member numbers are provisional; replace them with names when agreed. Module owne
 
 | Member | Owns | Independent demonstration |
 |---|---|---|
-| 1 | Physical dispenser, motor driver and movement | Test request completes one bounded dispense and stops |
+| 1 | Physical dispenser, motor driver and actuator task | Bounded dispensing stops on time while buzzer/light commands remain responsive |
 | 2 | Load-cell calibration/filtering, water sensing, low-food decision | Stable readings, low-water status and one feeding request |
-| 3 | MCXC444 startup, FreeRTOS, queues, mutex, button, feedback and coordination | Button event/beep and light control while sensing continues |
-| 4 | Both UART endpoints, protocol, ESP32 environment | Readings and commands cross boards; environment works independently |
-| 5 | Wi-Fi/MQTT, dashboard, cloud commands and reconnection | Sample telemetry appears; light command has confirmed result |
+| 3 | MCXC444 startup, FreeRTOS setup, queue definitions, mutex, button ISR/task and buzzer/light functions | Button event/beep and light control while sensing continues |
+| 4 | Both UART tasks and protocol | Readings, commands and results cross boards reliably |
+| 5 | Environmental sensing/task, Wi-Fi/MQTT, dashboard, alerts and reconnection | Environment works independently; telemetry appears and light commands have confirmed results |
 
-Member 2 decides **when to request** food. Member 3 coordinates the request. Member 1 controls **how the motor moves**. No other module should duplicate feeding policy or write motor outputs.
+Member 2 decides **when to request** food. Member 3 defines and creates the actuator command queue with Member 1. Member 1 owns the actuator task that consumes requests and controls **how the motor moves**, including deadlines. Member 3 supplies the buzzer/light functions called by that task. No other task should directly operate actuator outputs or duplicate feeding policy.
+
+Each member implements and tests their own task entry points. Member 3 owns central MCXC444 task creation, priorities and shared synchronization design, not everyone's task code or debugging. Members 4 and 5 jointly review ESP32 startup/task creation. Queue/interface changes are agreed with their producers and consumers.
 
 Member 3 coordinates local integration; Member 4 coordinates inter-board integration; Member 5 coordinates cloud integration. Everyone fixes their own module and contributes report/demo evidence.
 
@@ -32,10 +34,10 @@ Do not commit real credentials. Copy `secrets.example.h` to ignored `secrets.h` 
 
 - [ ] Agree on pins, motor model, sensor module, proposed API signatures and UART format.
 - [ ] Member 1 tests dispenser stopping; Member 2 tests calibrated food/water readings separately.
-- [ ] Member 3 connects feeding requests to actuator control and checks motor deadline enforcement.
-- [ ] Integrate button processing, acknowledgement, food-ready cue and light control.
+- [ ] Members 1 and 2 connect feeding requests to the actuator task; Member 1 verifies motor deadlines, with Member 3 providing queue/setup support.
+- [ ] Members 1 and 3 integrate button processing, acknowledgement, food-ready cue and light control.
 - [ ] Member 4 tests framed UART with sample readings, partial packets and command results.
-- [ ] Integrate ESP32 environmental monitoring independently of MCXC444.
+- [ ] Member 5 integrates ESP32 environmental monitoring independently of MCXC444.
 - [ ] Member 5 tests the dashboard with clearly labelled sample data, then connects real telemetry.
 - [ ] Run concurrent-operation, broken-link and reconnect scenarios in the [test checklist](../tests/README.md).
 

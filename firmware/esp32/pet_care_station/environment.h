@@ -1,6 +1,6 @@
 /*
  * File: environment.h
- * Provisional owner: Member 4
+ * Provisional owner: Member 5
  * Status: COMMENT-ONLY TEMPLATE - not implemented or buildable.
  * Responsibility: Read and interpret environment independently.
  * Dependencies/consumers: Sensor library; local cloud snapshot.

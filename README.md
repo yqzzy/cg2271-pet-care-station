@@ -26,11 +26,11 @@ Water is monitored only; automatic water replenishment needs an additional pump.
 
 | Provisional owner | Starting files and folders |
 |---|---|
-| Member 1 | [Dispenser interface](firmware/mcxc444/actuators/dispenser.h), [motor implementation template](firmware/mcxc444/actuators/dispenser.c), [mechanical files](hardware/dispenser/README.md) |
+| Member 1 | [Dispenser interface](firmware/mcxc444/actuators/dispenser.h), [motor implementation template](firmware/mcxc444/actuators/dispenser.c), [actuator task](firmware/mcxc444/control/actuator_task.c), [mechanical files](hardware/dispenser/README.md) |
 | Member 2 | [Food sensing](firmware/mcxc444/sensing/food_sensor.c), [water sensing](firmware/mcxc444/sensing/water_sensor.c) |
-| Member 3 | [RTOS setup](firmware/mcxc444/app/rtos_setup.c), [shared state](firmware/mcxc444/app/shared_state.h), [button task and ISR](firmware/mcxc444/control/button.c), [actuator task](firmware/mcxc444/control/actuator_task.c), [buzzer and LED](firmware/mcxc444/actuators/feedback.c) |
-| Member 4 | [MCXC444 UART](firmware/mcxc444/communication/uart_link.c), [ESP32 UART](firmware/esp32/pet_care_station/uart_bridge.cpp), [environment](firmware/esp32/pet_care_station/environment.cpp), [shared message template](protocol/messages.h) |
-| Member 5 | [Cloud client](firmware/esp32/pet_care_station/cloud_client.cpp), [secrets template](firmware/esp32/pet_care_station/secrets.example.h), [dashboard guide](dashboard/README.md) |
+| Member 3 | [RTOS setup](firmware/mcxc444/app/rtos_setup.c), [shared state](firmware/mcxc444/app/shared_state.h), [button task and ISR](firmware/mcxc444/control/button.c), [buzzer and LED](firmware/mcxc444/actuators/feedback.c) |
+| Member 4 | [MCXC444 UART](firmware/mcxc444/communication/uart_link.c), [ESP32 UART](firmware/esp32/pet_care_station/uart_bridge.cpp), [shared message template](protocol/messages.h) |
+| Member 5 | [Environment sensing](firmware/esp32/pet_care_station/environment.cpp), [Cloud client](firmware/esp32/pet_care_station/cloud_client.cpp), [secrets template](firmware/esp32/pet_care_station/secrets.example.h), [dashboard guide](dashboard/README.md) |
 
 ## Folder map
 
