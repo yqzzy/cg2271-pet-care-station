@@ -1,21 +1,25 @@
-/*
- * File: environment.h
- * Provisional owner: Member 5
- * Status: COMMENT-ONLY TEMPLATE - not implemented or buildable.
- * Responsibility: Read and interpret environment independently.
- * Dependencies/consumers: Sensor library; local cloud snapshot.
- * Template role: Public interface agreement; do not duplicate implementation here.
- *
- * Proposed functions/types (all intentionally commented):
- *   void Environment_Init(void);
- *   bool Environment_Read(EnvironmentReading *out);
- *   void Environment_Task(void *argument);
- *
- * TODO:
- * - Choose module/library, sampling period and thresholds.
- * - Reject failed reads, mark invalid; do not publish zero as failure.
- * - Include temperature/humidity/alert flags and freshness.
- * - Keep sampling independent of network retries..
- * - Agree concrete types, units, errors and timing with consumers before coding.
- * - Verify relevant scenarios in tests/README.md; record evidence.
- */
+#ifndef PET_CARE_ENVIRONMENT_H
+#define PET_CARE_ENVIRONMENT_H
+
+#include "environment_state.h"
+
+// Call once from setup(), before creating tasks. Returns false on invalid GPIO
+// or mutex allocation failure. Initialization does not wait for the sensor.
+bool Environment_Init(void);
+
+// Hardware read: Environment_Task is the sole caller after initialization.
+// Task scheduling provides power-up settling and the DHT read interval.
+// Updates the snapshot on sensor success AND failure; true means a valid sample
+// was read and published. Null output, missing init, or lock failure return false.
+bool Environment_Read(EnvironmentReading *out);
+
+// Safe for other tasks. No sensor/network I/O. Copies invalid/never-read status
+// too; returns false if no attempt exists, initialization failed, or lock timed out.
+// Use Environment_IsFresh(*out, millis()) before using values or alert flags.
+bool Environment_CopySnapshot(EnvironmentReading *out);
+
+// Owns the DHT11 and state model; create exactly one instance. Sleeps between
+// reads; performs no Wi-Fi, MQTT, UART, or actuator operations.
+void Environment_Task(void *argument);
+
+#endif
