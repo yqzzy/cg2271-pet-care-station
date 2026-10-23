@@ -1,21 +1,47 @@
 /*
  * File: shared_state.h
- * Provisional owner: Member 3
- * Status: COMMENT-ONLY TEMPLATE - not implemented or buildable.
- * Responsibility: Own synchronized latest readings and output snapshots.
- * Dependencies/consumers: Sensor and actuator producers; UART consumer.
- * Template role: Public interface agreement; do not duplicate implementation here.
+ * Owner: Member 3
+ * Status: PROPOSED types, implemented in shared_state.c (not yet built or tested on hardware).
+ * Responsibility: Mutex-protected latest readings and output snapshot.
  *
- * Proposed functions/types (all intentionally commented):
- *   void SharedState_Init(void);
- *   void SharedState_UpdateFood(const FoodReading *reading);
- *   void SharedState_UpdateWater(const WaterReading *reading);
- *   void SharedState_UpdateOutputs(const OutputState *state);
- *   bool SharedState_CopySnapshot(SystemSnapshot *out);
- *
- * TODO:
- * - Define FoodReading, WaterReading, OutputState, SystemSnapshot with validity and sample age/time.
- * - Lock only around copies; never hold during I/O or use from ISR..
- * - Agree concrete types, units, errors and timing with consumers before coding.
- * - Verify relevant scenarios in tests/README.md; record evidence.
+ * Rules: call from TASKS only, never from an ISR. Locks are held only while copying.
+ * Units are decided by the producers (Member 2 for readings, Member 1 for outputs).
  */
+#ifndef SHARED_STATE_H
+#define SHARED_STATE_H
+
+#include <stdint.h>
+#include <stdbool.h>
+#include "FreeRTOS.h"
+
+typedef struct {
+    int32_t    value;       /* food amount, units TBD by Member 2 */
+    bool       valid;       /* false until the first good sample   */
+    TickType_t tick;        /* when it was sampled                 */
+} FoodReading;
+
+typedef struct {
+    uint16_t   raw;         /* raw ADC value                       */
+    bool       low;         /* true when below the low-water threshold */
+    bool       valid;
+    TickType_t tick;
+} WaterReading;
+
+typedef struct {
+    bool light_on;          /* applied light state                 */
+    bool motor_running;     /* dispenser motor currently moving    */
+} OutputState;
+
+typedef struct {
+    FoodReading  food;
+    WaterReading water;
+    OutputState  outputs;
+} SystemSnapshot;
+
+void SharedState_Init(void);
+void SharedState_UpdateFood(const FoodReading *reading);
+void SharedState_UpdateWater(const WaterReading *reading);
+void SharedState_UpdateOutputs(const OutputState *state);
+bool SharedState_CopySnapshot(SystemSnapshot *out);   /* false if the lock timed out */
+
+#endif /* SHARED_STATE_H */
