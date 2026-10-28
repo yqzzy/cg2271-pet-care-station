@@ -1,5 +1,7 @@
 # ESP32 UART public API
 
+**Testing only:** `esp32_test.ino` is a standalone UART test sketch. It is not required for integration; do not add it to the integrated application. Integrate `esp32_uart.h` and `esp32_uart.cpp` instead, and call their functions from your application's own `setup()`, loop or tasks as described below.
+
 For teammates connecting the MCXC444 readings and button events to the cloud, and dashboard light commands to the MCXC444. Include `esp32_uart.h` and compile `esp32_uart.cpp` in the ESP32 build.
 
 These files currently live outside the `pet_care_station` sketch directory. When integrating, ensure the build compiles this source; adding a header include alone does not compile the implementation. For the existing Arduino sketch layout, one option is to move both files into `pet_care_station`.

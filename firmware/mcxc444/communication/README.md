@@ -1,5 +1,7 @@
 # MCXC444 UART public API
 
+**Testing only:** `mcxc_test_main.c` is a standalone UART test entry point. It is not required for integration; do not add it to the integrated application or compile it alongside your application's `main.c`. Integrate `mcxc_uart.h` and `mcxc_uart.c` instead, and call their functions from your application's own startup and tasks as described below.
+
 For teammates connecting food/water sensing, button events and light control to the ESP32. Include `mcxc_uart.h` and compile `mcxc_uart.c` in the MCXC444 project. The `uart_link.c/.h` files are application adapter templates; they do not implement this API.
 
 ## Startup
