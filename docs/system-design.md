@@ -71,6 +71,24 @@ Names and signatures below are proposed contracts in comments, not implemented d
 | Cloud to MCXC444 | Light on/off request with request ID; return applied output state, not just receipt acknowledgement |
 | Environment to cloud | Temperature, humidity, validity and alert flags; invalid data is not converted to zero |
 
+### MCXC444 queue messages (proposed by Member 3, pending review by Members 1, 2 and 4)
+
+Defined in [rtos_types.h](../firmware/mcxc444/app/rtos_types.h). Sensor readings do not use these queues; they use the shared-state buffer.
+
+| Queue | Producer to consumer | Message |
+|---|---|---|
+| buttonQueue | Button ISR to Button_Task | Tick timestamp of the falling edge |
+| actuatorQueue | Button_Task and food logic to Actuator_Task | Command type (beep ack, beep food-ready, dispense), value |
+| telemetryQueue | Button_Task to the UART adapter task (`uart_link.c`) | Event type (button pressed), tick |
+
+How the UART module fits (see [MCXC444 UART API](../firmware/mcxc444/communication/README.md)):
+
+- The adapter task calls `sendButton()` for each debounced press and `sendSensors()` once a second from a shared-state snapshot, taken outside the mutex.
+- Remote light commands are not queued. The actuator task polls `consumeLight(&on)` at least every 20 ms and writes the light GPIO immediately; the module sends the ACK itself. The ACK means the command was consumed, not that the light was measured.
+- The protocol has no dispense-result message yet, so dispense results are not reported to the ESP32.
+
+Units in shared state: food weight in milligrams (signed 32-bit), water as the raw ADC value (16-bit).
+
 ## Behaviour and open hardware choices
 
 - The load cell measures bowl contents, not proven consumption. Tare requires a known empty bowl and must not blindly zero a full bowl at startup.
