@@ -15,13 +15,13 @@
 #include "FreeRTOS.h"
 
 typedef struct {
-    int32_t    value;       /* food amount, units TBD by Member 2 */
+    int32_t    value;       /* food weight in MILLIGRAMS (matches sendSensors food_milligrams) */
     bool       valid;       /* false until the first good sample   */
     TickType_t tick;        /* when it was sampled                 */
 } FoodReading;
 
 typedef struct {
-    uint16_t   raw;         /* raw ADC value                       */
+    uint16_t   raw;         /* raw ADC value (matches sendSensors water_level) */
     bool       low;         /* true when below the low-water threshold */
     bool       valid;
     TickType_t tick;

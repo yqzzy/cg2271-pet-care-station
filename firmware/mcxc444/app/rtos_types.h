@@ -7,9 +7,15 @@
  *
  * Who produces / consumes each queue:
  *   buttonQueue    ISR (button.c)                              -> Button_Task (Member 3)
- *   actuatorQueue  Button_Task (beep), UartLink_Task (remote light, with request ID),
- *                  food logic (Member 2, DISPENSE_REQUEST)    -> Actuator_Task (Member 1)
- *   telemetryQueue Button_Task, Actuator_Task (results)        -> UartLink_Task (Member 4)
+ *   actuatorQueue  Button_Task (beep), food logic (Member 2, dispense request)
+ *                                                              -> Actuator_Task (Member 1)
+ *   telemetryQueue Button_Task                                 -> UartLink_Task (adapter in
+ *                  communication/uart_link.c, calls sendButton() of Member 4's UART module)
+ *
+ * Remote LIGHT commands do NOT use actuatorQueue. Member 4's UART module delivers them with
+ * consumeLight(&on), which the actuator task must poll regularly; the module sends the ACK
+ * itself. So ACT_LIGHT_SET and TEL_LIGHT_APPLIED are currently unused (kept for later), and
+ * the UART protocol has no dispense-result message yet, so TEL_DISPENSE_RESULT is dropped.
  *
  * Only Actuator_Task calls the Feedback_* output functions. Everyone else sends an ActuatorCmd.
  * Sensor readings do NOT use these queues: they go through the latest-state buffer

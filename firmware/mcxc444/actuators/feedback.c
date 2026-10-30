@@ -48,10 +48,25 @@
 static bool     cueActive = false;
 static uint32_t cueEndMs  = 0;
 
-/* Same clock setup as the TPM lectures: MCGIRCLK = 8 MHz */
+/* Clock for the buzzer TPM: MCGIRCLK = 8 MHz (same idea as the TPM lectures).
+ *
+ * DEFAULT (0): only turn ON the 8 MHz internal reference output (MCGIRCLK) and leave the
+ * core/bus clock chosen by the board clock init alone. This keeps the FreeRTOS tick, the
+ * debug console baud and Member 4's UART baud (computed from the bus clock) unchanged.
+ *
+ * Set to 1 to copy the lecture code exactly (also selects LIRC as the core clock). Only use
+ * this if the buzzer is silent with 0, and then re-check the debug console and UART baud. */
+#ifndef FEEDBACK_SWITCH_CORE_CLOCK_TO_LIRC
+#define FEEDBACK_SWITCH_CORE_CLOCK_TO_LIRC 0
+#endif
+
 static void setMCGIRClk(void) {
+#if FEEDBACK_SWITCH_CORE_CLOCK_TO_LIRC
     MCG->C1 &= ~MCG_C1_CLKS_MASK;
-    MCG->C1 |= (MCG_C1_CLKS(0b01) | MCG_C1_IRCLKEN_MASK);   /* LIRC, enabled */
+    MCG->C1 |= (MCG_C1_CLKS(0b01) | MCG_C1_IRCLKEN_MASK);   /* LIRC as core clock, enabled */
+#else
+    MCG->C1 |= MCG_C1_IRCLKEN_MASK;                         /* MCGIRCLK on, CLKS untouched */
+#endif
 
     MCG->C2 |= MCG_C2_IRCS_MASK;                            /* 8 MHz */
 
@@ -60,6 +75,10 @@ static void setMCGIRClk(void) {
 
     MCG->MC &= ~MCG_MC_LIRC_DIV2_MASK;
     MCG->MC |= MCG_MC_LIRC_DIV2(0b0);                       /* divide by 1 */
+
+#if FEEDBACK_SWITCH_CORE_CLOCK_TO_LIRC
+    SystemCoreClockUpdate();   /* keep the FreeRTOS tick correct */
+#endif
 }
 
 static void buzzerOff(void) {
