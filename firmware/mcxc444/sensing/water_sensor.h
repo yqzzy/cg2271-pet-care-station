@@ -18,3 +18,23 @@
  * - Agree concrete types, units, errors and timing with consumers before coding.
  * - Verify relevant scenarios in tests/README.md; record evidence.
  */
+#ifndef WATER_SENSOR_H
+#define WATER_SENSOR_H
+
+#include <stdbool.h>
+
+/*
+ * Configure the water sensor hardware. 
+ * Returns false if initialization fails.
+ *
+ * Call once during startup, before creating WaterSensor_Task.
+ */
+bool WaterSensor_Init(void);
+
+/*
+ * Periodically read the sensor and publish its latest state.
+ * Intended to run as a FreeRTOS task.
+ */
+void WaterSensor_Task(void *argument);
+
+#endif

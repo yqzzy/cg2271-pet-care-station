@@ -29,6 +29,7 @@
 #include "task.h"
 #include "queue.h"
 #include "fsl_debug_console.h"   /* PRINTF */
+#include "../sensing/water_sensor.h"
 
 /* ---- Task priorities (PROPOSED, higher number = higher priority) ----
  * Design rule: actuator deadlines and local button response outrank bulk telemetry.
@@ -79,6 +80,18 @@ void Rtos_CreateTasks(void) {
      * The UART module creates its own TX/RX tasks inside uartInit(). */
     ok = xTaskCreate(UartLink_Task, "uartlink", STACK_WORDS + 100, NULL, PRIO_UART, NULL);
     configASSERT(ok == pdPASS);
+
+    /*
+     * TODO (Member 3): Confirm sensing priority and stack size.
+     * Measure stack usage and sampling timing in the integrated project.
+     */
+    /* Start water sampling only if ADC initialization succeeds. */
+    if (WaterSensor_Init()) {
+        ok = xTaskCreate(WaterSensor_Task, "water", STACK_WORDS, NULL, PRIO_SENSING, NULL);
+        configASSERT(ok == pdPASS);
+    } else {
+        PRINTF("Water sensor initialization failed\r\n");
+    }
 
 #if USE_TEST_ACTUATOR_TASK
     ok = xTaskCreate(TestActuator_Task, "t_actuator", STACK_WORDS, NULL, PRIO_ACTUATOR, NULL);
