@@ -36,7 +36,7 @@
  * the FIXED TEST VALUES water = 600 raw, food = 125000 mg (125 g), the same ones Member 4's
  * mcxc_test_main.c uses, so the ESP32 side can be tested. Set to 0 as soon as the real
  * sensor tasks update the shared state, so test data is never mistaken for a real reading. */
-#define UARTLINK_USE_TEST_SENSOR_DATA  1
+#define UARTLINK_USE_TEST_SENSOR_DATA  0
 
 bool UartLink_Init(void) {
     bool ok = uartInit();   /* creates the module's queues, mutex and TX/RX tasks */

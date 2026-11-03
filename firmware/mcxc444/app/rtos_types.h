@@ -47,7 +47,7 @@ typedef enum {
     ACT_BEEP_ACK,               /* acknowledgement cue (Feedback cue ACK)            */
     ACT_BEEP_FOOD_READY,        /* food-ready cue (Feedback cue FOOD_READY)          */
     ACT_LIGHT_SET,              /* value: 1 = on, 0 = off. request_id from the cloud  */
-    ACT_DISPENSE                /* DISPENSE_REQUEST; value: units decided by Member 1 */
+    ACT_DISPENSE                /* DISPENSE_REQUEST; Proposed: value 1 requests one portion; other values unsupported. */
 } ActuatorCmdType;
 
 typedef struct {

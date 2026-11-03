@@ -30,6 +30,7 @@
 #include "queue.h"
 #include "fsl_debug_console.h"   /* PRINTF */
 #include "../sensing/water_sensor.h"
+#include "../sensing/food_sensor.h"
 
 /* ---- Task priorities (PROPOSED, higher number = higher priority) ----
  * Design rule: actuator deadlines and local button response outrank bulk telemetry.
@@ -93,6 +94,17 @@ void Rtos_CreateTasks(void) {
         PRINTF("Water sensor initialization failed\r\n");
     }
 
+    /*
+     * Start food sampling after configuring the HX711 pins.
+     * TODO (Member 3 / lab): Verify stack usage and sensing priority.
+     */
+    if (FoodSensor_Init()) {
+        ok = xTaskCreate(FoodSensor_Task, "food", STACK_WORDS, NULL, PRIO_SENSING, NULL);
+        configASSERT(ok == pdPASS);
+    } else {
+        PRINTF("Food sensor initialization failed\r\n");
+    }
+
 #if USE_TEST_ACTUATOR_TASK
     ok = xTaskCreate(TestActuator_Task, "t_actuator", STACK_WORDS, NULL, PRIO_ACTUATOR, NULL);
     configASSERT(ok == pdPASS);
@@ -101,10 +113,6 @@ void Rtos_CreateTasks(void) {
     /* Uncomment each line as its owner's task is pushed and builds:
      *
      * ok = xTaskCreate(Actuator_Task,     "actuator", STACK_WORDS, NULL, PRIO_ACTUATOR, NULL);
-     * configASSERT(ok == pdPASS);
-     * ok = xTaskCreate(FoodSensor_Task,   "food",     STACK_WORDS, NULL, PRIO_SENSING,  NULL);
-     * configASSERT(ok == pdPASS);
-     * ok = xTaskCreate(WaterSensor_Task,  "water",    STACK_WORDS, NULL, PRIO_SENSING,  NULL);
      * configASSERT(ok == pdPASS);
      */
     (void)ok;

@@ -19,3 +19,15 @@
  * - Agree concrete types, units, errors and timing with consumers before coding.
  * - Verify relevant scenarios in tests/README.md; record evidence.
  */
+#ifndef FOOD_SENSOR_H
+#define FOOD_SENSOR_H
+
+#include <stdbool.h>
+
+/* Configure the HX711 connection before starting the food sensor task. */
+bool FoodSensor_Init(void);
+
+/* Periodically measure food weight and request feeding when appropriate. */
+void FoodSensor_Task(void *argument);
+
+#endif
