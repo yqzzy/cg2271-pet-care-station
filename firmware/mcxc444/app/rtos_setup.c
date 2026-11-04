@@ -22,6 +22,8 @@
 #include "shared_state.h"
 #include "../control/button.h"
 #include "../actuators/feedback.h"
+#include "../actuators/dispenser.h"
+#include "../control/actuator_task.h"
 #include "../communication/uart_link.h"
 #include "test_tasks.h"
 
@@ -45,10 +47,9 @@
 /* 1 = create the temporary stand-in actuator task (test_tasks.c): applies light commands,
  * beeps on button press and toggles the light. Set to 0 and enable the real Actuator_Task
  * below as soon as Member 1 pushes it. */
-#define USE_TEST_ACTUATOR_TASK  1
+#define USE_TEST_ACTUATOR_TASK  0
 
 /* ---- Task entry points owned by other members (names from docs/system-design.md) ----
- * void Actuator_Task(void *argument);    Member 1 (control/actuator_task.c)
  * void FoodSensor_Task(void *argument);  Member 2 (sensing/food_sensor.c)
  * void WaterSensor_Task(void *argument); Member 2 (sensing/water_sensor.c)
  * Declare each (or include its header) when the owner's code lands.
@@ -108,13 +109,11 @@ void Rtos_CreateTasks(void) {
 #if USE_TEST_ACTUATOR_TASK
     ok = xTaskCreate(TestActuator_Task, "t_actuator", STACK_WORDS, NULL, PRIO_ACTUATOR, NULL);
     configASSERT(ok == pdPASS);
+#else
+    /* Member 1: servo gate, buzzer and light */
+    ok = xTaskCreate(Actuator_Task, "actuator", STACK_WORDS, NULL, PRIO_ACTUATOR, NULL);
+    configASSERT(ok == pdPASS);
 #endif
-
-    /* Uncomment each line as its owner's task is pushed and builds:
-     *
-     * ok = xTaskCreate(Actuator_Task,     "actuator", STACK_WORDS, NULL, PRIO_ACTUATOR, NULL);
-     * configASSERT(ok == pdPASS);
-     */
     (void)ok;
 }
 
@@ -122,6 +121,10 @@ void Rtos_Start(void) {
     Rtos_CreateObjects();   /* queues first: the button ISR uses buttonQueue               */
     Feedback_Init();        /* buzzer + light. Runs BEFORE the UART: it may touch the MCG   */
                             /* clock registers, and the UART baud is computed from the clock */
+
+    if (!Dispenser_Init()) {/* servo on TPM0: needs the TPM clock set by Feedback_Init()    */
+        PRINTF("Dispenser init failed: TPM clock not set\r\n");
+    }
 
     if (!UartLink_Init()) { /* uartInit(): creates the UART queues, mutex and TX/RX tasks   */
         PRINTF("UART init failed\r\n");

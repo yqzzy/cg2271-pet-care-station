@@ -64,7 +64,7 @@ The table mixes implemented interfaces with integration targets. Food/water shar
 |---|---|
 | Food sensing to coordinator | Queue `ACT_DISPENSE`, proposed `value = 1` for one portion and `request_id = 0`; sensing owns confirmed-low detection, rearm and minimum interval |
 | Coordinator to dispenser | `Dispenser_Start(now_ms)`, `Dispenser_Update(now_ms)`, `Dispenser_Stop()` and `Dispenser_GetStatus()` |
-| Dispenser to coordinator | Busy/completed/failed status; maximum run time is enforced locally |
+| Dispenser to coordinator | Busy/completed/failed status; maximum run time is enforced locally. `Dispenser_Start()` rejects a request while busy; how often to dispense is food sensing's policy |
 | Coordinator to feedback | `Feedback_StartCue(cue, now_ms)`, `Feedback_Update(now_ms)`, `Feedback_SetLight(on)` |
 | Sensor tasks to shared state | `SharedState_UpdateFood(...)`, `SharedState_UpdateWater(...)`; UART uses `SharedState_CopySnapshot(...)` |
 | MCXC444 to ESP32 | Current: raw water and food milligrams when both are valid, plus button events. Validity/low-water fields and dispense results remain integration work |
@@ -95,7 +95,7 @@ Both sensor tasks are registered in `app/rtos_setup.c` at the proposed sensing p
 
 - Food uses HX711 GPIO reads on proposed PTB1/PTB3, saved empty-bowl/reference calibration, and a four-sample moving average. A not-ready or rejected sample resets the filter; four valid converted samples are needed before publishing a valid average. Calibration is disabled until measured values are entered.
 - Water uses PTB2/ADC0 channel 12, startup ADC self-calibration, 16-conversion hardware averaging and a nominal 20 ms conversion timeout. Thresholds are disabled until measured. The current `water.valid` requires both successful acquisition and a known low-water decision; a first reading between the thresholds remains invalid until either boundary is reached.
-- Feeding is disabled by default. When enabled with valid thresholds, three consecutive low filtered samples request one portion. A successful enqueue starts the interval and latches until weight reaches the rearm threshold. Queue-full failure does not latch. The current 60000 ms interval is provisional; state is lost on reset. There is no actuator acceptance/completion feedback to this policy yet.
+- Feeding is disabled by default. When enabled with valid thresholds, three consecutive low filtered samples request one portion. A successful enqueue starts the interval and latches until weight reaches the rearm threshold. Queue-full failure does not latch. The current 10000 ms interval is provisional (shortened from 60000 ms for demonstration; it is the only limit on dispensing rate if each portion rearms the trigger); state is lost on reset. There is no actuator acceptance/completion feedback to this policy yet.
 - Food conversion rejects weights below the provisional `FOOD_MIN_VALID_MG = -5000` limit. HX711 reads reject a missing DOUT-high state after the final pulse. Desktop checks passed; the limit and pulse timing still need lab verification. Keep automatic motor operation disabled until lab checks and actuator busy/failure handling are resolved.
 
 ## Behaviour and open hardware choices

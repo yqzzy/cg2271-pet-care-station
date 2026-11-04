@@ -65,7 +65,7 @@
 #define FOOD_LOW_THRESHOLD_MG         0
 #define FOOD_REARM_THRESHOLD_MG       0
 #define FOOD_LOW_CONFIRM_SAMPLES      3u
-#define FOOD_MIN_INTERVAL_MS          60000u
+#define FOOD_MIN_INTERVAL_MS          10000u
 
 /* Configure the HX711 data and clock pins. */
 bool FoodSensor_Init(void)
