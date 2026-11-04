@@ -8,8 +8,8 @@
  *   1. TEL_BUTTON_PRESSED from telemetryQueue -> sendButton(). The module allows only ONE
  *      outstanding button event, so extra presses are counted and handed over later.
  *   2. Once a second: copy the shared-state snapshot (mutex released before sending), then
- *      sendSensors(water_raw, food_milligrams). Invalid readings are skipped (the packet has no
- *      validity fields).
+ *      sendSensors(water_raw, food_milligrams). Skipped unless BOTH are real: a raw water sample
+ *      and a calibrated food weight (the packet has no validity fields).
  *   3. Other telemetry types are dropped for now: the UART protocol has no wire message for
  *      light results (the module ACKs consumeLight() itself) or dispense results.
  *
@@ -53,7 +53,9 @@ static void reportSensors(void) {
     bool     have  = false;
 
     /* The mutex is held only inside CopySnapshot, so it is released before any UART call */
-    if (SharedState_CopySnapshot(&snap) && snap.water.valid && snap.food.valid) {
+    /* water.raw_valid = a real ADC sample (does not need calibrated thresholds);
+     * food.valid = calibrated, filtered weight. The packet has no validity fields. */
+    if (SharedState_CopySnapshot(&snap) && snap.water.raw_valid && snap.food.valid) {
         water = snap.water.raw;
         food  = snap.food.value;     /* already in milligrams */
         have  = true;
