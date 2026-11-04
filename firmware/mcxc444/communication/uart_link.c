@@ -8,7 +8,7 @@
  *   1. TEL_BUTTON_PRESSED from telemetryQueue -> sendButton(). The module allows only ONE
  *      outstanding button event, so extra presses are counted and handed over later.
  *   2. Once a second: copy the shared-state snapshot (mutex released before sending), then
- *      sendSensors(water_raw, food_milligrams). Skipped unless BOTH are real: a raw water sample
+ *      sendSensors(water_enough, food_milligrams). Skipped unless BOTH are valid: water status
  *      and a calibrated food weight (the packet has no validity fields).
  *   3. Other telemetry types are dropped for now: the UART protocol has no wire message for
  *      light results (the module ACKs consumeLight() itself) or dispense results.
@@ -33,7 +33,7 @@
 #define PENDING_BUTTON_MAX        8u
 
 /* !!! TEMPORARY !!!  1 = when no valid sensor data exists yet (Member 2 has not pushed), send
- * the FIXED TEST VALUES water = 600 raw, food = 125000 mg (125 g), the same ones Member 4's
+ * the FIXED TEST VALUES water_enough = true, food = 125000 mg (125 g), the same ones Member 4's
  * mcxc_test_main.c uses, so the ESP32 side can be tested. Set to 0 as soon as the real
  * sensor tasks update the shared state, so test data is never mistaken for a real reading. */
 #define UARTLINK_USE_TEST_SENSOR_DATA  0
@@ -48,21 +48,21 @@ bool UartLink_Init(void) {
 
 static void reportSensors(void) {
     SystemSnapshot snap;
-    uint16_t water = 0;
+    bool     water_enough = false;
     int32_t  food  = 0;
     bool     have  = false;
 
     /* The mutex is held only inside CopySnapshot, so it is released before any UART call */
-    /* water.raw_valid = a real ADC sample (does not need calibrated thresholds);
+    /* water.valid = a known low-water state (requires calibrated thresholds);
      * food.valid = calibrated, filtered weight. The packet has no validity fields. */
-    if (SharedState_CopySnapshot(&snap) && snap.water.raw_valid && snap.food.valid) {
-        water = snap.water.raw;
+    if (SharedState_CopySnapshot(&snap) && snap.water.valid && snap.food.valid) {
+        water_enough = !snap.water.low;
         food  = snap.food.value;     /* already in milligrams */
         have  = true;
     }
 #if UARTLINK_USE_TEST_SENSOR_DATA
     if (!have) {
-        water = 600;
+        water_enough = true;
         food  = 125000;
         have  = true;
     }
@@ -70,7 +70,7 @@ static void reportSensors(void) {
 
     if (have) {
         /* false = TX queue full: just try again with a fresh sample next period */
-        (void)sendSensors(water, food);
+        (void)sendSensors(water_enough, food);
     }
 }
 

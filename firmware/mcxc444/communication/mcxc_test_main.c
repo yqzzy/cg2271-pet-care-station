@@ -36,7 +36,7 @@ static void testTask(void *unused)
         TickType_t now = xTaskGetTickCount();
         if ((TickType_t)(now - lastSensor) >= pdMS_TO_TICKS(1000)) {
             lastSensor = now;
-            (void)sendSensors(600, 125000); /* 125 grams; replace with shared-state snapshot */
+            (void)sendSensors(true, 125000); /* Enough water, 125 grams; replace with shared-state snapshot */
         }
         if ((TickType_t)(now - lastButton) >= pdMS_TO_TICKS(10000)) {
             lastButton = now;

@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 typedef struct {
-    uint16_t water_level;
+    bool water_enough; // true = enough water, false = low water.
     int32_t food_milligrams;
     uint32_t received_ms; // ESP32-local time for stale-data checking.
 } SensorValues;

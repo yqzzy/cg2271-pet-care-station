@@ -83,11 +83,11 @@ Defined in [rtos_types.h](../firmware/mcxc444/app/rtos_types.h). Sensor readings
 
 How the UART module fits (see [MCXC444 UART API](../firmware/mcxc444/communication/README.md)):
 
-- The adapter task calls `sendButton()` for each debounced press and attempts sensor reporting once a second. It copies a shared-state snapshot under the mutex and releases it before UART calls. `sendSensors()` runs only when both readings are valid; fake-data fallback is disabled. The packet has no validity or water-low fields, so stale-data handling and low-water reporting require agreement with Member 4.
+- The adapter task calls `sendButton()` for each debounced press and attempts sensor reporting once a second. It copies a shared-state snapshot under the mutex and releases it before UART calls. `sendSensors()` runs only when food and water status are valid; fake-data fallback is disabled. Water is sent as `water_enough = !water.low` (`true` = enough, `false` = low). Water thresholds must be calibrated before reporting. The packet has no validity fields; the ESP32 uses its local receive timestamp to check freshness.
 - Remote light commands are not queued. The actuator task polls `consumeLight(&on)` at least every 20 ms and writes the light GPIO immediately; the module sends the ACK itself. The ACK means the command was consumed, not that the light was measured.
 - The protocol has no dispense-result message yet, so dispense results are not reported to the ESP32.
 
-Units in shared state: food weight in milligrams (signed 32-bit), water as the raw ADC value (16-bit).
+Units in shared state: food weight in milligrams (signed 32-bit), water as the raw ADC value (16-bit) plus low-water status and validity. UART sends only the boolean enough-water status, not the raw ADC value.
 
 ## Current sensing behaviour
 
