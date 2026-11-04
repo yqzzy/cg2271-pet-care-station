@@ -2,9 +2,11 @@
 
 CG2271 group project: monitor food, water and environmental conditions, notify an owner when the pet presses a button, dispense food and control the station light remotely.
 
-**Status: implementation in progress.** Food/water sensing, MCXC444 coordination and UART code have been written; dispenser and cloud integration remain incomplete. The repository is not a configured MCUXpresso project, and the sensor firmware still needs an integrated build, calibration and hardware tests. Food calibration, water thresholds and automatic feeding are disabled by default.
+**Status: implementation in progress.** Food/water sensing, MCXC444 coordination and UART code have been written; dispenser and cloud integration remain incomplete. The MCXC444 firmware builds in Debug and Release. Water thresholds are enabled. Food calibration, automatic feeding and hardware verification are pending.
 
 ## Start here
+
+- [Import, build and run the MCXC444 project in MCUXpresso](mcuxpresso/README.md)
 
 - [Team guide: ownership, Git workflow and integration](docs/team-guide.md)
 - [System design: tasks, synchronization and module interfaces](docs/system-design.md)
