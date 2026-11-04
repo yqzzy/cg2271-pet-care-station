@@ -23,7 +23,8 @@ typedef struct {
 typedef struct {
     uint16_t   raw;         /* raw ADC value (matches sendSensors water_level) */
     bool       low;         /* true when below the low-water threshold */
-    bool       valid;
+    bool       raw_valid;   /* raw is a real conversion result (set whenever a sample was acquired) */
+    bool       valid;       /* low-water STATE is known (needs calibrated thresholds). Not needed to send raw. */
     TickType_t tick;
 } WaterReading;
 

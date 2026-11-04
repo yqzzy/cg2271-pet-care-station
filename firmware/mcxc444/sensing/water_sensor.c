@@ -251,6 +251,7 @@ void WaterSensor_Task(void *argument)
 
         if (acquired) {
             reading.raw = raw;
+            reading.raw_valid = true;   /* a real conversion result, even before thresholds are set */
             reading.tick = xTaskGetTickCount();
             reading.valid = WaterSensor_DetermineLow(raw, &reading.low);
         } else {

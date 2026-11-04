@@ -36,6 +36,11 @@
 
 #define BUTTON_DEBOUNCE_MS  30u
 
+/* !!! BENCH TEST ONLY !!!  1 = every accepted press ALSO requests one dispense, so the servo gate
+ * and the food-ready cue can be tested without a calibrated HX711. Leave 0 for real operation:
+ * dispensing is decided by food sensing. */
+#define BUTTON_TEST_DISPENSE  0
+
 /* Presses lost because buttonQueue was full (check in the debugger) */
 static volatile uint32_t droppedPresses = 0;
 
@@ -119,6 +124,11 @@ void Button_Task(void *argument) {
          * stall this task if a consumer is slow) */
         ActuatorCmd cmd = { .type = ACT_BEEP_ACK, .value = 0, .request_id = 0 };
         (void)xQueueSend(actuatorQueue, &cmd, 0);
+
+#if BUTTON_TEST_DISPENSE
+        ActuatorCmd dispense = { .type = ACT_DISPENSE, .value = 1, .request_id = 0 };
+        (void)xQueueSend(actuatorQueue, &dispense, 0);
+#endif
 
         TelemetryMsg msg = { .type = TEL_BUTTON_PRESSED, .tick = ev.tick, .value = 0, .request_id = 0 };
         (void)xQueueSend(telemetryQueue, &msg, 0);
