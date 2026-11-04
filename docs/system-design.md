@@ -58,16 +58,16 @@ Each member implements/tests their owned task entry points. Member 3 creates MCX
 
 ## Module agreements
 
-Names and signatures below are proposed contracts in comments, not implemented declarations. Header templates describe public functions; source templates describe their implementation work.
+The table mixes implemented interfaces with integration targets. Food/water shared-state calls and the actuator queue are implemented; dispenser execution remains a template. Check the current headers and the UART limitations below before integrating.
 
 | Producer to consumer | Contract |
 |---|---|
-| Food sensing to coordinator | Queue `DISPENSE_REQUEST`; sensing owns confirmed-low-food detection and rearm/minimum-attempt-interval policy |
+| Food sensing to coordinator | Queue `ACT_DISPENSE`, proposed `value = 1` for one portion and `request_id = 0`; sensing owns confirmed-low detection, rearm and minimum interval |
 | Coordinator to dispenser | `Dispenser_Start(now_ms)`, `Dispenser_Update(now_ms)`, `Dispenser_Stop()` and `Dispenser_GetStatus()` |
 | Dispenser to coordinator | Busy/completed/failed status; maximum run time is enforced locally |
 | Coordinator to feedback | `Feedback_StartCue(cue, now_ms)`, `Feedback_Update(now_ms)`, `Feedback_SetLight(on)` |
 | Sensor tasks to shared state | `SharedState_UpdateFood(...)`, `SharedState_UpdateWater(...)`; UART uses `SharedState_CopySnapshot(...)` |
-| MCXC444 to ESP32 | Validity-tagged readings, confirmed button events, applied light state and dispense results |
+| MCXC444 to ESP32 | Current: raw water and food milligrams when both are valid, plus button events. Validity/low-water fields and dispense results remain integration work |
 | Cloud to MCXC444 | Light on/off request with request ID; return applied output state, not just receipt acknowledgement |
 | Environment to cloud | Temperature, humidity, validity and alert flags; invalid data is not converted to zero |
 
@@ -83,11 +83,20 @@ Defined in [rtos_types.h](../firmware/mcxc444/app/rtos_types.h). Sensor readings
 
 How the UART module fits (see [MCXC444 UART API](../firmware/mcxc444/communication/README.md)):
 
-- The adapter task calls `sendButton()` for each debounced press and `sendSensors()` once a second from a shared-state snapshot, taken outside the mutex.
+- The adapter task calls `sendButton()` for each debounced press and attempts sensor reporting once a second. It copies a shared-state snapshot under the mutex and releases it before UART calls. `sendSensors()` runs only when both readings are valid; fake-data fallback is disabled. The packet has no validity or water-low fields, so stale-data handling and low-water reporting require agreement with Member 4.
 - Remote light commands are not queued. The actuator task polls `consumeLight(&on)` at least every 20 ms and writes the light GPIO immediately; the module sends the ACK itself. The ACK means the command was consumed, not that the light was measured.
 - The protocol has no dispense-result message yet, so dispense results are not reported to the ESP32.
 
 Units in shared state: food weight in milligrams (signed 32-bit), water as the raw ADC value (16-bit).
+
+## Current sensing behaviour
+
+Both sensor tasks are registered in `app/rtos_setup.c` at the proposed sensing priority, with 250 ms periods. Startup checks each sensor's initialization result before creating its task. Sampling periods, stack sizes and priorities require measurement in the actual FreeRTOS project.
+
+- Food uses HX711 GPIO reads on proposed PTB1/PTB3, saved empty-bowl/reference calibration, and a four-sample moving average. A not-ready or rejected sample resets the filter; four valid converted samples are needed before publishing a valid average. Calibration is disabled until measured values are entered.
+- Water uses PTB2/ADC0 channel 12, startup ADC self-calibration, 16-conversion hardware averaging and a nominal 20 ms conversion timeout. Thresholds are disabled until measured. The current `water.valid` requires both successful acquisition and a known low-water decision; a first reading between the thresholds remains invalid until either boundary is reached.
+- Feeding is disabled by default. When enabled with valid thresholds, three consecutive low filtered samples request one portion. A successful enqueue starts the interval and latches until weight reaches the rearm threshold. Queue-full failure does not latch. The current 60000 ms interval is provisional; state is lost on reset. There is no actuator acceptance/completion feedback to this policy yet.
+- Food conversion rejects weights below the provisional `FOOD_MIN_VALID_MG = -5000` limit. HX711 reads reject a missing DOUT-high state after the final pulse. Desktop checks passed; the limit and pulse timing still need lab verification. Keep automatic motor operation disabled until lab checks and actuator busy/failure handling are resolved.
 
 ## Behaviour and open hardware choices
 
@@ -96,7 +105,7 @@ Units in shared state: food weight in milligrams (signed 32-bit), water as the r
 - Buzzer cues are short and non-blocking. A completed motor cycle alone does not prove food delivery; use honest result wording unless weight change confirms it.
 - The light is an owner-controlled station light. Output confirmation means the commanded GPIO/driver state, not independently measured illumination.
 - Water generates a low-level alert only. No pump is in this scaffold.
-- Pins, motor type, sensor models, polling periods, thresholds, cue patterns and wire encoding remain implementation TODOs, not invented constants.
+- Proposed sensor pins and timing defaults are recorded in code and the hardware worksheet. Final pin reservations, measured calibration/thresholds and actuator hardware remain to be confirmed; defaults are not lab measurements.
 
 ## Why FreeRTOS
 

@@ -2,7 +2,7 @@
 
 CG2271 group project: monitor food, water and environmental conditions, notify an owner when the pet presses a button, dispense food and control the station light remotely.
 
-**Status: design scaffold only.** All firmware files contain comments, proposed function signatures and TODOs. There is no executable firmware, configured IDE project or completed hardware test yet.
+**Status: implementation in progress.** Food/water sensing, MCXC444 coordination and UART code have been written; dispenser and cloud integration remain incomplete. The repository is not a configured MCUXpresso project, and the sensor firmware still needs an integrated build, calibration and hardware tests. Food calibration, water thresholds and automatic feeding are disabled by default.
 
 ## Start here
 
@@ -20,7 +20,7 @@ CG2271 group project: monitor food, water and environmental conditions, notify a
 | MCXC444 | Button ISR, food/water sensing, local control, motor/buzzer/light and UART |
 | ESP32 | Temperature/humidity sensing, environmental alerts, UART bridge, Wi-Fi and ThingsBoard MQTT |
 
-Water is monitored only; automatic water replenishment needs an additional pump. The buzzer acknowledges button presses and provides a food-ready cue after successful dispensing. Remote light commands return applied-state confirmation.
+Water is monitored only; automatic water replenishment needs an additional pump. The design includes button acknowledgement and a food-ready cue, with the latter awaiting dispenser integration. Remote light commands currently return a consumption acknowledgement; it does not independently confirm the physical output.
 
 ## Work on a subsystem
 
@@ -35,14 +35,14 @@ Water is monitored only; automatic water replenishment needs an additional pump.
 ## Folder map
 
 ```text
-docs/                         Team guide, system design, hardware worksheet
-firmware/mcxc444/              C templates for the local controller
+docs/                         Team guide, system design and hardware worksheet
+firmware/mcxc444/              Local-controller code and unfinished module templates
   app/                        Entry point, RTOS setup and shared state
   sensing/                    Food and water acquisition and conditions
   actuators/                  Motor, buzzer and light drivers
   control/                    Button processing and actuator ownership
   communication/              Board UART endpoint
-firmware/esp32/                Arduino C++ templates
+firmware/esp32/                Arduino C++ code and unfinished module templates
   pet_care_station/            Sketch, environment, bridge and cloud modules
 protocol/                     Cross-board message contract
 dashboard/                    ThingsBoard setup and future exports
@@ -50,8 +50,8 @@ hardware/dispenser/           Future CAD, wiring photos and assembly notes
 tests/                        Manual subsystem and integration checks
 ```
 
-## Before implementation
+## Before building and testing
 
-Read the [MCXC444 setup notes](firmware/mcxc444/README.md) and [ESP32 setup notes](firmware/esp32/README.md). Agree on pins, sensor/motor models, timing constants and UART encoding before integrating. TODOs deliberately avoid guessing these hardware-dependent choices.
+Read the [MCXC444 setup notes](firmware/mcxc444/README.md) and [ESP32 setup notes](firmware/esp32/README.md). Agree on proposed pins, module models and interfaces before wiring; tune timing and thresholds from lab measurements. The two sensor tasks are already registered in the normal MCXC444 startup.
 
-Work in a short-lived branch, keep changes within your module where possible, and ask affected owners to review interface changes. Do not commit Wi-Fi credentials, device tokens, private keys or local IDE/build output. No automated build is claimed for this comment-only scaffold.
+Work in a short-lived branch, keep changes within your module where possible, and ask affected owners to review interface changes. Do not commit Wi-Fi credentials, device tokens, private keys or local IDE/build output. A full automated firmware build is not configured.

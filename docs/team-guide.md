@@ -20,6 +20,14 @@ Each member implements and tests their own task entry points. Member 3 owns cent
 
 Member 3 coordinates local integration; Member 4 coordinates inter-board integration; Member 5 coordinates cloud integration. Everyone fixes their own module and contributes report/demo evidence.
 
+## Member 2 lab preparation
+
+Member 2 must calibrate food readings with an empty bowl and known mass, measure water thresholds, and test feeding requests without a motor. Both tasks are registered in `rtos_setup.c`; review priorities, stack sizes and the shared project configuration with Member 3.
+
+The food command proposal is `ACT_DISPENSE`, `value = 1` for one portion, `request_id = 0`. Members 1 and 2 must agree busy/failure handling: the current food logic latches after a successful queue send and will not retry while food stays low. Member 1 still owns motor execution and deadlines. Member 4 must coordinate sensor validity/low-water reporting; currently both readings must be valid before the adapter sends a packet, and neither validity nor the water-low flag is transmitted.
+
+Pins and measured settings remain subject to group review. Keep calibration/feeding switches disabled until the corresponding lab steps pass. The food code's negative-weight and transfer-completion checks are implemented; validate them on the board and resolve actuator acceptance/failure handling before motor integration.
+
 ## Working together
 
 1. Pull the latest `main`, then create a branch such as `feature/food-sensing` or `docs/pin-map`.

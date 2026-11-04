@@ -7,8 +7,8 @@
 | Component | Board | Interface | Pin allocation | Notes |
 |---|---|---|---|---|
 | Pet button | MCXC444 | GPIO interrupt | TODO (final pin). Test default: on-board SW2 on PTC3 | Active low, internal pull-up, falling-edge interrupt, debounced in Button_Task. Must be on Port A, C or D. Edit the pin block at the top of button.c |
-| Water sensor | MCXC444 | ADC | TODO | Calibrate low-water threshold; verify voltage |
-| Load cell and HX711 | MCXC444 | Data/clock | TODO | Select capacity, amplifier and rigid bowl mounting |
+| Water sensor | MCXC444 | ADC | Proposed: PTB2 / ADC0_SE12 / J4 pin 6 | Exposed-track module; verify voltage and measure thresholds. Driver owns ADC0. |
+| 1 kg bar load cell and HX711 | MCXC444 | Data/clock GPIO | Proposed: DOUT PTB1 / J4 pin 4; PD_SCK PTB3 / J4 pin 8 | Confirm pins and HX711 availability/logic voltage. Identify load-cell wires from its documentation and mount the bowl rigidly. |
 | Temperature/humidity | ESP32 | Module-specific digital interface | TODO | Identify actual kit module and matching library |
 | Dispenser motor and driver | MCXC444 | Driver-specific | TODO | Select motor/servo mechanism before choosing pins |
 | Passive buzzer | MCXC444 | Timer/PWM | PTE21 (TPM1_CH1, ALT3), proposed. Whole TPM1 reserved for the buzzer | Confirm the real buzzer type and pin first (Member 4's test used an active buzzer on PTB0). Cue frequency 2 kHz default. PTE21 is also ADC0_SE4a, so do not use it for an ADC input |
