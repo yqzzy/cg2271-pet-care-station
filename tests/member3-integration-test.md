@@ -8,7 +8,7 @@ For the teammate with the boards. The code has NOT been built or run on hardware
 |---|---|---|
 | `USE_TEST_ACTUATOR_TASK` (`app/rtos_setup.c`) | 0 | Member 1's real `Actuator_Task` runs |
 | `UARTLINK_USE_TEST_SENSOR_DATA` (`communication/uart_link.c`) | 0 | No sensor packets are sent until the food sensor is calibrated |
-| `FOOD_CALIBRATED`, `FOOD_FEEDING_ENABLED`, `WATER_THRESHOLDS_CONFIGURED` (`sensing/`) | 0 | Food weight is never valid, no automatic feeding, no low-water state |
+| `FOOD_CALIBRATED`, `FOOD_FEEDING_ENABLED` (`sensing/`) | 0 | Food weight is unknown, no automatic feeding |
 | `BUTTON_TEST_DISPENSE` (`control/button.c`) | 0 | A button press does not dispense |
 
 ## Setup
@@ -51,7 +51,7 @@ Flash `firmware/esp32/comms/esp32_test/esp32_test.ino` (the folder contains the 
 
 1. Set `WATER_DEBUG_LOG` to 1 in `sensing/water_sensor.c` and rebuild.
 2. Console prints `water raw=<0..4095> ...` about four times a second. Dry sensor, then wet it a little, and note whether the number rises with water. Record both values.
-3. Enter the measured low and clear thresholds, set `WATER_THRESHOLDS_CONFIGURED` to 1 only if raw readings rise with water level, and set `WATER_DEBUG_LOG` back to 0.
+3. Verify the trial thresholds with the mounted probe: dry at or below 100 gives LOW, wet at or above 4000 gives OK. Drain below the probe and verify it returns to LOW. Turn off raw logging after verification.
 
 ## Food sensor test (needs the HX711 and bowl)
 
