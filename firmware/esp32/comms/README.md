@@ -4,7 +4,7 @@
 
 For teammates connecting the MCXC444 readings and button events to the cloud, and dashboard light commands to the MCXC444. Include `esp32_uart.h` and compile `esp32_uart.cpp` in the ESP32 build.
 
-These files currently live outside the `pet_care_station` sketch directory. When integrating, ensure the build compiles this source; adding a header include alone does not compile the implementation. For the existing Arduino sketch layout, one option is to move both files into `pet_care_station`.
+The canonical source is now in `firmware/esp32/libraries/PetStationUart/src/`. Both sketches use the shared Arduino library; see [installation and integrated wiring](../README.md#shared-uart-library-and-wiring). Do not maintain a second copy in the test sketch directory. CLI builds can pass `--library firmware/esp32/libraries/PetStationUart` from the repository root.
 
 ## Startup
 

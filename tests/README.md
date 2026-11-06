@@ -59,6 +59,25 @@ Use the [ESP32 setup guide](../firmware/esp32/README.md#standalone-dht11-setup).
 
 Hardware results remain pending until recorded using the template below. Selectively marking code actions complete in the Member 5 plan does not mark these bench checks complete.
 
+## ThingsBoard test-message checks
+
+The 2026-11-04 one-shot synthetic connectivity test has been superseded by live periodic telemetry. Run `python tests/esp32/run_tests.py` for the 15 environment tests, reconnect policy checks, and live payload/scheduler tests. Coverage includes independent invalid/stale sources, three-second UART and fifteen-second environment boundaries, signed milligram conversion, correct low-water inversion, pre-first-sample status, buffer rejection without partial JSON, timer rollover, five-second scheduling and immediate current snapshots after reconnect.
+
+Software validation on **2026-11-06**: all three host suites passed. The integrated sketch compiled for `esp32:esp32:esp32s2` with ESP32 Arduino core 3.3.11, PubSubClient 2.8, and the repository's shared PetStationUart library: 975052 bytes program storage, 42964 bytes global memory. The compiler reported the existing constant-CA-marker-check warnings in Cloud_Init; no build errors. The UART driver's relocated files were reviewed against the originals and are unchanged. This validates software compilation/logic, not physical sensor calibration, UART wiring, task timing or receipt of combined values in ThingsBoard.
+
+The standalone `comms/esp32_test` sketch also compiled against the same shared library: 259272 bytes program storage, 16648 bytes global memory. Both builds used `--library firmware/esp32/libraries/PetStationUart`; no board upload or physical UART test was performed during this implementation.
+
+Follow the [integrated setup](../firmware/esp32/README.md#thingsboard-connectivity-test), then record these bench results:
+
+- Main sketch starts the DHT11 task, reports UART RX2/TX1 initialization, connects to ThingsBoard, and publishes live JSON approximately every five seconds.
+- With real calibrated MCU data, verify food grams and Boolean enough/low water agree with board measurements. Do not use the standalone MCU's fixed 125 g fixture as proof of sensing.
+- Disconnect UART: after three seconds from the last packet, `mcu_data_fresh=false`; food/water keys are omitted while DHT11 continues.
+- Disconnect DHT11: `environment_valid=false`, temperature/humidity/alert fields omitted, UART data continues. Reconnect each source and verify recovery.
+- With no UART packet or no first DHT sample, flags remain false and missing measurements are not zero-filled.
+- Lose Wi-Fi and restore it: sensing/UART continue; reconnect publishes current values without replaying history.
+- Confirm dashboard widgets and alarms honor validity flags instead of showing previously stored values as current.
+- Measure stack margins, sensor sampling jitter and UART overflow/frame loss during TLS connection and DHT reads. Hardware results remain pending until recorded.
+
 ## Evidence record template
 
 - Scenario / tester / date:
