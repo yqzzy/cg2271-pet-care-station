@@ -44,7 +44,7 @@ firmware/mcxc444/              Local-controller code and unfinished module templ
   actuators/                  Motor, buzzer and light drivers
   control/                    Button processing and actuator ownership
   communication/              Board UART endpoint
-firmware/esp32/                Arduino C++ code and unfinished module templates
+firmware/esp32/                Arduino C++ templates
   pet_care_station/            Sketch, environment, bridge and cloud modules
 protocol/                     Cross-board message contract
 dashboard/                    ThingsBoard setup and future exports
@@ -56,4 +56,4 @@ tests/                        Manual subsystem and integration checks
 
 Read the [MCXC444 setup notes](firmware/mcxc444/README.md) and [ESP32 setup notes](firmware/esp32/README.md). Agree on proposed pins, module models and interfaces before wiring; tune timing and thresholds from lab measurements. The two sensor tasks are already registered in the normal MCXC444 startup.
 
-Work in a short-lived branch, keep changes within your module where possible, and ask affected owners to review interface changes. Do not commit Wi-Fi credentials, device tokens, private keys or local IDE/build output. A full automated firmware build is not configured.
+Work in a short-lived branch, keep changes within your module where possible, and ask affected owners to review interface changes. Do not commit Wi-Fi credentials, device tokens, private keys or local IDE/build output. No automated build is claimed for this comment-only scaffold.

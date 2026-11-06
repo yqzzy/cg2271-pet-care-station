@@ -2,7 +2,7 @@
 
 [Back to project README](../README.md)
 
-These are future manual acceptance scenarios, not automated tests or claims of passing firmware. Record date, hardware/version, expected result, actual result and evidence for each run. Start with labelled sample data where hardware is unavailable.
+The table below lists manual acceptance scenarios, not claims of passing hardware tests. Record date, hardware/version, expected result, actual result and evidence for each run. Start with labelled sample data where hardware is unavailable. Automated environment-logic checks are documented separately below.
 
 Use a logging-only actuator queue receiver to test feeding requests without a motor. Run only one receiver for that queue.
 
@@ -30,6 +30,34 @@ Use a logging-only actuator queue receiver to test feeding requests without a mo
 | Wi-Fi loss/reconnect | Local button/control continues; reconnect does not replay stale actuator requests |
 | Concurrent operation | During dispensing, press button and send light command; measure response and motor-stop timing |
 | Full queues | Failures handled without ISR blocking or unbounded waiting |
+
+## Automated environment logic
+
+Run `python tests/esp32/run_tests.py` from the repository root (Python 3 and g++, or set `CXX` to the compiler executable). The runner compiles the production `environment_state.cpp` with warnings treated as errors and writes its executable under ignored `build/tests/environment/`.
+
+The 15 tests cover initial unknown state, valid units/timestamps, failed/non-finite readings, last-valid preservation and recovery, legitimate zero values, humidity bounds, consecutive alarm confirmation, hysteresis boundaries, interrupted activation/clearing, long sampling gaps, freshness expiry, and ESP32 uptime rollover. They do not simulate success in the live sketch or establish physical sensor, mutex/task timing, or UART reliability.
+
+### Recorded software validation - 2026-10-23
+
+- Host command: `python tests/esp32/run_tests.py`; g++ 13.2.0 with `-std=c++11 -Wall -Wextra -Werror -pedantic`; result: **15 tests, 0 failures**.
+- Sketch command: `arduino-cli compile --fqbn esp32:esp32:esp32s2 --build-path build/esp32-environment --warnings all firmware/esp32/pet_care_station`; result: **compiled successfully**, 262529 bytes of program storage and 17180 bytes of global-variable memory.
+- Build environment: Arduino CLI 1.5.1, ESP32 Arduino core 3.3.11, Adafruit DHT sensor library 1.4.7, Adafruit Unified Sensor 1.1.15.
+- Scope: local software checks against the current environment implementation. No board upload, physical sensor measurement, disconnect/reconnect run, serial-log capture, stack-margin measurement, or UART concurrency test was performed.
+
+## DHT11 environment bring-up
+
+Use the [ESP32 setup guide](../firmware/esp32/README.md#standalone-dht11-setup). GPIO4 is selected by default, with module DATA/S connected to GPIO4 and common ground; verify VCC and pull-up requirements against the actual kit module before powering it.
+
+1. Verify the board profile/upload options and DHT11 module pin labels, then upload the standalone sketch. Open the correct serial console at 115200 baud. No MCXC444 or network connection is required.
+2. Confirm the first sample follows the two-second settling delay and subsequent attempts occur about five seconds apart. Record the observed period and `read_ms`, including failures; no immediate retry burst should occur.
+3. With a connected sensor, record reasonable temperature/humidity, `valid=1`, `has_last_valid=1`, and increasing sample counts. Readings are not calibrated by these tests.
+4. Reset with the sensor disconnected. Check `valid=0`, `nan` current and historical values before any valid sample, `has_last_valid=0`, unknown age (`4294967295`), and increasing failure count. No false zero measurement should appear.
+5. After a successful run, disconnect the sensor. The next attempt must be invalid; historical fields remain unchanged and their age increases. Alarm flags may remain latched, but `alerts_known=0`. Reconnect and verify valid sampling resumes without resetting the ESP32.
+6. Exercise alarm activation and clearing. For a controlled bench demonstration, temporarily move the configurable thresholds around measured room conditions or use a controlled environment. Record the chosen thresholds and restore the defaults afterwards. Verify two consecutive valid samples, exact activation/clearing boundaries, and interruption by a failed read. Host tests cover deterministic boundary values without heating or wetting the electronics.
+7. For a future cloud consumer, verify `Environment_CopySnapshot` followed by `Environment_IsFresh` treats the latest failed sample as invalid and stops considering an otherwise valid snapshot fresh after 15 seconds. Copy/lock failure means unavailable data, not permission to reuse an old snapshot as current.
+8. Run for at least 15 minutes and record actual timing, failures, resets, and stack margin. Repeat UART traffic/overflow checks when Member 4's bridge exists; the DHT driver briefly disables interrupts.
+
+Hardware results remain pending until recorded using the template below. Selectively marking code actions complete in the Member 5 plan does not mark these bench checks complete.
 
 ## Evidence record template
 
