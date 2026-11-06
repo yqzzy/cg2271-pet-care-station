@@ -99,7 +99,7 @@ Use the server's latest telemetry timestamp/device connectivity as an additional
 
 ### MCXC444 prerequisites and limitations
 
-The MCU application must calibrate food sensing before enabling `FOOD_CALIBRATED`; it is currently 0 in source. `uart_link.c` sends sensor packets only when both food and water states are valid, and test fallback is disabled. No packet before calibration is therefore expected. Verify water thresholds and run the integrated MCU application, rather than its standalone test that sends fixed 125 g sample data.
+Food sensing is calibrated in source (`FOOD_CALIBRATED` 1, measured 2026-11-06). `uart_link.c` sends sensor packets only when both food and water states are valid, and test fallback is disabled. No packet before calibration is therefore expected. Verify water thresholds and run the integrated MCU application, rather than its standalone test that sends fixed 125 g sample data.
 
 `mcu_data_fresh` measures **UART packet arrival freshness**, not independent food/water acquisition age. The current wire format carries no source age, validity fields or synthetic-data marker. The MCU must reject stale source snapshots before transmission; that check is still required in its adapter. A simulated UART packet cannot be identified as synthetic by this ESP32 publisher. Do not present standalone MCU test fixtures as real measurements.
 

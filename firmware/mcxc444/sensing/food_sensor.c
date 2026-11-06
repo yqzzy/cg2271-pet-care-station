@@ -41,13 +41,13 @@
 #define HX711_CLOCK_PIN   3u
 
 /*
- * TODO (lab): Measure these values with the bowl mounted.
- * Set FOOD_CALIBRATED to 1 only after entering the measured values.
+ * Measured with the bowl mounted (80 g reference, 2026-11-06); redo after remounting.
+ * The cell is mounted so counts fall as weight is added; the conversion handles the sign.
  */
-#define FOOD_CALIBRATED          0u
-#define FOOD_EMPTY_RAW           0  // raw count with the empty bowl.
-#define FOOD_REFERENCE_RAW       0 // raw count with the empty bowl plus a known calibration weight.
-#define FOOD_REFERENCE_MASS_MG   0
+#define FOOD_CALIBRATED          1u
+#define FOOD_EMPTY_RAW           64436  // raw count with the empty bowl (measured 2026-11-06).
+#define FOOD_REFERENCE_RAW       7132   // raw count with the empty bowl plus 80 g; counts fall as weight is added.
+#define FOOD_REFERENCE_MASS_MG   80000
 
 /*
  * Reject weights substantially below the empty-bowl baseline.
@@ -181,8 +181,10 @@ static bool FoodSensor_ConvertToMilligrams(int32_t raw, int32_t *milligrams)
     result = (raw_difference * FOOD_REFERENCE_MASS_MG)
            / calibration_difference;
 
-    /* Reject implausible negative weights before filtering or feeding decisions. */
-    if (result < FOOD_MIN_VALID_MG || result < INT32_MIN || result > INT32_MAX) {
+    /* Reject implausible negative weights before filtering or feeding decisions.
+     * The cast is needed: Redlib defines INT32_MIN as (-0x80000000), an unsigned int, which
+     * compares as +2147483648 against an int64_t and rejected every reading. */
+    if (result < FOOD_MIN_VALID_MG || result < (int32_t)INT32_MIN || result > INT32_MAX) {
         return false;
     }
 

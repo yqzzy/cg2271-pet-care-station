@@ -20,7 +20,7 @@ Normal startup initializes shared state and queues before creating tasks. `FoodS
 | Water input | PTB2 / ADC0 channel 12 | Reserve ADC0 and verify module voltage |
 | Sampling periods | 250 ms each | Measure under concurrent load |
 | Food filter | Four samples | Tune noise versus response time |
-| `FOOD_CALIBRATED` | `0u` | Enter measured empty/reference counts and reference mass |
+| `FOOD_CALIBRATED` | `1u` | Measured 2026-11-06 (80 g reference); redo if the cell or bowl is remounted |
 | `WATER_THRESHOLDS_CONFIGURED` | `0u` | Enter measured low/clear thresholds |
 | `FOOD_FEEDING_ENABLED` | `0u` | Test the policy without a motor, then agree actuator handling |
 | Sensor debug logging | Disabled | Enable temporarily for calibration |
