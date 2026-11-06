@@ -2,7 +2,7 @@
 
 [Back to project README](../../README.md)
 
-The Arduino C++ sketch implements the DHT11 environmental task and optional ThingsBoard test connectivity. With local configuration, a separate cloud task sends one labelled synthetic telemetry message per boot. Without configuration, sensing runs and cloud startup reports that it is disabled. UART integration and live cloud telemetry remain future work; hardware operation still requires verification.
+The main sketch publishes combined live DHT11 and MCXC444 UART sensor telemetry every five seconds, with independent source-validity/freshness flags. It also publishes a current snapshot on MQTT reconnection. Missing local cloud configuration disables networking while sensing/UART continue. The previous one-shot synthetic test payload is no longer used.
 
 For Member 5's ESP32-S2 and DHT11 work, follow the [implementation plan and milestone checklist](../../docs/member-5/README.md). Its hardware details are user-reported and its settings are proposed pending verification.
 
@@ -42,43 +42,70 @@ In Arduino IDE, install the **esp32 by Espressif Systems** board package, **DHT 
 From the repository root, with Arduino CLI on PATH and the dependencies installed:
 
 ```powershell
-arduino-cli compile --fqbn esp32:esp32:esp32s2 --build-path build/esp32-environment --warnings all firmware/esp32/pet_care_station
+arduino-cli compile --fqbn esp32:esp32:esp32s2 --library firmware/esp32/libraries/PetStationUart --build-path build/esp32-environment --warnings all firmware/esp32/pet_care_station
 ```
 
-This generic S2 build target checks compilation; it does not identify the physical board or validate its USB/flash configuration. Use your verified board profile to upload from the IDE, then open Serial Monitor at **115200 baud**. Install **PubSubClient 2.8** as well as the DHT libraries to build the current sketch. Missing cloud credentials disable networking at runtime; ArduinoJson and the MCXC444 are not required.
+This generic S2 build target checks compilation; it does not identify the physical board or validate its USB/flash configuration. Use your verified board profile to upload from the IDE, then open Serial Monitor at **115200 baud**. Install **PetStationUart** (instructions below) and **PubSubClient 2.8** as well as the DHT libraries to build the current sketch. Missing cloud credentials disable networking at runtime; ArduinoJson and the MCXC444 are not required.
 
 ### Runtime and public interface
 
 `setup()` checks `Environment_Init()` and task allocation, then starts exactly one `Environment_Task`. Initialization now returns `bool` so startup can handle invalid GPIO/mutex allocation failure; the original comment-only proposal used `void`. Future startup integration should retain this check.
 
-The task waits two seconds for sensor settling, reads a humidity/Celsius-temperature pair every five seconds, and never retries immediately after a failed read. Sensor transactions and serial logging occur outside the snapshot mutex. Overruns do not trigger a burst of catch-up reads. Cloud startup is optional and uses a separate task; UART startup remains absent.
+The task waits two seconds for sensor settling, reads a humidity/Celsius-temperature pair every five seconds, and never retries immediately after a failed read. Sensor transactions and serial logging occur outside the snapshot mutex. Overruns do not trigger a burst of catch-up reads. Cloud startup is optional and uses a separate task; The shared UART driver starts before the cloud task.
 
 ## ThingsBoard connectivity test
 
-This first cloud increment sends a fixed sample, not DHT11 measurements. It has no dashboard RPC, actuator control, UART event forwarding, or offline event history.
+The current sketch sends live sensor snapshots, not the former fixed test message. Keep your existing local `secrets.h` (Wi-Fi SSID/password, MQTT hostname, device token, trusted root CA). For the EU endpoint shown by ThingsBoard's connectivity dialog, use `mqtt.eu.thingsboard.cloud`. Upload the main `pet_care_station.ino`; the DHT11 task is enabled.
 
-1. In your ThingsBoard account, create a device named `pet-care-test` using access-token credentials. Use a separate test device so synthetic values cannot be confused with real measurements.
-2. Copy `pet_care_station/secrets.example.h` to `pet_care_station/secrets.h` locally. The latter is ignored by Git. Set `WIFI_SSID`, `WIFI_PASSWORD`, `THINGSBOARD_HOST`, and `THINGSBOARD_DEVICE_TOKEN` there. An empty password is allowed for an open network. Supply only a hostname, such as `thingsboard.cloud` or your account's regional hostname, without a URL scheme/path. Never paste secrets into a commit or serial log.
-3. Obtain the endpoint's trusted **root CA PEM** from its **Check connectivity** dialog. Paste the full certificate, including BEGIN/END lines, between the `R"PEM(` and `)PEM"` delimiters of `TLS_CA_CERT`. The public CA is distinct from a device token or private key. Do not disable TLS verification. Empty configuration or missing certificate markers disables cloud startup.
-4. Install **PubSubClient by Nick O'Leary, version 2.8** through Library Manager (or `arduino-cli lib install "PubSubClient@2.8"`). Wi-Fi and NetworkClientSecure come from ESP32 Arduino core 3.3.11; no ThingsBoard SDK or ArduinoJson dependency is needed for this fixed JSON message.
-5. Upload the main `pet_care_station.ino` sketch using your board/USB settings. Open Serial Monitor at 115200 baud. The cloud task joins Wi-Fi, obtains SNTP time, validates the server certificate on port 8883, and authenticates MQTT using the device token as username.
-6. Look for `[cloud] MQTT connected with certificate validation` followed by `[cloud] Test telemetry sent (QoS 0); verify Latest telemetry in ThingsBoard`. In ThingsBoard, open the test device's **Latest telemetry** tab and confirm the values below. The serial publish log alone does not prove server receipt.
+### Shared UART library and wiring
 
-The non-retained JSON is published to `v1/devices/me/telemetry`:
+The single canonical driver now lives in [PetStationUart](libraries/PetStationUart/), shared by this application and `comms/esp32_test/esp32_test.ino`. Its behavior/wire encoding is unchanged. Do not add the standalone test `.ino` to the main sketch.
 
-```json
-{"test_telemetry":true,"data_source":"synthetic","test_message":"esp32-connectivity-check","test_temperature_c":25.0,"test_humidity_pct":60.0}
+The library was packaged into ignored `build/PetStationUart.zip` and installed in the local Arduino library directory during implementation. On another computer, from the repository root:
+
+```powershell
+Compress-Archive -LiteralPath firmware/esp32/libraries/PetStationUart -DestinationPath "$env:TEMP/PetStationUart.zip" -Force
 ```
 
-The sample is sent once per boot after a successful local publish. MQTT remains serviced after that and may reconnect, but the sample is not intentionally resent. Reset the board to request another test message. Failed publish calls are retried; PubSubClient uses outbound QoS 0, so loss or an ambiguous duplicate is possible if a connection fails during transmission. This is a connectivity smoke test, not an exactly-once delivery guarantee.
+In Arduino IDE, use **Sketch > Include Library > Add .ZIP Library** and select that ZIP, then reopen the sketch. Repeat installation after changes to the canonical driver. CLI builds can use the repository copy directly via the documented `--library` argument.
 
-Network waits are confined to `Cloud_Task`. Wi-Fi and SNTP each have ten-second attempt windows; failed attempts use 1/2/4/8/16/30-second backoff. TCP connection timeout is three seconds, TLS handshake timeout five seconds, and MQTT protocol timeout two seconds; DNS also uses the core's own timeout. These are separate bounds, not a promised total connection latency. Both tasks yield; no startup wait for Wi-Fi/time is added.
+Default bridge allocation in [uart_bridge.h](pet_care_station/uart_bridge.h):
 
-`Cloud_Init()` returns a Boolean configuration/resource check and does not connect. Create exactly one `Cloud_Task` on success; the sketch allocates an 8192-byte stack at priority 1. Only that task accesses Wi-Fi/TLS/MQTT. Hardware measurements of stack margin, sampling jitter, and reconnect timing are still needed.
+| ESP32-S2 | MCXC444 |
+|---|---|
+| RX GPIO2 | TX PTE22 |
+| TX GPIO1 | RX PTE23 |
+| GND | GND |
 
-If cloud startup is disabled, check your local configuration. For repeated connection failures, check SSID/password and 2.4 GHz availability, hostname/region, device token, access to NTP, outbound port 8883, and the correct root CA. The implementation never falls back to insecure TLS or prints credentials. No live connection has been verified without your local configuration.
+The board link is **9600 baud, 8N1**; debug Serial remains **115200 baud**, and DHT11 DATA stays on GPIO4. Match the actual wiring before powering the boards. Override `PET_RX_PIN`/`PET_TX_PIN` through build flags or edit the bridge header. Initialization rejects invalid pins and conflicts with the DHT pin. Failed UART initialization does not stop environmental/cloud tasks; the adapter never calls the driver getter unless initialization succeeded.
 
-References: [ThingsBoard authentication and TLS](https://thingsboard.io/docs/reference/mqtt-api/getting-connected/), [telemetry API](https://thingsboard.io/docs/reference/mqtt-api/telemetry/), and [PubSubClient API](https://pubsubclient.knolleary.net/api).
+### Payload and timing
+
+After MQTT connects, then every five seconds, Cloud_Task copies the two snapshots, releases their locks, builds JSON and publishes non-retained data to `v1/devices/me/telemetry`. Example values below illustrate the format only:
+
+```json
+{"data_source":"live","environment_valid":true,"mcu_data_fresh":true,"environment_age_ms":500,"mcu_age_ms":250,"temperature_c":21.6,"humidity_pct":69.3,"temperature_high":false,"humidity_high":false,"food_weight_g":125.000,"water_enough":true,"water_low":false}
+```
+
+Environment data must pass `Environment_IsFresh` (latest attempt valid, last valid sample less than 15 seconds old). UART packets must exist and be less than three seconds old, matching the current one-second MCU reporting period. The cloud builder and scheduler are hardware-independent in [live_telemetry.h](pet_care_station/live_telemetry.h).
+
+A failed/stale environment source sets `environment_valid=false` and omits temperature, humidity and environment alarm fields. A missing/stale UART packet sets `mcu_data_fresh=false` and omits food weight and both water fields. Known ages are still reported; ages are omitted before the first sample. A valid water-low reading is **false water_enough / true water_low**, never an unknown reading.
+
+Food is converted from signed milligrams to grams using division by 1000.0. Negative calibrated readings are preserved for diagnosis; they are not clamped. Water is an enough/low Boolean, not a percentage or raw ADC value.
+
+In ThingsBoard, bind widgets to these new keys and gate their current displays/alarms with the corresponding status flags. ThingsBoard retains previous numeric values when an update omits a key, so their presence alone does not mean they are still current. Old `test_*` keys may remain in history but are no longer updated. Verify timestamps change approximately every five seconds; each source continues independently when the other fails.
+
+Use the server's latest telemetry timestamp/device connectivity as an additional gate (for example, mark unavailable after 15 seconds without an update). During an internet outage the last source flags and age values freeze too. Local source expiry appears in the next periodic publication, not exactly when the threshold is crossed.
+
+### MCXC444 prerequisites and limitations
+
+The MCU application must calibrate food sensing before enabling `FOOD_CALIBRATED`; it is currently 0 in source. `uart_link.c` sends sensor packets only when both food and water states are valid, and test fallback is disabled. No packet before calibration is therefore expected. Verify water thresholds and run the integrated MCU application, rather than its standalone test that sends fixed 125 g sample data.
+
+`mcu_data_fresh` measures **UART packet arrival freshness**, not independent food/water acquisition age. The current wire format carries no source age, validity fields or synthetic-data marker. The MCU must reject stale source snapshots before transmission; that check is still required in its adapter. A simulated UART packet cannot be identified as synthetic by this ESP32 publisher. Do not present standalone MCU test fixtures as real measurements.
+
+The cloud task logs `[cloud] Live telemetry sent (QoS 0): {...}`. This confirms a local publish only; verify receipt in ThingsBoard Latest telemetry. Reconnect sends current snapshots immediately without replaying an offline history. Serialization failure skips the packet, never publishes truncated JSON, and is retried on a later period. MQTT buffer allocation is 1024 bytes for the 512-byte payload buffer plus topic/protocol overhead. All network waits remain in Cloud_Task; existing certificate validation, time synchronization and backoff remain in effect.
+
+References: [ThingsBoard telemetry API](https://thingsboard.io/docs/reference/mqtt-api/telemetry/) and [PubSubClient API](https://pubsubclient.knolleary.net/api).
 
 Serial output reports `sample`, `valid`, `temp_c`, `humidity_pct`, last-valid values, `has_last_valid`, `age_ms`, `read_ms`, cumulative failures, `alerts_known`, and high-temperature/high-humidity flags. Before any successful sample, values are `nan`, `has_last_valid=0`, and `age_ms=4294967295` means unknown. A real numeric zero is not treated as a failed read.
 

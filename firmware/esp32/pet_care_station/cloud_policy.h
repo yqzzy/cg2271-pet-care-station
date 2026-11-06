@@ -16,21 +16,12 @@ class CloudPolicy {
     waiting_ = true;
   }
   void Connected() { waiting_ = false; next_wait_ms_ = 1000; }
-  bool ShouldPublishTest() const { return !test_published_; }
-  void MarkTestPublished() { test_published_ = true; }
 
  private:
   uint32_t failed_ms_ = 0;
   uint32_t wait_ms_ = 0;
   uint32_t next_wait_ms_ = 1000;
   bool waiting_ = false;
-  bool test_published_ = false;
 };
-
-inline const char *Cloud_TestPayload() {
-  return "{\"test_telemetry\":true,\"data_source\":\"synthetic\","
-         "\"test_message\":\"esp32-connectivity-check\","
-         "\"test_temperature_c\":25.0,\"test_humidity_pct\":60.0}";
-}
 
 #endif

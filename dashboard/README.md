@@ -6,6 +6,10 @@ Owner: Member 5, also responsible for [environmental sensing](../firmware/esp32/
 
 ## Display
 
+The integrated ESP32 now publishes periodic live keys: `temperature_c`, `humidity_pct`, `food_weight_g`, `water_enough`, and `water_low`. Gate environment widgets/alarms with `environment_valid` and food/water displays with `mcu_data_fresh`. These sources fail independently; omitted measurement keys leave historical values in ThingsBoard, so status flags must determine whether a value is shown as current. See the [payload and timing](../firmware/esp32/README.md#payload-and-timing). The water value is Boolean enough/low, not a percentage.
+
+Also gate current displays with device connectivity / time since the latest telemetry (for example, unavailable after 15 seconds without a new five-second update). Source flags and published age values freeze during an internet outage; they must not keep an offline device looking current. Source expiry is reflected at the next publication, rather than exactly at its local threshold.
+
 - Food weight, water level/low-water status and temperature/humidity, with validity and freshness.
 - Confirmed pet-button events and dispensing status/history.
 - Light control switch plus separately displayed confirmed device output state.

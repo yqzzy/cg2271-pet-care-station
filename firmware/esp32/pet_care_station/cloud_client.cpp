@@ -10,6 +10,9 @@
 #include <time.h>
 
 #include "cloud_policy.h"
+#include "live_telemetry.h"
+#include "environment.h"
+#include "uart_bridge.h"
 #if __has_include("secrets.h")
 #include "secrets.h"
 #else
@@ -26,6 +29,7 @@ constexpr char kTelemetryTopic[] = "v1/devices/me/telemetry";
 NetworkClientSecure tls;
 PubSubClient mqtt(tls);
 CloudPolicy policy;
+PeriodicTelemetry telemetry_timer;
 bool initialized = false;
 char client_id[40];
 
@@ -70,12 +74,12 @@ bool Cloud_Init(void) {
   mqtt.setServer(THINGSBOARD_HOST, kMqttPort);
   mqtt.setSocketTimeout(2);   // Seconds waiting for MQTT protocol data.
   mqtt.setKeepAlive(30);
-  if (!mqtt.setBufferSize(512)) {
+  if (!mqtt.setBufferSize(1024)) {
     Serial.println("[cloud] Disabled: MQTT buffer allocation failed");
     return false;
   }
   const uint64_t mac = ESP.getEfuseMac();
-  snprintf(client_id, sizeof(client_id), "pet-care-test-%08lx%08lx",
+  snprintf(client_id, sizeof(client_id), "pet-care-%08lx%08lx",
            static_cast<unsigned long>(mac >> 32),
            static_cast<unsigned long>(mac & 0xffffffff));
   initialized = true;
@@ -148,6 +152,7 @@ void Cloud_Task(void *argument) {
         continue;
       }
       policy.Connected();
+      telemetry_timer.Reconnected();
       Serial.println("[cloud] MQTT connected with certificate validation");
     }
 
@@ -155,15 +160,22 @@ void Cloud_Task(void *argument) {
       Retry("MQTT service");
       continue;
     }
-    if (policy.ShouldPublishTest()) {
-      if (mqtt.publish(kTelemetryTopic, Cloud_TestPayload(), false)) {
-        policy.MarkTestPublished();
-        Serial.println("[cloud] Test telemetry sent (QoS 0); verify Latest telemetry in ThingsBoard");
+    if (telemetry_timer.Due(millis())) {
+      EnvironmentReading environment;
+      McuTelemetry mcu;
+      Environment_CopySnapshot(&environment);
+      UartBridge_CopySensors(&mcu);
+      const uint32_t sampled_at = millis();
+      telemetry_timer.Attempted(sampled_at);
+      char payload[512];
+      if (!BuildLiveTelemetry(payload, sizeof(payload), environment, mcu, sampled_at)) {
+        Serial.println("[cloud] Live telemetry serialization failed; no partial JSON sent");
+      } else if (mqtt.publish(kTelemetryTopic, payload, false)) {
+        Serial.printf("[cloud] Live telemetry sent (QoS 0): %s\n", payload);
       } else {
-        Retry("test publish");
+        Retry("live telemetry publish");
       }
     }
-    // Keep servicing/reconnecting MQTT, but never resend after a successful
-    // local publish in this boot. QoS 0 is NOT a broker/application receipt.
+    // Reconnection sends current snapshots, not buffered historical readings.
   }
 }
