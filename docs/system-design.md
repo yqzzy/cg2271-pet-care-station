@@ -58,7 +58,7 @@ Each member implements/tests their owned task entry points. Member 3 creates MCX
 
 ## Module agreements
 
-The table mixes implemented interfaces with integration targets. Food/water shared-state calls and the actuator queue are implemented; dispenser execution remains a template. Check the current headers and the UART limitations below before integrating.
+Most contracts below remain proposals in comment-only templates. The ESP32 environmental interfaces are now implemented in [environment.h](../firmware/esp32/pet_care_station/environment.h), with separate hardware-independent state logic. `Environment_Init()` returns a Boolean initialization result; snapshot consumers check freshness separately. UART/cloud and MCXC444 contracts still require implementation and owner review.
 
 | Producer to consumer | Contract |
 |---|---|

@@ -2,7 +2,7 @@
 
 CG2271 group project: monitor food, water and environmental conditions, notify an owner when the pet presses a button, dispense food and control the station light remotely.
 
-**Status: implementation in progress.** Food/water sensing, MCXC444 coordination and UART code have been written; dispenser and cloud integration remain incomplete. The repository is not a configured MCUXpresso project, and the sensor firmware still needs an integrated build, calibration and hardware tests. Food calibration, water thresholds and automatic feeding are disabled by default.
+**Status: partial implementation.** Member 5's ESP32-S2/DHT11 standalone environmental task is implemented with host-testable validity, freshness, and alert logic. MCXC444, UART, and cloud modules remain comment-only scaffolds. Hardware tests and end-to-end integration are not yet completed; see the [ESP32 setup and verification notes](firmware/esp32/README.md).
 
 ## Start here
 
@@ -42,7 +42,7 @@ firmware/mcxc444/              Local-controller code and unfinished module templ
   actuators/                  Motor, buzzer and light drivers
   control/                    Button processing and actuator ownership
   communication/              Board UART endpoint
-firmware/esp32/                Arduino C++ code and unfinished module templates
+firmware/esp32/                Arduino C++ templates
   pet_care_station/            Sketch, environment, bridge and cloud modules
 protocol/                     Cross-board message contract
 dashboard/                    ThingsBoard setup and future exports
@@ -54,4 +54,4 @@ tests/                        Manual subsystem and integration checks
 
 Read the [MCXC444 setup notes](firmware/mcxc444/README.md) and [ESP32 setup notes](firmware/esp32/README.md). Agree on proposed pins, module models and interfaces before wiring; tune timing and thresholds from lab measurements. The two sensor tasks are already registered in the normal MCXC444 startup.
 
-Work in a short-lived branch, keep changes within your module where possible, and ask affected owners to review interface changes. Do not commit Wi-Fi credentials, device tokens, private keys or local IDE/build output. A full automated firmware build is not configured.
+Work in a short-lived branch, keep changes within your module where possible, and ask affected owners to review interface changes. Do not commit Wi-Fi credentials, device tokens, private keys or local IDE/build output. No automated build is claimed for this comment-only scaffold.

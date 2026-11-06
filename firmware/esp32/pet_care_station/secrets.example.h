@@ -1,18 +1,16 @@
-/*
- * File: secrets.example.h
- * Provisional owner: Member 5
- * Status: COMMENT-ONLY TEMPLATE - not implemented or buildable.
- * Responsibility: Document required local configuration without real values.
- * Dependencies/consumers: Cloud setup.
- * Template role: Public interface agreement; do not duplicate implementation here.
- *
- * Proposed functions/types (all intentionally commented):
- *   Proposed configuration names: WIFI_SSID, WIFI_PASSWORD, THINGSBOARD_HOST, THINGSBOARD_DEVICE_TOKEN, TLS_CA_CERT;
- *
- * TODO:
- * - Copy to ignored secrets.h during implementation.
- * - Populate credentials only locally; never commit passwords/tokens/private keys.
- * - Public CA selection must match actual endpoint..
- * - Agree concrete types, units, errors and timing with consumers before coding.
- * - Verify relevant scenarios in tests/README.md; record evidence.
- */
+#ifndef PET_CARE_SECRETS_H
+#define PET_CARE_SECRETS_H
+
+// Copy to ignored secrets.h and fill locally. Never commit real credentials.
+// Use a ThingsBoard TEST device; host only, without https:// or a path.
+constexpr char WIFI_SSID[] = "";
+constexpr char WIFI_PASSWORD[] = "";  // Empty is allowed for an open network.
+constexpr char THINGSBOARD_HOST[] = "thingsboard.cloud";  // Match your account region.
+constexpr char THINGSBOARD_DEVICE_TOKEN[] = "";
+
+// Paste the trusted root CA PEM from the endpoint's Check connectivity dialog.
+// Leave certificate validation enabled. Empty CA disables cloud startup.
+constexpr char TLS_CA_CERT[] = R"PEM(
+)PEM";
+
+#endif
