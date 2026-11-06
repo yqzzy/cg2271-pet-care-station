@@ -22,7 +22,7 @@ Normal startup initializes shared state and queues before creating tasks. `FoodS
 | Food filter | Four samples | Tune noise versus response time |
 | `FOOD_CALIBRATED` | `1u` | Measured 2026-11-06 (80 g reference); redo if the cell or bowl is remounted |
 | `WATER_THRESHOLDS_CONFIGURED` | `0u` | Enter measured low/clear thresholds |
-| `FOOD_FEEDING_ENABLED` | `0u` | Test the policy without a motor, then agree actuator handling |
+| `FOOD_FEEDING_ENABLED` | `1u` | Low threshold 10 g, rearm 20 g, 10 s minimum interval |
 | Sensor debug logging | Disabled | Enable temporarily for calibration |
 | UART fake-data fallback | Disabled | Keep disabled for real-sensor testing |
 

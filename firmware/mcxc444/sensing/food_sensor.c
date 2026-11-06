@@ -61,9 +61,9 @@
  * minimum interval and what happens when the dispenser is busy.
  * TODO (lab): Choose thresholds from measured bowl weights.
  */
-#define FOOD_FEEDING_ENABLED          0u
-#define FOOD_LOW_THRESHOLD_MG         0
-#define FOOD_REARM_THRESHOLD_MG       0
+#define FOOD_FEEDING_ENABLED          1u
+#define FOOD_LOW_THRESHOLD_MG         10000   /* 10 g or less: request one portion */
+#define FOOD_REARM_THRESHOLD_MG       20000   /* must reach 20 g before the next request */
 #define FOOD_LOW_CONFIRM_SAMPLES      3u
 #define FOOD_MIN_INTERVAL_MS          10000u
 

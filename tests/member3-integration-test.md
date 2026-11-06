@@ -9,7 +9,7 @@ For the teammate with the boards. The code has NOT been built or run on hardware
 | `USE_TEST_ACTUATOR_TASK` (`app/rtos_setup.c`) | 0 | Member 1's real `Actuator_Task` runs |
 | `UARTLINK_USE_TEST_SENSOR_DATA` (`communication/uart_link.c`) | 0 | Only real sensor values are sent |
 | `FOOD_CALIBRATED` (`sensing/`) | 1 | Food weight is calibrated (80 g reference), so sensor packets are sent |
-| `FOOD_FEEDING_ENABLED` (`sensing/`) | 0 | No automatic feeding |
+| `FOOD_FEEDING_ENABLED` (`sensing/`) | 1 | Automatic feeding: one portion at 10 g or less, rearms at 20 g |
 | `BUTTON_TEST_DISPENSE` (`control/button.c`) | 0 | A button press does not dispense |
 
 ## Setup
