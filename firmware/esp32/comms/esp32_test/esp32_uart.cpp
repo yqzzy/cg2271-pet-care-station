@@ -192,9 +192,12 @@ static void handleReceived(UartMessage *message)
     xSemaphoreTake(stateMutex, portMAX_DELAY);
 
     // %n records end position; the next character must be newline, not extra data.
-    if (sscanf(message->text, "SENSOR:%5u,%11lld%n", &water, &food, &end) == 2 &&
-        message->text[end] == '\n' && water <= UINT16_MAX && food >= INT32_MIN && food <= INT32_MAX) {
-        sensors.water_level = (uint16_t)water;
+    // Water is exactly one ASCII digit, 0 or 1; reject old raw-ADC packets.
+    if (strncmp(message->text, "SENSOR:", 7) == 0 &&
+        (message->text[7] == '0' || message->text[7] == '1') &&
+        sscanf(message->text, "SENSOR:%1u,%11lld%n", &water, &food, &end) == 2 &&
+        message->text[end] == '\n' && water <= 1u && food >= INT32_MIN && food <= INT32_MAX) {
+        sensors.water_enough = water != 0u;
         sensors.food_milligrams = (int32_t)food;
         sensors.received_ms = millis();
         sensorsReceived = true;

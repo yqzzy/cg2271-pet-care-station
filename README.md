@@ -2,9 +2,11 @@
 
 CG2271 group project: monitor food, water and environmental conditions, notify an owner when the pet presses a button, dispense food and control the station light remotely.
 
-**Status: partial implementation.** Member 5's ESP32-S2/DHT11 standalone environmental task is implemented with host-testable validity, freshness, and alert logic. MCXC444, UART, and cloud modules remain comment-only scaffolds. Hardware tests and end-to-end integration are not yet completed; see the [ESP32 setup and verification notes](firmware/esp32/README.md).
+**Status: implementation in progress.** Food/water sensing, MCXC444 coordination and UART code have been written; dispenser and cloud integration remain incomplete. The MCXC444 firmware builds in Debug and Release. Water thresholds are enabled. Food calibration, automatic feeding and hardware verification are pending.
 
 ## Start here
+
+- [Import, build and run the MCXC444 project in MCUXpresso](mcuxpresso/README.md)
 
 - [Team guide: ownership, Git workflow and integration](docs/team-guide.md)
 - [System design: tasks, synchronization and module interfaces](docs/system-design.md)

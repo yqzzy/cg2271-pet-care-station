@@ -19,10 +19,11 @@ The link uses UART2, PTE22 TX and PTE23 RX, at 9600 baud, 8N1. Connect TX to the
 ## Send sensor readings — sensing/UART adapter
 
 ```c
-bool sendSensors(uint16_t water_level, int32_t food_milligrams);
+bool sendSensors(bool water_enough, int32_t food_milligrams);
 ```
 
-- Sends both readings in one packet. Water is raw ADC counts; food is signed milligrams, e.g. 125 g = 125000 mg.
+- Sends both readings in one packet. Water is a boolean: `true` = enough water, `false` = low water. Food is signed milligrams, e.g. 125 g = 125000 mg.
+- On the wire, water is the ASCII digit `1` or `0`: `SENSOR:1,125000*HH\n` means enough water and 125 g of food (`HH` is the calculated XOR checksum). Update both boards together; raw-ADC sensor packets are no longer accepted by the ESP32.
 - Returns `true` when queued locally, `false` when the TX queue is full. Queued does not mean received by the ESP32.
 - Sensor packets have no ACK or automatic retry. If the queue is full, send a fresh sample on the next reporting cycle.
 - Copy shared readings under the sensor-state mutex, release the mutex, then call this function. Skip invalid readings; this packet has no validity fields.
@@ -30,9 +31,11 @@ bool sendSensors(uint16_t water_level, int32_t food_milligrams);
 Example after obtaining a valid snapshot and converting food to milligrams:
 
 ```c
-bool queued = sendSensors(water_raw, food_mg);
+bool queued = sendSensors(water_enough, food_mg);
 // If !queued, keep sensing and try a fresh sample next reporting cycle.
 ```
+
+The integrated adapter uses `water_enough = !snap.water.low` and requires `snap.water.valid` plus `snap.food.valid` before sending. Configure the water sensor's calibrated thresholds first; a raw ADC sample alone does not establish enough/low status. The standalone test sends `true`; change it to `false` to test low water.
 
 ## Send a button event — debounced button task or UART adapter
 

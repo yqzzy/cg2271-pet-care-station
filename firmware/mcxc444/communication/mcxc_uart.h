@@ -14,9 +14,10 @@ typedef struct {
 /* Once before scheduler, after board/debug init. Stop on failure.
  * All other functions are TASK-context calls, never GPIO ISR calls. */
 bool uartInit(void);
-/* One packet with both readings. Signed food milligrams; no ACK/retry.
+/* One packet: water_enough true = enough water, false = low water;
+ * signed food milligrams; no ACK/retry.
  * true = queued; false = full. Call outside shared-sensor-state mutex. */
-bool sendSensors(uint16_t water_level, int32_t food_milligrams);
+bool sendSensors(bool water_enough, int32_t food_milligrams);
 /* One outstanding button event; saved string/sequence + three retries.
  * true = queued; false = previous event pending, queue full or IDs exhausted. */
 bool sendButton(void);

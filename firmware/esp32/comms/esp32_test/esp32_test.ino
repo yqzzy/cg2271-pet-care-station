@@ -33,8 +33,8 @@ void loop()
     if ((uint32_t)(millis() - last) >= 1000) {
         last = millis();
         SensorValues values;
-        if (getSensors(&values)) Serial.printf("water=%u food=%ld mg age=%lu ms\n",
-            (unsigned)values.water_level, (long)values.food_milligrams,
+        if (getSensors(&values)) Serial.printf("water_enough=%u food=%ld mg age=%lu ms\n",
+            (unsigned)values.water_enough, (long)values.food_milligrams,
             (unsigned long)(millis() - values.received_ms));
         UartResult result = getLightResult();
         Serial.printf("light seq=%lu status=%u\n", (unsigned long)result.sequence, (unsigned)result.status);

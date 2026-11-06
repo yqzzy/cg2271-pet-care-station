@@ -64,7 +64,7 @@ Most contracts below remain proposals in comment-only templates. The ESP32 envir
 |---|---|
 | Food sensing to coordinator | Queue `ACT_DISPENSE`, proposed `value = 1` for one portion and `request_id = 0`; sensing owns confirmed-low detection, rearm and minimum interval |
 | Coordinator to dispenser | `Dispenser_Start(now_ms)`, `Dispenser_Update(now_ms)`, `Dispenser_Stop()` and `Dispenser_GetStatus()` |
-| Dispenser to coordinator | Busy/completed/failed status; maximum run time is enforced locally |
+| Dispenser to coordinator | Busy/completed/failed status; maximum run time is enforced locally. `Dispenser_Start()` rejects a request while busy; how often to dispense is food sensing's policy |
 | Coordinator to feedback | `Feedback_StartCue(cue, now_ms)`, `Feedback_Update(now_ms)`, `Feedback_SetLight(on)` |
 | Sensor tasks to shared state | `SharedState_UpdateFood(...)`, `SharedState_UpdateWater(...)`; UART uses `SharedState_CopySnapshot(...)` |
 | MCXC444 to ESP32 | Current: raw water and food milligrams when both are valid, plus button events. Validity/low-water fields and dispense results remain integration work |
@@ -83,19 +83,19 @@ Defined in [rtos_types.h](../firmware/mcxc444/app/rtos_types.h). Sensor readings
 
 How the UART module fits (see [MCXC444 UART API](../firmware/mcxc444/communication/README.md)):
 
-- The adapter task calls `sendButton()` for each debounced press and attempts sensor reporting once a second. It copies a shared-state snapshot under the mutex and releases it before UART calls. `sendSensors()` runs only when both readings are valid; fake-data fallback is disabled. The packet has no validity or water-low fields, so stale-data handling and low-water reporting require agreement with Member 4.
+- The adapter task calls `sendButton()` for each debounced press and attempts sensor reporting once a second. It copies a shared-state snapshot under the mutex and releases it before UART calls. `sendSensors()` runs only when food and water status are valid; fake-data fallback is disabled. Water is sent as `water_enough = !water.low` (`true` = enough, `false` = low). Water thresholds must be calibrated before reporting. The packet has no validity fields; the ESP32 uses its local receive timestamp to check freshness.
 - Remote light commands are not queued. The actuator task polls `consumeLight(&on)` at least every 20 ms and writes the light GPIO immediately; the module sends the ACK itself. The ACK means the command was consumed, not that the light was measured.
 - The protocol has no dispense-result message yet, so dispense results are not reported to the ESP32.
 
-Units in shared state: food weight in milligrams (signed 32-bit), water as the raw ADC value (16-bit).
+Units in shared state: food weight in milligrams (signed 32-bit), water as the raw ADC value (16-bit) plus low-water status and validity. UART sends only the boolean enough-water status, not the raw ADC value.
 
 ## Current sensing behaviour
 
 Both sensor tasks are registered in `app/rtos_setup.c` at the proposed sensing priority, with 250 ms periods. Startup checks each sensor's initialization result before creating its task. Sampling periods, stack sizes and priorities require measurement in the actual FreeRTOS project.
 
 - Food uses HX711 GPIO reads on proposed PTB1/PTB3, saved empty-bowl/reference calibration, and a four-sample moving average. A not-ready or rejected sample resets the filter; four valid converted samples are needed before publishing a valid average. Calibration is disabled until measured values are entered.
-- Water uses PTB2/ADC0 channel 12, startup ADC self-calibration, 16-conversion hardware averaging and a nominal 20 ms conversion timeout. Thresholds are disabled until measured. The current `water.valid` requires both successful acquisition and a known low-water decision; a first reading between the thresholds remains invalid until either boundary is reached.
-- Feeding is disabled by default. When enabled with valid thresholds, three consecutive low filtered samples request one portion. A successful enqueue starts the interval and latches until weight reaches the rearm threshold. Queue-full failure does not latch. The current 60000 ms interval is provisional; state is lost on reset. There is no actuator acceptance/completion feedback to this policy yet.
+- Water uses PTB2/ADC0 channel 12, startup ADC self-calibration, 16-conversion hardware averaging and a nominal 20 ms conversion timeout. Trial thresholds are enabled at 100 (dry/LOW) and 4000 (wet/OK). Verify recovery as water falls below the mounted probe. The current `water.valid` requires both successful acquisition and a known low-water decision; a first reading between the thresholds remains invalid until either boundary is reached.
+- Feeding is disabled by default. When enabled with valid thresholds, three consecutive low filtered samples request one portion. A successful enqueue starts the interval and latches until weight reaches the rearm threshold. Queue-full failure does not latch. The current 10000 ms interval is provisional (shortened from 60000 ms for demonstration; it is the only limit on dispensing rate if each portion rearms the trigger); state is lost on reset. There is no actuator acceptance/completion feedback to this policy yet.
 - Food conversion rejects weights below the provisional `FOOD_MIN_VALID_MG = -5000` limit. HX711 reads reject a missing DOUT-high state after the final pulse. Desktop checks passed; the limit and pulse timing still need lab verification. Keep automatic motor operation disabled until lab checks and actuator busy/failure handling are resolved.
 
 ## Behaviour and open hardware choices

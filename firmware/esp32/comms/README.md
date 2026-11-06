@@ -36,7 +36,7 @@ Copies the latest received readings into the supplied structure:
 
 | Field | Meaning |
 |---|---|
-| `water_level` | `uint16_t`: raw water ADC reading |
+| `water_enough` | `bool`: `true` = enough water, `false` = low water |
 | `food_milligrams` | `int32_t`: food weight in milligrams; divide by 1000.0 for grams |
 | `received_ms` | `uint32_t`: ESP32-local `millis()` when the packet arrived |
 
@@ -45,12 +45,14 @@ SensorValues values;
 if (getSensors(&values)) {
     bool stale = uint32_t(millis() - values.received_ms) > 3000;
     float foodGrams = values.food_milligrams / 1000.0f;
-    // Publish values.water_level and foodGrams with freshness information.
+    // Publish values.water_enough and foodGrams with freshness information.
     // 3000 ms is an example threshold; match it to the reporting period.
 }
 ```
 
 Returns `false` before the first valid packet or if `out` is null. This is a snapshot getter: repeated calls can return the same sample, and `true` alone does not mean the readings are fresh. Use the output only when the function returns `true`.
+
+The sensor wire format is `SENSOR:1,125000*HH\n` for enough water and 125 g of food, or `SENSOR:0,125000*HH\n` for low water (`HH` is the calculated XOR checksum). Only water digits `0` and `1` are accepted. Update both boards together; the old raw-ADC water payload is no longer supported. The standalone sketch prints `water_enough=1` or `water_enough=0`.
 
 ## Consume a button event — cloud/notification task
 

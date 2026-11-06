@@ -92,10 +92,10 @@ static uint32_t nowMs(void)
 
 
 /* Same pattern as your demo: format a string, then queue a COPY of it. */
-bool sendSensors(uint16_t water, int32_t food)
+bool sendSensors(bool water_enough, int32_t food)
 {
     UartMessage message = {0};
-    snprintf(message.text, sizeof(message.text), "SENSOR:%u,%ld\n", (unsigned)water, (long)food);
+    snprintf(message.text, sizeof(message.text), "SENSOR:%u,%ld\n", (unsigned)water_enough, (long)food);
     return xQueueSend(txQueue, &message, 0) == pdPASS;
 }
 

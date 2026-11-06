@@ -42,12 +42,11 @@
 #define WATER_CONVERSION_TIMEOUT_MS   20u
 
 /*
- * TODO (lab): Enter measured thresholds after lab calibration.
- * Enable only after confirming that raw readings rise with water level.
+ * Trial point-level thresholds. Verify the falling transition with the probe mounted.
  */
-#define WATER_THRESHOLDS_CONFIGURED  0u
-#define WATER_LOW_THRESHOLD          0u
-#define WATER_CLEAR_THRESHOLD        0u
+#define WATER_THRESHOLDS_CONFIGURED  1u
+#define WATER_LOW_THRESHOLD          100u   /* Dry tip: water below the probe. */
+#define WATER_CLEAR_THRESHOLD        4000u  /* Wet tip: water has reached the probe. */
 
 #define WATER_ADC_CALIBRATION_LIMIT  1000000u
 
@@ -251,6 +250,7 @@ void WaterSensor_Task(void *argument)
 
         if (acquired) {
             reading.raw = raw;
+            reading.raw_valid = true;   /* a real conversion result, even before thresholds are set */
             reading.tick = xTaskGetTickCount();
             reading.valid = WaterSensor_DetermineLow(raw, &reading.low);
         } else {
