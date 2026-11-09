@@ -36,6 +36,8 @@ Installed versions found in the development environment:
 | Espressif Arduino ESP32 core | 3.3.11 |
 | Adafruit DHT sensor library | 1.4.7 |
 | Adafruit Unified Sensor | 1.1.15 |
+| PubSubClient | 2.8 |
+| ArduinoJson | 7.4.2 |
 
 In Arduino IDE, install the **esp32 by Espressif Systems** board package, **DHT sensor library by Adafruit**, and **Adafruit Unified Sensor**. Open `pet_care_station/pet_care_station.ino`. Select the board matching your exact S2 variant and its upload/flash options. If using native USB for the serial monitor, configure USB CDC On Boot for your board; USB-to-UART boards may use a different console setup. Do not assign a task to core 1 on the single-core S2.
 
@@ -45,7 +47,7 @@ From the repository root, with Arduino CLI on PATH and the dependencies installe
 arduino-cli compile --fqbn esp32:esp32:esp32s2 --library firmware/esp32/libraries/PetStationUart --build-path build/esp32-environment --warnings all firmware/esp32/pet_care_station
 ```
 
-This generic S2 build target checks compilation; it does not identify the physical board or validate its USB/flash configuration. Use your verified board profile to upload from the IDE, then open Serial Monitor at **115200 baud**. Install **PetStationUart** (instructions below) and **PubSubClient 2.8** as well as the DHT libraries to build the current sketch. Missing cloud credentials disable networking at runtime; ArduinoJson and the MCXC444 are not required.
+This generic S2 build target checks compilation; it does not identify the physical board or validate its USB/flash configuration. Use your verified board profile to upload from the IDE, then open Serial Monitor at **115200 baud**. Install **PetStationUart** (instructions below), **PubSubClient 2.8**, and **ArduinoJson 7.4.2** as well as the DHT libraries to build the current sketch. Missing cloud credentials disable networking at runtime; the MCXC444 is not required for compilation.
 
 ### Runtime and public interface
 
@@ -59,7 +61,7 @@ The current sketch sends live sensor snapshots, not the former fixed test messag
 
 ### Shared UART library and wiring
 
-The single canonical driver now lives in [PetStationUart](libraries/PetStationUart/), shared by this application and `comms/esp32_test/esp32_test.ino`. Its behavior/wire encoding is unchanged. Do not add the standalone test `.ino` to the main sketch.
+The single canonical driver lives in [PetStationUart](libraries/PetStationUart/), shared by this application and `comms/esp32_test/esp32_test.ino`. Its wire encoding is unchanged. Button consumption now waits until its ACK is queued, and control polling uses nonblocking mutex acquisition. Do not add the standalone test `.ino` to the main sketch.
 
 The library was packaged into ignored `build/PetStationUart.zip` and installed in the local Arduino library directory during implementation. On another computer, from the repository root:
 
@@ -107,6 +109,33 @@ The cloud task logs `[cloud] Live telemetry sent (QoS 0): {...}`. This confirms 
 
 References: [ThingsBoard telemetry API](https://thingsboard.io/docs/reference/mqtt-api/telemetry/) and [PubSubClient API](https://pubsubclient.knolleary.net/api).
 
+### Button events and light RPC
+
+`loop()` calls `UartBridge_Poll()` every 20 ms, independently of the cloud task's connection waits. The bridge is the only owner of button/light consume and send calls. It acknowledges each consumed button locally, counts it once, and retains its absolute count until ESP32 reset. MQTT failure does not clear the count. This is a count per boot, not a guaranteed lifetime event log; reset both boards together because UART sequences have no reboot/session recovery.
+
+The cloud publishes a separate control snapshot when it changes and every five seconds while connected:
+
+```json
+{"button_presses":3,"last_button_uptime_ms":42000,"last_button_ts":1794200000000,"light_known":true,"light_pending":false,"light_status":"acknowledged","light_on":true}
+```
+
+Values above are examples. Last-press fields are omitted before the first event. `last_button_ts` is an approximate Unix timestamp in milliseconds reconstructed from the synchronized clock and event uptime, with about one-second precision; it is omitted until the clock is valid. Uptime arithmetic supports wraparound within one 32-bit uptime cycle. The count saturates at UINT32_MAX.
+
+On every MQTT connection the client subscribes to `v1/devices/me/rpc/request/+`. Configure the ThingsBoard legacy Switch Control with `getValue` / `setValue`, Boolean parameters and a five-second RPC timeout; `getLight` / `setLight` aliases also work. Use nonpersistent RPC so server-side commands are not stored for a later connection. Examples:
+
+```json
+{"method":"getValue"}
+{"method":"setValue","params":true}
+```
+
+Responses use `v1/devices/me/rpc/response/<original-request-id>`. A successful get returns the last acknowledged Boolean; before any acknowledgement or following failure it returns `{"error":"light_state_unknown"}`. A set returns the Boolean only after the MCXC444 consumption ACK. Invalid requests, unsupported methods, an unavailable/busy bridge and command failure return error objects. Payloads are bounded to 256 bytes, four JSON nesting levels, and Boolean set parameters. No incoming payloads or credentials are logged.
+
+There is one outstanding set request at a time; additional requests receive a busy error instead of replacing a command whose reply is pending. A repeated in-flight request ID waits for its original result; the most recent completed ID reuses its cached response within that MQTT session. Busy driver locks/full queues are retried until the three-second queue deadline. The UART uses three attempts 200 ms apart; lack of an ACK sets `light_known=false`, omits `light_on` from subsequent snapshots and reports failure. Gate the confirmed indicator with `light_known` and connectivity, since ThingsBoard retains old `light_on` values. `light_pending` and `light_status` describe the command, separately from the last confirmed setting.
+
+The ACK confirms that the MCXC444 application consumed the requested setting. Its actuator writes the LED immediately afterwards; this is not an optical measurement or independent GPIO readback. Verify physical illumination on the bench. On cloud loss an unclaimed request is cancelled; a command already claimed by the UART poller may finish its bounded transmission attempts. Its outcome can update the snapshot, but its old RPC reply is discarded and it is not replayed after reconnection.
+
+The bridge protects shared control state with a short critical section; driver calls, logging, serialization and MQTT operations occur outside it. The main sketch requires no new credentials or changes to the existing UART wire protocol. See [bidirectional acceptance tests](../../tests/README.md#bidirectional-button-and-light-checks) and the [ThingsBoard RPC API](https://thingsboard.io/docs/reference/mqtt-api/rpc/).
+
 Serial output reports `sample`, `valid`, `temp_c`, `humidity_pct`, last-valid values, `has_last_valid`, `age_ms`, `read_ms`, cumulative failures, `alerts_known`, and high-temperature/high-humidity flags. Before any successful sample, values are `nan`, `has_last_valid=0`, and `age_ms=4294967295` means unknown. A real numeric zero is not treated as a failed read.
 
 Alert defaults are two consecutive valid samples at or above 30 degrees Celsius / 80% RH to activate, and two below 28 degrees Celsius / 75% RH to clear. Neutral or invalid samples break pending confirmation sequences. Invalid readings preserve latched flags and last-valid values, but their current values are `nan` and alerts must be displayed as unknown. A sampling gap of at least 15 seconds also breaks pending confirmations. These are prototype settings, not animal-care recommendations.
@@ -131,6 +160,6 @@ Run the hardware-independent C++ tests from the repository root:
 python tests/esp32/run_tests.py
 ```
 
-The runner requires Python 3 and g++ (or `CXX` set to its executable path). It builds into ignored `build/tests/environment/`. It exercises the production state/alert logic without mocking readings into the live sketch. Host tests and compilation do not verify GPIO signaling, serial output, FreeRTOS timing, or physical sensor recovery.
+The runner requires Python 3, g++ (or `CXX` set to its executable path), and ArduinoJson 7.4.2. It looks for ArduinoJson under `~/Documents/Arduino/libraries/ArduinoJson/src`; set `ARDUINOJSON_INCLUDE` to its `src` directory if installed elsewhere. It builds into ignored `build/tests/environment/`. Tests cover environment state, reconnect policy, live payloads, bridge control, RPC parsing and the actual UART driver with host substitutes. Host tests and compilation do not verify GPIO signaling, serial output, FreeRTOS timing, or physical sensor recovery.
 
 For bench checks, follow the [DHT11 procedure](../../tests/README.md#dht11-environment-bring-up) and record the actual board, wiring, versions, sample timing, observed logs, and pass/fail evidence. DHT reads briefly disable interrupts; later UART integration must measure frame loss/overflow while sampling.

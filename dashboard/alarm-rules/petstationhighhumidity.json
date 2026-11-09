@@ -1,0 +1,62 @@
+{
+  "type": "ALARM",
+  "name": "PetStationHighHumidity",
+  "debugSettings": {
+    "failuresEnabled": true,
+    "allEnabled": false,
+    "allEnabledUntil": 1794216825842
+  },
+  "configurationVersion": 0,
+  "configuration": {
+    "type": "ALARM",
+    "output": null,
+    "arguments": {
+      "high": {
+        "refEntityKey": {
+          "key": "humidity_high",
+          "type": "TS_LATEST"
+        },
+        "defaultValue": ""
+      },
+      "valid": {
+        "refEntityKey": {
+          "key": "environment_valid",
+          "type": "TS_LATEST"
+        },
+        "defaultValue": ""
+      }
+    },
+    "createRules": {
+      "CRITICAL": {
+        "condition": {
+          "type": "SIMPLE",
+          "expression": {
+            "type": "TBEL",
+            "expression": "return valid == true && high == true;"
+          },
+          "schedule": null
+        },
+        "alarmDetails": null,
+        "dashboardId": null
+      }
+    },
+    "clearRule": {
+      "condition": {
+        "type": "SIMPLE",
+        "expression": {
+          "type": "TBEL",
+          "expression": "return valid == true && high == false;"
+        },
+        "schedule": null
+      },
+      "alarmDetails": null,
+      "dashboardId": null
+    },
+    "propagate": false,
+    "propagateToOwner": false,
+    "propagateToOwnerHierarchy": false,
+    "propagateToTenant": false,
+    "propagateRelationTypes": null
+  },
+  "additionalInfo": null
+}
