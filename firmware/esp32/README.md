@@ -83,7 +83,7 @@ The board link is **9600 baud, 8N1**; debug Serial remains **115200 baud**, and 
 
 ### Payload and timing
 
-After MQTT connects, then every five seconds, Cloud_Task copies the two snapshots, releases their locks, builds JSON and publishes non-retained data to `v1/devices/me/telemetry`. Example values below illustrate the format only:
+After MQTT connects, then every five seconds, Cloud_Task copies the two snapshots, releases their locks, builds JSON and publishes non-retained data to `v1/devices/me/telemetry`. It also publishes early, at most once a second, when the MCU readings change noticeably (water flips, food moves by 2 g or more, or MCU data appears or disappears), so the dashboard follows the bowl within about 1-2 s; the log then says `Live telemetry sent early (MCU change)`. Example values below illustrate the format only:
 
 ```json
 {"data_source":"live","environment_valid":true,"mcu_data_fresh":true,"environment_age_ms":500,"mcu_age_ms":250,"temperature_c":21.6,"humidity_pct":69.3,"temperature_high":false,"humidity_high":false,"food_weight_g":125.000,"water_enough":true,"water_low":false}

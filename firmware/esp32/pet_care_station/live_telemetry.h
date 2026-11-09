@@ -17,9 +17,21 @@ bool BuildLiveTelemetry(char *out, size_t capacity,
                         const EnvironmentReading &environment,
                         const McuTelemetry &mcu, uint32_t now_ms);
 
+// Food change that triggers an early publish, so the dashboard follows the bowl quickly.
+constexpr int32_t kFoodChangeMg = 2000;
+// Never publish early more often than this (pouring candies changes the weight constantly).
+constexpr uint32_t kEarlyPublishGapMs = 1000;
+
+// True when the MCU readings differ enough from the last published ones to publish now:
+// MCU data appears or disappears, water flips, or food moves by kFoodChangeMg or more.
+bool McuChangedNotably(const McuTelemetry &published, const McuTelemetry &now);
+
 class PeriodicTelemetry {
  public:
   bool Due(uint32_t now_ms) const { return !attempted_ || uint32_t(now_ms - last_ms_) >= 5000; }
+  bool EarlyAllowed(uint32_t now_ms) const {
+    return !attempted_ || uint32_t(now_ms - last_ms_) >= kEarlyPublishGapMs;
+  }
   void Attempted(uint32_t now_ms) { attempted_ = true; last_ms_ = now_ms; }
   void Reconnected() { attempted_ = false; } // Send a fresh snapshot, not history.
  private:
