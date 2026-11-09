@@ -54,13 +54,13 @@ Returns `false` before the first valid packet or if `out` is null. This is a sna
 
 The sensor wire format is `SENSOR:1,125000*HH\n` for enough water and 125 g of food, or `SENSOR:0,125000*HH\n` for low water (`HH` is the calculated XOR checksum). Only water digits `0` and `1` are accepted. Update both boards together; the old raw-ADC water payload is no longer supported. The standalone sketch prints `water_enough=1` or `water_enough=0`.
 
-## Consume a button event — cloud/notification task
+## Consume a button event — network-independent poller
 
 ```cpp
 bool consumeButton(uint32_t *sequence = nullptr);
 ```
 
-Returns `true` once for a pending button event, clears its pending flag and automatically requests `BUTTON_ACK`. Optionally copies the event sequence into the supplied pointer.
+Returns `true` once for a pending button event after successfully queuing `BUTTON_ACK`, then clears its pending flag. A full TX queue or busy mutex returns `false` and leaves the event pending for the next poll. Optionally copies the event sequence into the supplied pointer.
 
 ```cpp
 uint32_t sequence;
@@ -72,9 +72,9 @@ if (consumeButton(&sequence)) {
 
 Use `consumeButton()` without an argument if the sequence is unnecessary. Returns `false` when nothing is pending. Duplicate UART retransmissions do not create another application event after consumption.
 
-The ACK acknowledges this application's consumption of the event. The cloud task owns notification buffering and MQTT delivery afterward.
+The ACK acknowledges this application's consumption of the event. In the integrated sketch, `UartBridge_Poll()` owns this operation from the 20 ms main loop; never put it in a network task that can block for seconds. The bridge retains a cumulative per-boot count for cloud publication.
 
-## Request a light setting — dashboard command handler
+## Request a light setting — UART poller
 
 ```cpp
 bool sendLight(bool on);
@@ -87,7 +87,7 @@ Call `sendLight(true)` for ON or `sendLight(false)` for OFF. Send an explicit de
 
 Only one light request can be outstanding. Consume the previous ACK before submitting another request.
 
-## Consume the light ACK — cloud/dashboard task
+## Consume the light ACK — UART poller
 
 ```cpp
 bool consumeLightAck(bool *on);
@@ -109,7 +109,9 @@ if (consumeLightAck(&acknowledgedOn)) {
 
 The MCXC444 actuator task is expected to write the LED GPIO immediately after consuming the command. For this project, that consumption ACK serves as completion of the light setting; it does not measure physical illumination.
 
-No ACK event is generated on retry exhaustion. A `false` return means no ACK is currently available; it does not distinguish waiting from timeout. If needed, the application can bound how long the dashboard displays a pending request and show an unknown outcome without assuming the light is OFF.
+No ACK event is generated on retry exhaustion. A `false` return means no ACK is currently available; it does not distinguish waiting from timeout. `getLightResult()` reports `UART_WAITING`, `UART_CONSUMED` or `UART_TIMED_OUT` with its sequence; on a busy mutex it returns the nonterminal `UART_IDLE` sentinel with sequence zero. The integrated bridge handles timeout as an unknown outcome, never as OFF.
+
+For the integrated sketch, cloud code uses `UartBridge_RequestLight()` and `UartBridge_TakeLightOutcome()` instead of these driver operations. The main-loop poller owns all `sendLight()` / `consumeLightAck()` calls. See the [RPC and control contract](../README.md#button-events-and-light-rpc).
 
 ## Calling rules
 

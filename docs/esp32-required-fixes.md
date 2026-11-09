@@ -5,6 +5,14 @@
 For: Members 4 and 5 (ESP32 UART bridge, cloud and dashboard). Written 9 Nov 2026 after
 testing both boards together.
 
+Implementation follow-up: source changes now add the network-independent 20 ms bridge
+poller, retained per-boot button count, bounded light RPC/ACK handling, driver queue-full
+protection and regression tests. The saved dashboard and five profile alarm rules are
+exported under [dashboard/](../dashboard/). See the [current interfaces and setup](../firmware/esp32/README.md#button-events-and-light-rpc),
+[bench checklist](../tests/README.md#bidirectional-button-and-light-checks) and
+[report draft](member-5/implementation-report.md). The original diagnosis below describes
+the starting state; hardware acceptance boxes remain pending until measured on the boards.
+
 The MCXC444 side is working: it sends `SENSOR` packets every second and `BUTTON` events, and
 it accepts `LIGHT` commands. The ESP32 currently **only receives**. It never sends anything
 back to the MCXC444, so the demo would lose marks in several rubric rows:

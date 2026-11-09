@@ -1,5 +1,5 @@
 // DHT11 and UART sensor snapshots published together through ThingsBoard MQTT.
-// Members 4 and 5 will extend startup together when their modules are ready.
+// UART acknowledgements run independently of cloud connection attempts.
 #include <Arduino.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
@@ -37,6 +37,6 @@ void setup(void) {
 }
 
 void loop(void) {
-  // Sampling belongs to its own task; yield instead of busy-spinning.
-  vTaskDelay(pdMS_TO_TICKS(1000));
+  UartBridge_Poll();
+  vTaskDelay(pdMS_TO_TICKS(20));
 }

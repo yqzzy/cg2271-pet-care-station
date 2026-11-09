@@ -13,6 +13,8 @@
 #include "live_telemetry.h"
 #include "environment.h"
 #include "uart_bridge.h"
+#include "rpc_protocol.h"
+#include "rpc_session.h"
 #if __has_include("secrets.h")
 #include "secrets.h"
 #else
@@ -26,12 +28,24 @@ constexpr uint32_t kTimeAttemptMs = 10000;
 constexpr uint32_t kTcpTimeoutMs = 3000;
 constexpr time_t kMinimumTime = 1735689600;  // 2025-01-01; reject an unset clock.
 constexpr char kTelemetryTopic[] = "v1/devices/me/telemetry";
+constexpr char kRpcRequests[] = "v1/devices/me/rpc/request/+";
 NetworkClientSecure tls;
 PubSubClient mqtt(tls);
 CloudPolicy policy;
 PeriodicTelemetry telemetry_timer;
+PeriodicTelemetry control_timer;
+bool control_published = false;
+uint32_t published_revision = 0;
+RpcSession rpc_session;
 bool initialized = false;
 char client_id[40];
+
+void ForgetSession() {
+  rpc_session.Reset();
+  UartBridge_CancelQueuedLight();
+  LightOutcome discarded;
+  UartBridge_TakeLightOutcome(&discarded);
+}
 
 // Wi-Fi events run on the network event task. Only print event metadata here;
 // do not change connection state or access application globals from the callback.
@@ -54,8 +68,74 @@ void LogWifiEvent(arduino_event_id_t event, arduino_event_info_t info) {
 
 void Retry(const char *stage) {
   tls.stop();
+  ForgetSession();
   policy.Failed(millis());  // Measure backoff AFTER the failed blocking operation.
   Serial.printf("[cloud] %s failed; retry scheduled (passwords/tokens hidden)\n", stage);
+}
+
+bool Reply(const char *id, const char *body) {
+  // Own storage: PubSubClient's callback topic/payload share its TX buffer.
+  char topic[64];
+  snprintf(topic, sizeof(topic), "v1/devices/me/rpc/response/%s", id);
+  if (mqtt.publish(topic, body, false)) return true;
+  Retry("RPC response publish");
+  return false;
+}
+
+void OnMqttMessage(char *topic, byte *payload, unsigned int length) {
+  RpcRequest request;
+  const RpcParseResult result = ParseRpcRequest(topic, payload, length, &request);
+  if (result == kRpcBadTopic) return;
+  if (result != kRpcValid) {
+    Reply(request.id, result == kRpcUnsupportedMethod
+          ? "{\"error\":\"unsupported_method\"}" : "{\"error\":\"invalid_request\"}");
+    return;
+  }
+  if (!request.set) {
+    const ControlSnapshot state = UartBridge_ControlSnapshot();
+    Reply(request.id, state.light_known ? (state.light_on ? "true" : "false")
+                                      : "{\"error\":\"light_state_unknown\"}");
+    return;
+  }
+  if (rpc_session.InFlight(request.id)) return; // Wait for original outcome.
+  if (rpc_session.Cached(request.id)) {
+    Reply(request.id, rpc_session.Response());
+    return;
+  }
+  uint32_t token;
+  if (rpc_session.Pending() || !UartBridge_RequestLight(request.value, &token)) {
+    Reply(request.id, "{\"error\":\"bridge_unavailable_or_busy\"}");
+    return;
+  }
+  rpc_session.Begin(request.id, token);
+  // Reply only after the UART owner consumes LIGHT_ACK (or reports failure).
+}
+
+bool ServiceControl() {
+  LightOutcome outcome;
+  if (UartBridge_TakeLightOutcome(&outcome) &&
+      rpc_session.Complete(outcome.token, outcome.success, outcome.on)) {
+    if (!Reply(rpc_session.Id(), rpc_session.Response())) return false;
+  }
+  const ControlSnapshot state = UartBridge_ControlSnapshot();
+  const uint32_t now = millis();
+  if (!control_published || state.revision != published_revision || control_timer.Due(now)) {
+    char payload[384];
+    if (!BuildControlTelemetry(payload, sizeof(payload), state, now, time(nullptr))) {
+      Serial.println("[cloud] Control telemetry serialization failed");
+      return true;
+    }
+    if (!mqtt.publish(kTelemetryTopic, payload, false)) {
+      Retry("control telemetry publish");
+      return false;
+    }
+    // Absolute count stays in the bridge. Failed sends never consume presses.
+    published_revision = state.revision;
+    control_published = true;
+    control_timer.Attempted(now);
+    Serial.printf("[cloud] Control telemetry sent (QoS 0): %s\n", payload);
+  }
+  return true;
 }
 }  // namespace
 
@@ -72,6 +152,7 @@ bool Cloud_Init(void) {
   tls.setCACert(TLS_CA_CERT);
   tls.setHandshakeTimeout(5);  // Seconds; TCP connect below uses milliseconds.
   mqtt.setServer(THINGSBOARD_HOST, kMqttPort);
+  mqtt.setCallback(OnMqttMessage);
   mqtt.setSocketTimeout(2);   // Seconds waiting for MQTT protocol data.
   mqtt.setKeepAlive(30);
   if (!mqtt.setBufferSize(1024)) {
@@ -105,6 +186,7 @@ void Cloud_Task(void *argument) {
     const uint32_t now = millis();
     if (WiFi.status() != WL_CONNECTED) {
       tls.stop();
+      ForgetSession();
       time_attempt = false;
       if (!wifi_attempt && policy.Ready(now)) {
         Serial.println("[cloud] Starting Wi-Fi attempt");
@@ -141,6 +223,7 @@ void Cloud_Task(void *argument) {
     time_attempt = false;
 
     if (!mqtt.connected()) {
+      ForgetSession();
       if (!policy.Ready(now)) continue;
       // Preconnect with a finite TCP timeout. PubSubClient reuses this socket.
       // Hostname is preserved for SNI/hostname certificate verification.
@@ -151,9 +234,16 @@ void Cloud_Task(void *argument) {
         Retry("TLS/MQTT");
         continue;
       }
+      if (!mqtt.subscribe(kRpcRequests, 1)) {
+        Retry("RPC subscription");
+        continue;
+      }
       policy.Connected();
       telemetry_timer.Reconnected();
+      control_published = false;
+      control_timer.Reconnected();
       Serial.println("[cloud] MQTT connected with certificate validation");
+      Serial.println("[cloud] Subscribed to light RPC requests");
     }
 
     if (!mqtt.loop()) {
@@ -174,8 +264,12 @@ void Cloud_Task(void *argument) {
         Serial.printf("[cloud] Live telemetry sent (QoS 0): %s\n", payload);
       } else {
         Retry("live telemetry publish");
+        continue;
       }
     }
+    // Refresh source validity first on reconnect, before control-only telemetry
+    // can cause profile alarm evaluation against cached sensor values.
+    if (!ServiceControl()) continue;
     // Reconnection sends current snapshots, not buffered historical readings.
   }
 }
