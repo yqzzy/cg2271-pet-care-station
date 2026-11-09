@@ -42,11 +42,12 @@
 #define WATER_CONVERSION_TIMEOUT_MS   20u
 
 /*
- * Trial point-level thresholds. Verify the falling transition with the probe mounted.
+ * Point-level thresholds with hysteresis, from bench readings on 2026-11-06/09:
+ * dry probe 0-33, partly wet about 1900, fully wet 4095.
  */
 #define WATER_THRESHOLDS_CONFIGURED  1u
-#define WATER_LOW_THRESHOLD          100u   /* Dry tip: water below the probe. */
-#define WATER_CLEAR_THRESHOLD        4000u  /* Wet tip: water has reached the probe. */
+#define WATER_LOW_THRESHOLD          500u   /* Dry tip: water below the probe. */
+#define WATER_CLEAR_THRESHOLD        1500u  /* Wet tip: water has reached the probe. */
 
 #define WATER_ADC_CALIBRATION_LIMIT  1000000u
 
@@ -201,6 +202,12 @@ static bool WaterSensor_DetermineLow(uint16_t raw, bool *low)
         status_known = true;
     } else if (raw >= WATER_CLEAR_THRESHOLD) {
         is_low = false;
+        status_known = true;
+    } else if (!status_known) {
+        /* First reading lands between the thresholds: decide by the midpoint instead of
+         * leaving the state unknown (which would stop all sensor reports). Hysteresis
+         * applies from then on. */
+        is_low = raw < (WATER_LOW_THRESHOLD + WATER_CLEAR_THRESHOLD) / 2u;
         status_known = true;
     }
 

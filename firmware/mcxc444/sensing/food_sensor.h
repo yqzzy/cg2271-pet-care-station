@@ -23,11 +23,19 @@
 #define FOOD_SENSOR_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 /* Configure the HX711 connection before starting the food sensor task. */
 bool FoodSensor_Init(void);
 
 /* Periodically measure food weight and request feeding when appropriate. */
 void FoodSensor_Task(void *argument);
+
+/* Read one raw HX711 sample. False if no conversion is ready or the transfer failed.
+ * For the calibration tool only: never call while FoodSensor_Task is running. */
+bool FoodSensor_ReadRaw(int32_t *raw);
+
+/* The compiled calibration (for the calibration tool). False if not calibrated. */
+bool FoodSensor_GetCalibration(int32_t *empty_raw, int32_t *reference_raw, int32_t *reference_mg);
 
 #endif

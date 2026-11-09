@@ -15,6 +15,7 @@
 #include "clock_config.h"
 #include "fsl_debug_console.h"
 #include "app/rtos_setup.h"
+#include "app/servo_test.h"
 
 /*
  * @brief   Application entry point.
@@ -28,6 +29,11 @@ int main(void) {
 #ifndef BOARD_INIT_DEBUG_CONSOLE_PERIPHERAL
     /* Init FSL debug console. */
     BOARD_InitDebugConsole();
+#endif
+
+#if SERVO_TEST_ONLY
+    /* Bench test: servo console only (app/servo_test.c), never returns */
+    ServoTest_Run();
 #endif
 
     /* Initialize application objects and tasks, then start FreeRTOS. */

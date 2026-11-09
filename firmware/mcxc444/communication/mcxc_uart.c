@@ -384,9 +384,10 @@ static void initUART2(void)
     PORTE->PCR[UART_TX_PTE22] &= ~PORT_PCR_MUX_MASK;
     PORTE->PCR[UART_TX_PTE22] |= PORT_PCR_MUX(4);
 
-    // Connect UART RX to PTE23.
+    // Connect UART RX to PTE23, with the internal pull-up so the line idles high (no
+    // garbage frames) while the ESP32 is unpowered or unplugged.
     PORTE->PCR[UART_RX_PTE23] &= ~PORT_PCR_MUX_MASK;
-    PORTE->PCR[UART_RX_PTE23] |= PORT_PCR_MUX(4);
+    PORTE->PCR[UART_RX_PTE23] |= PORT_PCR_MUX(4) | PORT_PCR_PE_MASK | PORT_PCR_PS_MASK;
 
     // Calculate the baud-rate divisor using integer rounding.
     uint32_t bus_clk = CLOCK_GetBusClkFreq();

@@ -25,14 +25,15 @@
 #include "../actuators/dispenser.h"
 #include "../control/actuator_task.h"
 #include "../communication/uart_link.h"
-#include "test_tasks.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "semphr.h"
 #include "fsl_debug_console.h"   /* PRINTF */
 #include "../sensing/water_sensor.h"
 #include "../sensing/food_sensor.h"
+#include "../sensing/food_calibration.h"   /* FOOD_CALIBRATION_MODE */
 
 /* ---- Task priorities (PROPOSED, higher number = higher priority) ----
  * Design rule: actuator deadlines and local button response outrank bulk telemetry.
@@ -44,11 +45,6 @@
 
 #define STACK_WORDS     (configMINIMAL_STACK_SIZE + 100)
 
-/* 1 = create the temporary stand-in actuator task (test_tasks.c): applies light commands,
- * beeps on button press and toggles the light. Set to 0 and enable the real Actuator_Task
- * below as soon as Member 1 pushes it. */
-#define USE_TEST_ACTUATOR_TASK  0
-
 /* ---- Task entry points owned by other members (names from docs/system-design.md) ----
  * void FoodSensor_Task(void *argument);  Member 2 (sensing/food_sensor.c)
  * void WaterSensor_Task(void *argument); Member 2 (sensing/water_sensor.c)
@@ -59,6 +55,7 @@
 QueueHandle_t buttonQueue;
 QueueHandle_t actuatorQueue;
 QueueHandle_t telemetryQueue;
+SemaphoreHandle_t dispenseDoneSem;
 
 void Rtos_CreateObjects(void) {
     SharedState_Init();   /* creates the state mutex */
@@ -66,10 +63,12 @@ void Rtos_CreateObjects(void) {
     buttonQueue    = xQueueCreate(BUTTON_QUEUE_LEN,    sizeof(ButtonEvent));
     actuatorQueue  = xQueueCreate(ACTUATOR_QUEUE_LEN,  sizeof(ActuatorCmd));
     telemetryQueue = xQueueCreate(TELEMETRY_QUEUE_LEN, sizeof(TelemetryMsg));
+    dispenseDoneSem = xSemaphoreCreateBinary();   /* starts empty */
 
     configASSERT(buttonQueue != NULL);
     configASSERT(actuatorQueue != NULL);
     configASSERT(telemetryQueue != NULL);
+    configASSERT(dispenseDoneSem != NULL);
 }
 
 void Rtos_CreateTasks(void) {
@@ -100,20 +99,20 @@ void Rtos_CreateTasks(void) {
      * TODO (Member 3 / lab): Verify stack usage and sensing priority.
      */
     if (FoodSensor_Init()) {
-        ok = xTaskCreate(FoodSensor_Task, "food", STACK_WORDS, NULL, PRIO_SENSING, NULL);
+#if FOOD_CALIBRATION_MODE
+        ok = xTaskCreate(FoodCalibration_Task, "food_cal", STACK_WORDS + 100, NULL, PRIO_SENSING, NULL);
+#else
+        /* Extra stack for the portion log (PRINTF) */
+        ok = xTaskCreate(FoodSensor_Task, "food", STACK_WORDS + 100, NULL, PRIO_SENSING, NULL);
+#endif
         configASSERT(ok == pdPASS);
     } else {
         PRINTF("Food sensor initialization failed\r\n");
     }
 
-#if USE_TEST_ACTUATOR_TASK
-    ok = xTaskCreate(TestActuator_Task, "t_actuator", STACK_WORDS, NULL, PRIO_ACTUATOR, NULL);
-    configASSERT(ok == pdPASS);
-#else
-    /* Member 1: servo gate, buzzer and light */
+    /* Servo gate, buzzer and light */
     ok = xTaskCreate(Actuator_Task, "actuator", STACK_WORDS, NULL, PRIO_ACTUATOR, NULL);
     configASSERT(ok == pdPASS);
-#endif
     (void)ok;
 }
 

@@ -14,6 +14,7 @@ CG2271 group project: monitor food, water and environmental conditions, notify a
 - [UART protocol agreement](protocol/README.md)
 - [Dashboard requirements](dashboard/README.md)
 - [ESP32: required fixes before the Week 13 demo](docs/esp32-required-fixes.md)
+- [Week 13 demo: sequence and rubric check](docs/demo-sequence.md)
 - [Integration order](docs/team-guide.md#integration-order) and [test checklist](tests/README.md)
 
 ## Board responsibilities

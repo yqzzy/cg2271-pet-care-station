@@ -11,6 +11,8 @@
  *   - consumeLight() (Member 4's UART module): remote light commands, polled at least every
  *     LIGHT_POLL_MS. The module sends the ACK itself ("consumed", not "lit").
  * Outputs:
+ *   - dispenseDoneSem: given when a gate cycle ends or a dispense request is rejected, so the
+ *     food sensing task knows when to re-check the bowl.
  *   - telemetryQueue: TEL_DISPENSE_RESULT when a cycle ends (value = DispenseStatus) and
  *     TEL_LIGHT_APPLIED for ACT_LIGHT_SET. uart_link.c currently drops TEL_DISPENSE_RESULT:
  *     the protocol has no dispense-result message yet.
@@ -28,6 +30,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "semphr.h"
 
 /* Light commands are polled, so never wait longer than this */
 #define LIGHT_POLL_MS        20u
@@ -72,12 +75,20 @@ static void handleCommand(const ActuatorCmd *cmd, uint32_t now) {
             PRINTF("[actuator] dispense value %u unsupported, ignored\r\n", (unsigned)cmd->value);
             break;
         }
-        /* Busy only happens with an extra/duplicate request: food sensing sends one request
-         * per low-food episode, at least FOOD_MIN_INTERVAL_MS apart. */
+        /* Busy only happens with an extra request (e.g. a bench test): food sensing waits for
+         * dispenseDoneSem before it asks for the next portion. */
         switch (Dispenser_Start(now)) {
-        case DISPENSE_STARTED:       PRINTF("[actuator] dispense started\r\n");             break;
-        case DISPENSE_REJECTED_BUSY: PRINTF("[actuator] dispense rejected: busy\r\n");      break;
-        default:                     PRINTF("[actuator] dispense rejected: not ready\r\n"); break;
+        case DISPENSE_STARTED:
+            PRINTF("[actuator] dispense started\r\n");
+            break;
+        case DISPENSE_REJECTED_BUSY:
+            PRINTF("[actuator] dispense rejected: busy\r\n");
+            (void)xSemaphoreGive(dispenseDoneSem);   /* never leave the requester waiting */
+            break;
+        default:
+            PRINTF("[actuator] dispense rejected: not ready\r\n");
+            (void)xSemaphoreGive(dispenseDoneSem);
+            break;
         }
         break;
 
@@ -112,6 +123,8 @@ void Actuator_Task(void *argument) {
             }
             PRINTF("[actuator] dispense %s\r\n",
                    (status == DISPENSE_COMPLETED) ? "completed" : "failed");
+            /* Gate closed: food sensing can now let the food settle and re-check the bowl */
+            (void)xSemaphoreGive(dispenseDoneSem);
         }
         wasBusy = (status == DISPENSE_BUSY);
 

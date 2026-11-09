@@ -6,9 +6,9 @@ For the teammate with the boards. The code has NOT been built or run on hardware
 
 | Setting | Value | Effect |
 |---|---|---|
-| `USE_TEST_ACTUATOR_TASK` (`app/rtos_setup.c`) | 0 | Member 1's real `Actuator_Task` runs |
-| `UARTLINK_USE_TEST_SENSOR_DATA` (`communication/uart_link.c`) | 0 | No sensor packets are sent until the food sensor is calibrated |
-| `FOOD_CALIBRATED`, `FOOD_FEEDING_ENABLED` (`sensing/`) | 0 | Food weight is unknown, no automatic feeding |
+| `UARTLINK_USE_TEST_SENSOR_DATA` (`communication/uart_link.c`) | 0 | Only real sensor values are sent |
+| `FOOD_CALIBRATED` (`sensing/`) | 1 | Food weight is calibrated (80 g reference), so sensor packets are sent |
+| `FOOD_FEEDING_ENABLED` (`sensing/`) | 1 | Automatic feeding: tops up from 10 g or less until above 20 g, then 10 s eating time |
 | `BUTTON_TEST_DISPENSE` (`control/button.c`) | 0 | A button press does not dispense |
 
 ## Setup
@@ -16,13 +16,13 @@ For the teammate with the boards. The code has NOT been built or run on hardware
 ### MCXC444 (MCUXpresso)
 
 1. Course project with FreeRTOS: pre-emption on, time slicing on (`configUSE_TIME_SLICING = 1`), mutexes on, dynamic allocation on. Raise `configTOTAL_HEAP_SIZE` if start-up halts: this firmware now has about nine tasks plus queues.
-2. Build everything under `firmware/mcxc444/` except `communication/mcxc_test_main.c` (only ONE `main()`). `app/test_tasks.c` can stay in the build but is unused.
+2. Build everything under `firmware/mcxc444/` except `communication/mcxc_test_main.c` (only ONE `main()`).
 3. Wiring:
    - UART: MCXC444 PTE22 (TX) to the ESP32 RX pin, PTE23 (RX) to the ESP32 TX pin, grounds joined, 3.3 V logic.
    - Servo (SG90): signal to PTD2, red wire to a SEPARATE 5 V supply (not the board 3.3 V pin), brown wire to ground, and that ground joined to the board ground.
    - Water sensor: signal to PTB2 (J4 pin 6). HX711: DOUT to PTB1, PD_SCK to PTB3. Check each module's supply and logic voltage first.
    - Buzzer: the defaults assume a PASSIVE buzzer on PTE21. Member 4's old test used an ACTIVE buzzer on PTB0. Check which is fitted and tell Member 3 (see the table in `docs/hardware.md`).
-   - Light: on-board red LED (PTE31, active low). Button: on-board SW2 (PTC3).
+   - Light: one colour of the RGB LED module on PTD6 (J2-8, active high), - to GND. Button: 3-pin module, S on PTD4 (J2-6), + on 3.3 V, - to GND.
 
 ### ESP32
 
@@ -34,12 +34,12 @@ Flash `firmware/esp32/comms/esp32_test/esp32_test.ino` (the folder contains the 
 |---|--------|-----------------------|------------------------------------|--------|
 | 1 | Reset both boards | Console shows `[MCXC UART]` log lines. No `UART init failed`, `Dispenser init failed`, `Water sensor initialization failed` or `Food sensor initialization failed`. The servo gate moves to closed and holds. | Prompt `1=ON, 0=OFF, p=consume button` | |
 | 2 | Wait 10 seconds | Nothing else | No `water=... food=...` lines. This is expected while the food sensor is uncalibrated. | |
-| 3 | Press SW2 once | Short beep (about 80 ms). The light does NOT toggle (that was only the stand-in task). | Nothing yet | |
+| 3 | Press the button once | Short beep (about 80 ms). The light does NOT toggle. | Nothing yet | |
 | 4 | Type `p` within a few seconds | Nothing | `Consumed button N; ACK queued` | |
 | 5 | Type `1`, then `0` | Red LED on, then off | `Light accepted=1`, then `Light command ACK consumed: requested state=1` (then `=0`). The `light seq=... status=2` line shows consumed. | |
-| 6 | Hold SW2 down | One beep only | At most one button event | |
-| 7 | Tap SW2 five times, 1 second apart, typing `p` after each | Five beeps | Five `Consumed button N` lines | |
-| 8 | Light command while pressing SW2 | Beep and the light ends in the commanded state | Light ACK still arrives | |
+| 6 | Hold the button down | One beep only | At most one button event | |
+| 7 | Tap the button five times, 1 second apart, typing `p` after each | Five beeps | Five `Consumed button N` lines | |
+| 8 | Light command while pressing the button | Beep and the light ends in the commanded state | Light ACK still arrives | |
 
 ## Sensor link test (fixed test data)
 
@@ -63,23 +63,24 @@ Flash `firmware/esp32/comms/esp32_test/esp32_test.ino` (the folder contains the 
 ## Dispenser test (no HX711 needed)
 
 1. Set `BUTTON_TEST_DISPENSE` to 1 in `control/button.c` and rebuild. This is a bench test only.
-2. Press SW2: short beep, then the console shows `[actuator] dispense started`, the servo gate swings open for about half a second and closes, the console shows `[actuator] dispense completed`, and a longer beep (about 400 ms) sounds as the food-ready cue.
-3. Press SW2 twice quickly: the second press shows `[actuator] dispense rejected: busy` and does not restart or extend the cycle.
+2. Press the button: short beep, then the console shows `[actuator] dispense started`, the servo gate swings open for about half a second and closes, the console shows `[actuator] dispense completed`, and a longer beep (about 400 ms) sounds as the food-ready cue.
+3. Press the button twice quickly: the second press shows `[actuator] dispense rejected: busy` and does not restart or extend the cycle.
 4. The open/closed angles and times in `actuators/dispenser.c` (`SERVO_OPEN_US`, `SERVO_CLOSED_US`, `DISPENSE_OPEN_MS`) are placeholders. Adjust them if the gate does not open or close fully. Note the values that work.
 5. Set `BUTTON_TEST_DISPENSE` back to 0.
 
 ## Automatic feeding test (after food calibration)
 
-1. Choose a low threshold and a re-arm threshold from measured bowl weights (low must be below re-arm), set `FOOD_FEEDING_ENABLED` to 1, rebuild.
-2. Empty the bowl below the low threshold: after about three samples (under a second) exactly ONE dispense happens, with the food-ready beep.
-3. Leave the bowl low: no repeat. Fill above the re-arm threshold, then empty again: a new dispense only after the 10-second minimum interval.
+1. Fill the food container. Empty the bowl to 10 g or less: within about a second the gate opens, closes and beeps, and the console prints `[feed] portion 1 added ... g, bowl ... g`.
+2. About 1.5 s after each portion the bowl is re-checked: 20 g or less gives another portion; above 20 g prints `-> full, eating time`. A top-up from an empty bowl must finish within three portions; if not, increase `DISPENSE_OPEN_MS` in `dispenser.c`.
+3. Empty the bowl again straight away: nothing happens for 10 s (eating time), then a new top-up starts.
+4. Lift the bowl off during a top-up: no further portions until it is back and reads a valid weight.
 
 ## Soak and failure checks
 
 | Check | Expect |
 |---|---|
 | Run 10 minutes with button presses and light commands | No reset, no hang, beeps stay on time |
-| Unplug the ESP32 wires, press SW2, dispense if possible | Local beep, light and servo still work. Link works again after resetting both boards. |
+| Unplug the ESP32 wires, press the button, dispense if possible | Local beep, light and servo still work. Link works again after resetting both boards. |
 | In the debugger, read `droppedPresses` in `control/button.c` | 0 |
 
 ## What to report if something fails
