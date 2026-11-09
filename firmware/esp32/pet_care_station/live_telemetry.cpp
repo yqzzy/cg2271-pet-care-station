@@ -2,6 +2,14 @@
 #include <math.h>
 #include <stdio.h>
 
+bool McuChangedNotably(const McuTelemetry &published, const McuTelemetry &now) {
+  if (published.available != now.available) return true;
+  if (!now.available) return false;
+  if (published.water_enough != now.water_enough) return true;
+  const int64_t change = int64_t(now.food_milligrams) - int64_t(published.food_milligrams);
+  return change >= kFoodChangeMg || change <= -kFoodChangeMg;
+}
+
 bool BuildLiveTelemetry(char *out, size_t capacity,
                         const EnvironmentReading &environment,
                         const McuTelemetry &mcu, uint32_t now_ms) {

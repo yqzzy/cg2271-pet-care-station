@@ -33,6 +33,7 @@ NetworkClientSecure tls;
 PubSubClient mqtt(tls);
 CloudPolicy policy;
 PeriodicTelemetry telemetry_timer;
+McuTelemetry published_mcu;  // MCU readings in the last successful telemetry publish
 PeriodicTelemetry control_timer;
 bool control_published = false;
 uint32_t published_revision = 0;
@@ -250,18 +251,22 @@ void Cloud_Task(void *argument) {
       Retry("MQTT service");
       continue;
     }
-    if (telemetry_timer.Due(millis())) {
+    // Publish every 5 s, and early (at most once a second) when food or water changes
+    // noticeably, so the dashboard follows the bowl within about 1-2 s.
+    McuTelemetry mcu;
+    UartBridge_CopySensors(&mcu);
+    const bool early = telemetry_timer.EarlyAllowed(millis()) && McuChangedNotably(published_mcu, mcu);
+    if (telemetry_timer.Due(millis()) || early) {
       EnvironmentReading environment;
-      McuTelemetry mcu;
       Environment_CopySnapshot(&environment);
-      UartBridge_CopySensors(&mcu);
       const uint32_t sampled_at = millis();
       telemetry_timer.Attempted(sampled_at);
       char payload[512];
       if (!BuildLiveTelemetry(payload, sizeof(payload), environment, mcu, sampled_at)) {
         Serial.println("[cloud] Live telemetry serialization failed; no partial JSON sent");
       } else if (mqtt.publish(kTelemetryTopic, payload, false)) {
-        Serial.printf("[cloud] Live telemetry sent (QoS 0): %s\n", payload);
+        published_mcu = mcu;
+        Serial.printf("[cloud] Live telemetry sent%s (QoS 0): %s\n", early ? " early (MCU change)" : "", payload);
       } else {
         Retry("live telemetry publish");
         continue;

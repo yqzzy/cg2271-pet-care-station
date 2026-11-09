@@ -69,10 +69,40 @@ int main() {
   assert(timer.Due(4000)); // Reconnect immediately publishes a current snapshot.
   timer.Attempted(4000);
   assert(!timer.Due(4001));
+  // Early publish: only a noticeable MCU change, and at most once a second
+  McuTelemetry last, now;
+  assert(!McuChangedNotably(last, now));                // both unavailable
+  now.available = true;
+  assert(McuChangedNotably(last, now));                 // data appeared
+  last = now;
+  now.food_milligrams = 1999;
+  assert(!McuChangedNotably(last, now));                // under 2 g: wait for the period
+  now.food_milligrams = 2000;
+  assert(McuChangedNotably(last, now));
+  now.food_milligrams = -2000;
+  assert(McuChangedNotably(last, now));                 // removing food counts too
+  now.food_milligrams = 0;
+  now.water_enough = !last.water_enough;
+  assert(McuChangedNotably(last, now));                 // water flipped
+  now = last;
+  now.available = false;
+  assert(McuChangedNotably(last, now));                 // data lost
+  last.food_milligrams = INT32_MIN;
+  now = last;
+  now.food_milligrams = INT32_MAX;
+  assert(McuChangedNotably(last, now));                 // no overflow on extreme values
+  PeriodicTelemetry gap;
+  assert(gap.EarlyAllowed(0));
+  gap.Attempted(10000);
+  assert(!gap.EarlyAllowed(10999));
+  assert(gap.EarlyAllowed(11000));
+  gap.Attempted(UINT32_MAX - 499);
+  assert(!gap.EarlyAllowed(499));
+  assert(gap.EarlyAllowed(500));
   EnvironmentReading extreme = state.Reading();
   extreme.temperature_c = std::numeric_limits<float>::max();
   extreme.humidity_pct = std::numeric_limits<float>::max();
   assert(!BuildLiveTelemetry(payload, sizeof(payload), extreme, mcu, 1000));
   assert(payload[0] == '\0'); // Intermediate formatting cannot leak partial JSON.
-  std::puts("PASS: combined payload, independent failures/staleness, units, unknown state, bounds, rollover, periodic timing");
+  std::puts("PASS: combined payload, independent failures/staleness, units, unknown state, bounds, rollover, periodic timing, early publish on change");
 }
