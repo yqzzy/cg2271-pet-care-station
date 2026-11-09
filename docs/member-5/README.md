@@ -4,6 +4,8 @@
 
 **Status: partial implementation.** DHT11 sensing, periodic MQTT telemetry, button ACK/count handling and light RPC are implemented in source. The source now follows the [current ESP32 contract](../../firmware/esp32/README.md#button-events-and-light-rpc): a 20 ms main-loop UART poller, cumulative per-boot button count, `LIGHT_ACK` consumption confirmation, and one outstanding light RPC. This supersedes the proposed event queue and `COMMAND_RESULT` interfaces below. Hardware integration and MCU calibration still require verification. Checked actions identify implemented code, not successful hardware tests.
 
+Software verification on 9 Nov: all eight host suites and both configured/clean-clone S2 builds passed; dashboard and alarm exports are saved. See [recorded evidence and remaining bench checks](../../tests/README.md#recorded-software-validation---2026-11-09) and the [report draft](implementation-report.md).
+
 **User-reported hardware:** ESP32-S2 and a DHT11 sensor from a 45-in-1 component set. GPIO4 is selected as a configurable default with the user's authorization. The exact development-board variant, sensor breakout pin order, supply requirements, connection to GPIO4, and upload settings still require physical verification.
 
 ## Goal and responsibilities

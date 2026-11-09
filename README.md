@@ -48,7 +48,7 @@ firmware/mcxc444/              Local-controller code and unfinished module templ
 firmware/esp32/                Arduino C++ templates
   pet_care_station/            Sketch, environment, bridge and cloud modules
 protocol/                     Cross-board message contract
-dashboard/                    ThingsBoard setup and future exports
+dashboard/                    ThingsBoard setup, dashboard and alarm-rule exports
 hardware/dispenser/           Future CAD, wiring photos and assembly notes
 tests/                        Manual subsystem and integration checks
 ```

@@ -156,7 +156,7 @@ find the hotspot at all (not a password problem).
 
 ## Done when
 
-- [ ] A fresh clone builds the ESP32 sketch (task 1)
+- [x] A fresh local clone builds the ESP32 sketch without private credentials (task 1; [software evidence](../tests/README.md#recorded-software-validation---2026-11-09), implementation `fcd6170`)
 - [ ] Five button presses produce five ACKs, five beeps and `button_presses` 5 on the dashboard (task 2)
 - [ ] The dashboard switch turns the LED on and off, and `light_on` follows (task 3)
 - [ ] The low-food, low-water and temperature/humidity alarms fire on the dashboard (task 4)

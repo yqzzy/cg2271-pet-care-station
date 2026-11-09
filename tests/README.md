@@ -94,6 +94,18 @@ Upload the integrated sketch after reinstalling the changed PetStationUart libra
 8. Trigger low food (<=10 g), low water and both configured environment alerts using real controlled readings. Verify invalid source data does not create a threshold alarm or clear an active threshold alarm; stale sources get separate alarms. With all telemetry offline, verify the dashboard stops presenting frozen values as current. Follow [dashboard setup](../dashboard/README.md).
 9. In the demo room, verify the exact configured SSID and 2.4 GHz hotspot, then capture Wi-Fi IP, validated MQTT connection and current source values. Measure UART ACK latency during TLS reconnect, DHT reads and concurrent traffic. Record physical results using the template below.
 
+### Recorded software validation - 2026-11-09
+
+Implementation revision: `fcd6170` on `codex/esp32-bidirectional-control`. Subsequent documentation updates do not change the compiled sources.
+
+- `python tests/esp32/run_tests.py`: all eight host suites passed in the working repository and again in a clean local clone. Environment suite: 15 tests, zero failures; the other suites cover reconnects, payloads, bridge control/integration, RPC parsing/session handling and the UART driver. Compiler: g++ 13.2.0 with C++11 and warnings as errors.
+- Configured integrated sketch: compiled for `esp32:esp32:esp32s2`, **985704 bytes flash / 43084 bytes global memory**. The existing constant-CA-marker `-Waddress` warnings were reported; no compile errors.
+- Clean local clone: `git clone --no-hardlinks --single-branch --branch codex/esp32-bidirectional-control . build/esp32-clean-clone`. Verified the required library, telemetry files, tests and dashboard export exist and `secrets.h` does not. A fresh build directory was used, so no configured header could remain from a previous build.
+- Clean-clone compile command: `arduino-cli compile --fqbn esp32:esp32:esp32s2 --library build/esp32-clean-clone/firmware/esp32/libraries/PetStationUart --build-path build/esp32-clean-build --jobs 4 --warnings all build/esp32-clean-clone/firmware/esp32/pet_care_station`; result: **556717 bytes flash / 26560 bytes global memory**. Its dependency scan referenced `secrets.example.h`, not private `secrets.h`; networking is disabled by the placeholder configuration at runtime.
+- Toolchain/dependencies: Arduino CLI 1.5.1, ESP32 Arduino core 3.3.11, Adafruit DHT 1.4.7, Unified Sensor 1.1.15, PubSubClient 2.8, ArduinoJson 7.4.2 and the repository's PetStationUart source. The updated UART library was also installed for Arduino IDE, and its installed source hash matched the repository copy.
+- Documentation/export checks: relative links exist; Git whitespace checks passed; all six dashboard/alarm exports parse as JSON without credential fields. Switch settings and all five alarm trigger/clear expressions were checked. See [dashboard UI evidence and limitations](../dashboard/README.md).
+- No board upload, physical button/cue or LED measurement, source calibration, demo-hotspot run, real alarm trigger/recovery, stack-margin measurement or concurrency timing test was performed during this change. The dashboard device was offline. These remain bench acceptance work.
+
 ## Evidence record template
 
 - Scenario / tester / date:
