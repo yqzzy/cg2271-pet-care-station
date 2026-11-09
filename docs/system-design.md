@@ -40,7 +40,7 @@ The MCXC444 remains responsible for local sensing and actuator deadlines. ESP32 
 | Actuator_Task | 1 | Block until a command or next output deadline; own motor/buzzer/light execution |
 | UartLink_Task | 4 | Bounded event wait, periodic snapshots and buffered RX processing |
 | Environment_Task | 5 | Periodic temperature/humidity reads, validity checks and alert thresholds |
-| UartBridge_Task | 4 | Decode local telemetry and forward cloud light commands/results |
+| ESP32 UART RX/TX tasks and main-loop bridge poller | 4 | Library decodes/transmits; 20 ms loop poller consumes button/light events and dispatches cloud requests |
 | Cloud_Task | 5 | MQTT service, telemetry, commands and bounded reconnect attempts |
 
 Enable pre-emption and time-slicing. Use periodic delays rather than spinning. Actuator deadlines and local button response have priority over bulk telemetry; exact priorities and periods are TODOs to validate on hardware. Network failures must not block environmental sampling or local actuator operation.
@@ -58,7 +58,7 @@ Each member implements/tests their owned task entry points. Member 3 creates MCX
 
 ## Module agreements
 
-Most contracts below remain proposals in comment-only templates. The ESP32 environmental interfaces are now implemented in [environment.h](../firmware/esp32/pet_care_station/environment.h), with separate hardware-independent state logic. `Environment_Init()` returns a Boolean initialization result; snapshot consumers check freshness separately. UART/cloud and MCXC444 contracts still require implementation and owner review.
+Some contracts below originated as comment-only proposals. ESP32 environment, UART/cloud telemetry and light RPC are implemented; see [current setup and interfaces](../firmware/esp32/README.md). `Environment_Init()` returns a Boolean initialization result; snapshot consumers check freshness separately. Shared interfaces and physical integration still require owner review and bench validation.
 
 | Producer to consumer | Contract |
 |---|---|
@@ -67,8 +67,8 @@ Most contracts below remain proposals in comment-only templates. The ESP32 envir
 | Dispenser to coordinator | Busy/completed/failed status; maximum run time is enforced locally. `Dispenser_Start()` rejects a request while busy; how often to dispense is food sensing's policy |
 | Coordinator to feedback | `Feedback_StartCue(cue, now_ms)`, `Feedback_Update(now_ms)`, `Feedback_SetLight(on)` |
 | Sensor tasks to shared state | `SharedState_UpdateFood(...)`, `SharedState_UpdateWater(...)`; UART uses `SharedState_CopySnapshot(...)` |
-| MCXC444 to ESP32 | Current: raw water and food milligrams when both are valid, plus button events. Validity/low-water fields and dispense results remain integration work |
-| Cloud to MCXC444 | Light on/off request with request ID; return applied output state, not just receipt acknowledgement |
+| MCXC444 to ESP32 | Current: Boolean enough-water status and signed food milligrams when both are valid, plus sequenced button events; independent source validity/age and dispense results are not on the wire |
+| Cloud to MCXC444 | Boolean light request mapped to a UART sequence; matching application consumption ACK completes RPC, without independent output readback |
 | Environment to cloud | Temperature, humidity, validity and alert flags; invalid data is not converted to zero |
 
 ### MCXC444 queue messages (proposed by Member 3, pending review by Members 1, 2 and 4)
@@ -103,7 +103,7 @@ Both sensor tasks are registered in `app/rtos_setup.c` at the proposed sensing p
 - The load cell measures bowl contents, not proven consumption. Tare requires a known empty bowl and must not blindly zero a full bowl at startup.
 - Keep dispensing simple: one bounded request for a confirmed-low condition, then rearm according to an agreed interval/state rule. The work split includes a minimum attempt interval; its value is TODO. Do not add dietary schedules or daily allowances.
 - Buzzer cues are short and non-blocking. A completed motor cycle alone does not prove food delivery; use honest result wording unless weight change confirms it.
-- The light is an owner-controlled station light. Output confirmation means the commanded GPIO/driver state, not independently measured illumination.
+- The light is an owner-controlled station light. Current confirmation means MCU application consumption immediately before its GPIO write, not independently measured output or illumination.
 - Water generates a low-level alert only. No pump is in this scaffold.
 - Proposed sensor pins and timing defaults are recorded in code and the hardware worksheet. Final pin reservations, measured calibration/thresholds and actuator hardware remain to be confirmed; defaults are not lab measurements.
 

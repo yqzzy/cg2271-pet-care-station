@@ -1,0 +1,1281 @@
+{
+  "title": "pet-care-test Dashboard",
+  "name": "pet-care-test Dashboard",
+  "image": null,
+  "mobileHide": false,
+  "mobileOrder": null,
+  "configuration": {
+    "timewindow": {
+      "selectedTab": 1,
+      "history": {
+        "historyType": 0,
+        "timewindowMs": 259200000
+      },
+      "aggregation": {
+        "type": "NONE",
+        "limit": 25000
+      }
+    },
+    "settings": {
+      "stateControllerId": "entity",
+      "showTitle": false,
+      "showDashboardsSelect": true,
+      "showEntitiesSelect": true,
+      "showDashboardTimewindow": false,
+      "showDashboardExport": true,
+      "toolbarAlwaysOpen": true,
+      "dashboardCss": "/* tb-ai-theme:switchable:light:tb-ai-theme-6be342f1-90e3-4124-95f5-0fa37bc16b01:start */\n.tb-widget-container > .tb-widget {\n    border-radius: 8px;\n}\n\n.tb-widget-container > .tb-widget .tb-widget-actions.tb-widget-actions-absolute {\n    background: var(--tb-ai-surface, #FFFFFF);\n    border-radius: 8px;\n    padding-left: 4px;\n    box-shadow: -10px 0 8px -4px var(--tb-ai-surface, #FFFFFF);\n}\n\ngridster-item:not(.tb-noselect) > .tb-widget-container > .tb-widget {\n    cursor: default !important;\n}\n\n.tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-row {\n    cursor: pointer;\n    --tb-orig-background-color: var(--tb-ai-surface, #FFFFFF);\n}\n\n.tb-widget-container > .tb-widget .tb-legend-keys {\n    cursor: pointer;\n}\n\n.tb-widget-container > .tb-widget:has(.tb-ai-back) .tb-markdown-view,\n.tb-widget-container > .tb-widget:has(.tb-ai-title-bar) .tb-markdown-view {\n    overflow: hidden !important;\n}\n\n.tb-dashboard-page.dark {\n    --tb-ai-canvas: #1E1F21;\n    --tb-ai-surface: #2A2C2F;\n    --tb-ai-text: #FFFFFF;\n    --tb-ai-text-secondary: #94969C;\n    --tb-ai-border: rgba(255, 255, 255, 0.2);\n    --tb-ai-primary: var(--tb-primary-300, #4DB6AC);\n    --tb-ai-on-primary: var(--tb-primary-contrast-300, rgba(0, 0, 0, 0.87));\n    --tb-ai-accent: var(--tb-accent-300, #FF8A65);\n}\n\n.tb-dashboard-page.dark tb-dashboard > div {\n    background-color: #1E1F21 !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget {\n    background: #2A2C2F !important;\n    color: #FFFFFF !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget svg tspan {\n    fill: #FFFFFF !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .leaflet-marker-icon svg tspan {\n    fill: inherit !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-marker-label,\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-marker-label *,\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-polygon-label,\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-polygon-label *,\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-circle-label,\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-circle-label * {\n    color: #FFFFFF !important;\n    text-shadow: 0 0 3px rgba(0, 0, 0, 0.8);\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-latest-chart-legend-item-label div {\n    color: #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-latest-chart-legend-item-value {\n    color: #FFFFFF !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-latest-chart-shape svg text {\n    fill: #FFFFFF !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-time-series-chart-legend-type-label {\n    color: #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-time-series-chart-legend-item-label div {\n    color: #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-time-series-chart-legend-value {\n    color: #FFFFFF !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .flot-text {\n    color: #FFFFFF !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .flot-text > div > div {\n    color: #FFFFFF !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-table .mat-mdc-header-row {\n    background-color: #2A2C2F !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-table .mat-mdc-header-cell.mat-mdc-table-sticky {\n    background-color: #2A2C2F !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-table .mat-mdc-row .mat-mdc-cell.mat-mdc-table-sticky {\n    background-color: #2A2C2F !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-table .mat-mdc-header-cell {\n    color: #FFFFFF !important;\n    border-bottom-color: rgba(255, 255, 255, 0.2) !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-table .mat-mdc-cell {\n    color: #FFFFFF !important;\n    border-bottom-color: rgba(255, 255, 255, 0.2) !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-table .mat-mdc-header-cell .mat-sort-header-arrow {\n    color: #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-divider {\n    border-top-color: rgba(255, 255, 255, 0.2) !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-input-element::placeholder {\n    color: #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-input-element::-moz-placeholder {\n    color: #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-input-element::-webkit-input-placeholder {\n    color: #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-input-element:-ms-input-placeholder {\n    color: #94969C !important;\n}\n\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-table .mat-mdc-cell .mdc-checkbox__background,.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-table .mat-mdc-header-cell .mdc-checkbox__background {\n    border-color : #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-table .mat-mdc-cell button.mat-mdc-icon-button .mat-icon {\n    color : #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget mat-toolbar.mat-mdc-table-toolbar:not([color=\"primary\"]) button.mat-mdc-icon-button .mat-icon {\n    color : #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-table .mat-mdc-cell button.mat-mdc-icon-button[disabled][disabled] .mat-icon {\n    color : rgba(255, 255, 255, 0.2) !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-paginator {\n    color: #94969C !important;\n}\n\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-paginator button.mat-mdc-icon-button {\n    color : #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-paginator button.mat-mdc-icon-button[disabled][disabled] {\n    color : rgba(255, 255, 255, 0.2) !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget,\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget * {\n    scrollbar-color: rgba(255, 255, 255, 0.25) transparent;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .mat-mdc-paginator .mat-mdc-paginator-icon {\n    fill: #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .mat-mdc-paginator button[disabled] .mat-mdc-paginator-icon,\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .mat-mdc-paginator button[aria-disabled=\"true\"] .mat-mdc-paginator-icon,\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .mat-mdc-paginator button.mat-mdc-button-disabled .mat-mdc-paginator-icon {\n    fill: rgba(255, 255, 255, 0.3) !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-table-widget .mat-mdc-paginator .mat-mdc-select-value {\n    color : #94969C !important;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .mat-mdc-select-arrow {\n    color : #94969C;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .mdc-text-field--filled:not(.mdc-text-field--disabled) .mdc-line-ripple:before {\n    border-bottom-color: rgba(255, 255, 255, 0.4);\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__leading, \n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__notch,\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .mdc-text-field--outlined:not(.mdc-text-field--disabled) .mdc-notched-outline__trailing {\n    border-color: rgba(255, 255, 255, 0.4);\n}\n\n.tb-dashboard-page.dark .tb-markdown-view div,\n.tb-dashboard-page.dark .tb-markdown-view div.param,\n.tb-dashboard-page.dark .tb-markdown-view .header .title,\n.tb-dashboard-page.dark .tb-markdown-view p {\n    color : #FFFFFF;\n}\n\n.tb-dashboard-page.dark .tb-markdown-view div.param-title,\n.tb-dashboard-page.dark .tb-markdown-view .header .subtitle {\n    color : #94969C;\n}\n\n\n.tb-dashboard-page.dark .tb-powered-by-footer {\n    color : #FFFFFF !important;\n}\n\n/* Outdoor-map (Leaflet) tiles — invert the external tile imagery to dark.\n * invert(1) saturate(0) brightness(2) yields a clean black/grayscale dark map.\n * For a tinted dark map instead of black, adjust the filter\n * (e.g. append hue-rotate(180deg) / sepia() and tune brightness).\n * Satellite imagery (Esri World_Imagery) keeps its own colors. */\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget img.leaflet-tile:not([src*=\"World_Imagery\"]),\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget canvas.maplibregl-canvas {\n    filter: invert(1) saturate(0) brightness(2);\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-map.leaflet-container {\n    background: transparent;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget img.leaflet-image-layer {\n    filter: invert(0.85) hue-rotate(180deg);\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-map-sidebar .tb-layers-title-container .tb-layers-title {\n    color: rgba(255, 255, 255, 0.87);\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-map-sidebar .tb-layers-title-container button.tb-button-close {\n    color: rgba(255, 255, 255, 0.6);\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-map-sidebar .tb-group-checkbox .tb-group-label {\n    color: rgba(255, 255, 255, 0.76);\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-map-timeline-panel .tb-map-timeline-timestamp,\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-map-timeline-panel .tb-map-timeline-no-data {\n    color: rgba(255, 255, 255, 0.76);\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-map-timeline-panel .tb-timeline-buttons .mat-mdc-mini-fab.mat-primary {\n    --mat-fab-small-foreground-color: rgba(255, 255, 255, 0.87);\n    --mat-fab-small-container-elevation-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);\n    --mat-fab-small-disabled-state-container-color: rgba(255, 255, 255, 0.06);\n    --mat-fab-small-disabled-state-foreground-color: rgba(255, 255, 255, 0.3);\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-map-timeline-panel .tb-timeline-buttons .mat-mdc-mini-fab.mat-primary:before {\n    opacity: 0.25;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-map-timeline-panel .mat-mdc-slider {\n    --mat-slider-inactive-track-color: rgba(255, 255, 255, 0.38);\n    --mat-slider-disabled-inactive-track-color: rgba(255, 255, 255, 0.2);\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-map-timeline-panel .mat-mdc-select {\n    --mat-select-enabled-trigger-text-color: rgba(255, 255, 255, 0.76);\n    --mat-select-enabled-arrow-color: rgba(255, 255, 255, 0.6);\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget .tb-widget-button.tb-outlined {\n    --tb-widget-button-main-color-enabled: color-mix(in srgb, var(--tb-primary-500) 40%, #FFFFFF) !important;\n    --tb-widget-button-main-color-hovered: color-mix(in srgb, var(--tb-primary-500) 40%, #FFFFFF) !important;\n    --tb-widget-button-main-color-pressed: color-mix(in srgb, var(--tb-primary-500) 40%, #FFFFFF) !important;\n    --tb-widget-button-main-color-activated: color-mix(in srgb, var(--tb-primary-500) 40%, #FFFFFF) !important;\n}\n\n.tb-dashboard-page {\n    --tb-ai-show-when-light: inline-block;\n    --tb-ai-show-when-dark: none;\n}\n\n.tb-dashboard-page.dark {\n    --tb-ai-show-when-light: none;\n    --tb-ai-show-when-dark: inline-block;\n}\n\n.tb-ai-theme-toggle {\n    position: absolute !important;\n    top: 50%;\n    right: 16px;\n    transform: translateY(-50%);\n}\n\n.tb-ai-theme-solo .tb-ai-theme-toggle {\n    right: auto;\n    left: 50%;\n    transform: translate(-50%, -50%);\n}\n\n.tb-ai-theme-toggle .tb-ai-light-icon,\n.tb-dashboard-page.dark .tb-ai-theme-toggle .tb-ai-dark-icon {\n    display: none;\n}\n\n.tb-dashboard-page.dark .tb-ai-theme-toggle .tb-ai-light-icon {\n    display: inline-block;\n}\n\n.tb-dashboard-page.dark .tb-ai-theme-toggle,\n.tb-dashboard-page.dark .tb-ai-back {\n    color: #FFFFFF;\n}\n\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget:has(.tb-ai-back),\n.tb-dashboard-page.dark .tb-widget-container > .tb-widget:has(.tb-ai-title-bar) {\n    background: transparent !important;\n    box-shadow: none !important;\n}\n/* tb-ai-theme:switchable:end */\n\n/* tb-ai-embeds:start */\n.tb-dashboard-page tb-dashboard-state div.tb-dashboard-page.mat-content,\n.tb-dashboard-page tb-dashboard-state .mat-drawer-container,\n.tb-dashboard-page tb-dashboard-state tb-dashboard-layout > div.mat-content,\n.tb-dashboard-page tb-dashboard-state tb-dashboard > div {\n    background-color: transparent !important;\n}\n\n.tb-dashboard-page tb-dashboard-state .tb-widget {\n    font-family: var(--tb-ai-font, inherit);\n    --mat-paginator-container-text-font: var(--tb-ai-font, Roboto, \"Helvetica Neue\", sans-serif);\n}\n\n.tb-dashboard-page :not(.tb-ai-header-actions) > tb-dashboard-state .tb-widget-container > .tb-widget {\n    border: var(--tb-ai-card-border, 1px solid var(--tb-ai-border, rgba(0,0,0,0.12))) !important;\n    border-radius: var(--tb-ai-card-radius, 8px) !important;\n    box-shadow: var(--tb-ai-card-shadow, none) !important;\n}\n\n.tb-dashboard-page :not(.tb-ai-header-actions) > tb-dashboard-state .tb-widget-container > .tb-widget:not(:has(.widget-type-system-html_container, .tb-ai-title-bar)) {\n    padding: var(--tb-ai-card-padding, 16px) !important;\n}\n\n.tb-dashboard-page :not(.tb-ai-header-actions) > tb-dashboard-state .tb-widget-container > .tb-widget > .tb-widget-header:has(> .tb-widget-title) {\n    align-items: flex-start !important;\n}\n\n.tb-dashboard-page :not(.tb-ai-header-actions) > tb-dashboard-state .tb-widget-container > .tb-widget .tb-widget-title .title-row {\n    min-height: 32px;\n    align-items: center;\n}\n\n.tb-dashboard-page :not(.tb-ai-header-actions) > tb-dashboard-state .tb-widget-container > .tb-widget > .tb-widget-header > .tb-widget-title {\n    padding: 0 !important;\n}\n\n.tb-dashboard-page :not(.tb-ai-header-actions) > tb-dashboard-state .tb-widget-container > .tb-widget > .tb-widget-header > .tb-widget-actions {\n    margin-top: 0 !important;\n}\n\n.tb-dashboard-page :not(.tb-ai-header-actions) > tb-dashboard-state .tb-widget-container > .tb-widget tb-dynamic-component div[class*=\"-panel\"]:not(div[class*=\"-panel\"] div) {\n    padding: 0 !important;\n}\n\n.tb-dashboard-page :not(.tb-ai-header-actions) > tb-dashboard-state .tb-widget-title .title-row > .title {\n    font-family: var(--tb-ai-card-title-family, var(--tb-ai-font, inherit)) !important;\n    font-size: var(--tb-ai-card-title-size, 16px) !important;\n    font-weight: var(--tb-ai-card-title-weight, 500) !important;\n    line-height: var(--tb-ai-card-title-line-height, 24px) !important;\n    letter-spacing: var(--tb-ai-card-title-letter-spacing, normal) !important;\n    text-transform: var(--tb-ai-card-title-transform, none) !important;\n    color: var(--tb-ai-card-title-color, var(--tb-ai-text, rgba(0,0,0,0.87))) !important;\n}\n\n.tb-dashboard-page :not(.tb-ai-header-actions) > tb-dashboard-state .tb-widget-title .title-row > tb-icon {\n    color: var(--tb-ai-card-title-color, var(--tb-ai-text, rgba(0,0,0,0.87)));\n}\n\n.tb-dashboard-page tb-dashboard-state .tb-widget .mat-mdc-table {\n    --mat-table-header-headline-font: var(--tb-ai-table-font, var(--tb-ai-font, Roboto, \"Helvetica Neue\", sans-serif));\n    --mat-table-header-headline-color: var(--tb-ai-table-header-color, var(--tb-ai-text-secondary, rgba(0,0,0,0.54)));\n    --mat-table-header-headline-weight: var(--tb-ai-table-header-weight, 500);\n    --mat-table-row-item-label-text-font: var(--tb-ai-table-font, var(--tb-ai-font, Roboto, \"Helvetica Neue\", sans-serif));\n    --mat-table-row-item-label-text-color: var(--tb-ai-table-cell-color, var(--tb-ai-text, rgba(0,0,0,0.87)));\n    --mat-table-row-item-label-text-weight: var(--tb-ai-table-cell-weight, 400);\n    --mat-table-row-item-outline-color: var(--tb-ai-table-divider-color, var(--tb-ai-border, rgba(0,0,0,0.12)));\n}\n\n.tb-dashboard-page tb-dashboard-state .tb-widget .mat-mdc-table .mat-mdc-header-row .mat-mdc-header-cell {\n    font-size: var(--tb-ai-table-header-size, 12px);\n    letter-spacing: var(--tb-ai-table-header-letter-spacing, normal);\n    text-transform: var(--tb-ai-table-header-transform, none);\n}\n\n.tb-dashboard-page tb-dashboard-state .tb-widget .mat-mdc-table .mat-mdc-row .mat-mdc-cell {\n    font-size: var(--tb-ai-table-cell-size, 13px);\n}\n\n.tb-dashboard-page tb-dashboard-state.tb-ai-framed .tb-widget-container > .tb-widget {\n    border: none !important;\n    border-radius: 0 !important;\n    box-shadow: none !important;\n}\n/* tb-ai-embeds:end */"
+    },
+    "widgets": {
+      "26e36636-68ce-48d7-b256-22d9d141c4a9": {
+        "sizeX": 0,
+        "sizeY": 0,
+        "row": 0,
+        "col": 0,
+        "config": {
+          "configMode": "basic",
+          "title": "Temperature Alarm State History",
+          "titleFont": {
+            "size": 21,
+            "sizeUnit": "px",
+            "weight": "500",
+            "lineHeight": "22px"
+          },
+          "titleIcon": "warning",
+          "showTitle": true,
+          "showTitleIcon": true,
+          "iconSize": "20px",
+          "dropShadow": false,
+          "useDashboardTimewindow": false,
+          "displayTimewindow": true,
+          "timewindow": {
+            "selectedTab": 0,
+            "realtime": {
+              "interval": 1800000,
+              "timewindowMs": 604800000,
+              "advancedParams": {
+                "lastAggIntervalsConfig": {
+                  "900000": {
+                    "defaultAggInterval": 5000
+                  },
+                  "3600000": {
+                    "defaultAggInterval": 10000
+                  },
+                  "21600000": {
+                    "defaultAggInterval": 60000
+                  },
+                  "86400000": {
+                    "defaultAggInterval": 300000
+                  },
+                  "604800000": {
+                    "defaultAggInterval": 1800000
+                  }
+                }
+              },
+              "realtimeType": 0
+            },
+            "aggregation": {
+              "type": "NONE",
+              "limit": 25000
+            }
+          },
+          "padding": "0px",
+          "margin": "0px",
+          "borderRadius": "8px",
+          "widgetStyle": {
+            "box-shadow": "0px 2px 4px 0px #00000024;"
+          },
+          "actions": {},
+          "settings": {
+            "dataZoom": false,
+            "showLegend": false,
+            "yAxes": {
+              "default": {
+                "id": "default",
+                "order": 0,
+                "position": "left",
+                "show": true,
+                "label": "High Temp Status",
+                "tickLabelFont": {
+                  "family": "'Inter',sans-serif",
+                  "size": 12,
+                  "sizeUnit": "px",
+                  "style": "normal",
+                  "weight": "400",
+                  "lineHeight": "1"
+                },
+                "labelFont": {
+                  "family": "'Inter',sans-serif",
+                  "size": 12,
+                  "sizeUnit": "px",
+                  "style": "normal",
+                  "weight": "600",
+                  "lineHeight": "1"
+                }
+              }
+            },
+            "states": [
+              {
+                "label": "High Temp Alarm",
+                "value": 1,
+                "sourceType": "constant",
+                "sourceValue": true
+              },
+              {
+                "label": "Normal Temp",
+                "value": 0,
+                "sourceType": "constant",
+                "sourceValue": false
+              }
+            ],
+            "tooltipDateFont": {
+              "family": "'Inter',sans-serif",
+              "size": 11,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "legendValueFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "500",
+              "lineHeight": "16px"
+            },
+            "tooltipValueFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "500",
+              "lineHeight": "16px"
+            },
+            "legendLabelFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "legendColumnTitleFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "tooltipLabelFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "xAxis": {
+              "tickLabelFont": {
+                "family": "'Inter',sans-serif",
+                "size": 10,
+                "sizeUnit": "px",
+                "style": "normal",
+                "weight": "400",
+                "lineHeight": "1"
+              },
+              "labelFont": {
+                "family": "'Inter',sans-serif",
+                "size": 12,
+                "sizeUnit": "px",
+                "style": "normal",
+                "weight": "600",
+                "lineHeight": "1"
+              }
+            },
+            "background": {
+              "type": "color",
+              "imageUrl": null,
+              "color": "#FFFFFF00",
+              "overlay": {
+                "enabled": false,
+                "color": "rgba(255,255,255,0.72)",
+                "blur": 3
+              }
+            }
+          },
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "temperature_high",
+                  "label": "High Temperature Alert",
+                  "type": "timeseries",
+                  "decimals": 0,
+                  "color": "#EF5350",
+                  "settings": {
+                    "yAxisId": "default",
+                    "type": "line",
+                    "lineSettings": {
+                      "step": true,
+                      "stepType": "end",
+                      "pointShape": "circle",
+                      "pointSize": 12
+                    }
+                  }
+                }
+              ],
+              "entityAliasId": "61b167aa-f35a-4c3b-a47f-b29b36e8012c"
+            }
+          ],
+          "tbAiTimeRanges": [
+            "900000",
+            "3600000",
+            "21600000",
+            "86400000",
+            "604800000"
+          ],
+          "timewindowStyle": {
+            "showIcon": true,
+            "icon": "date_range",
+            "iconSize": "16px",
+            "iconPosition": "left",
+            "displayTypePrefix": false
+          }
+        },
+        "id": "26e36636-68ce-48d7-b256-22d9d141c4a9",
+        "typeFullFqn": "system.state_chart",
+        "type": "timeseries"
+      },
+      "04368486-0e87-427e-9e98-73211f2a39c6": {
+        "sizeX": 0,
+        "sizeY": 0,
+        "row": 0,
+        "col": 0,
+        "config": {
+          "configMode": "basic",
+          "title": "Water Level Status History",
+          "titleFont": {
+            "size": 21,
+            "sizeUnit": "px",
+            "weight": "500",
+            "lineHeight": "22px"
+          },
+          "titleIcon": "water_drop",
+          "showTitle": true,
+          "showTitleIcon": true,
+          "iconSize": "20px",
+          "dropShadow": false,
+          "useDashboardTimewindow": false,
+          "displayTimewindow": true,
+          "timewindow": {
+            "selectedTab": 0,
+            "realtime": {
+              "interval": 1800000,
+              "timewindowMs": 604800000,
+              "advancedParams": {
+                "lastAggIntervalsConfig": {
+                  "900000": {
+                    "defaultAggInterval": 5000
+                  },
+                  "3600000": {
+                    "defaultAggInterval": 10000
+                  },
+                  "21600000": {
+                    "defaultAggInterval": 60000
+                  },
+                  "86400000": {
+                    "defaultAggInterval": 300000
+                  },
+                  "604800000": {
+                    "defaultAggInterval": 1800000
+                  }
+                }
+              },
+              "realtimeType": 0
+            },
+            "aggregation": {
+              "type": "NONE",
+              "limit": 25000
+            }
+          },
+          "padding": "0px",
+          "margin": "0px",
+          "borderRadius": "8px",
+          "widgetStyle": {
+            "box-shadow": "0px 2px 4px 0px #00000024;"
+          },
+          "actions": {},
+          "settings": {
+            "dataZoom": false,
+            "showLegend": false,
+            "yAxes": {
+              "default": {
+                "id": "default",
+                "order": 0,
+                "position": "left",
+                "show": true,
+                "label": "Water Status",
+                "tickLabelFont": {
+                  "family": "'Inter',sans-serif",
+                  "size": 12,
+                  "sizeUnit": "px",
+                  "style": "normal",
+                  "weight": "400",
+                  "lineHeight": "1"
+                },
+                "labelFont": {
+                  "family": "'Inter',sans-serif",
+                  "size": 12,
+                  "sizeUnit": "px",
+                  "style": "normal",
+                  "weight": "600",
+                  "lineHeight": "1"
+                }
+              }
+            },
+            "states": [
+              {
+                "label": "Water Low",
+                "value": 1,
+                "sourceType": "constant",
+                "sourceValue": true
+              },
+              {
+                "label": "Water Adequate",
+                "value": 0,
+                "sourceType": "constant",
+                "sourceValue": false
+              }
+            ],
+            "tooltipDateFont": {
+              "family": "'Inter',sans-serif",
+              "size": 11,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "legendValueFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "500",
+              "lineHeight": "16px"
+            },
+            "tooltipValueFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "500",
+              "lineHeight": "16px"
+            },
+            "legendLabelFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "legendColumnTitleFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "tooltipLabelFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "xAxis": {
+              "tickLabelFont": {
+                "family": "'Inter',sans-serif",
+                "size": 10,
+                "sizeUnit": "px",
+                "style": "normal",
+                "weight": "400",
+                "lineHeight": "1"
+              },
+              "labelFont": {
+                "family": "'Inter',sans-serif",
+                "size": 12,
+                "sizeUnit": "px",
+                "style": "normal",
+                "weight": "600",
+                "lineHeight": "1"
+              }
+            },
+            "background": {
+              "type": "color",
+              "imageUrl": null,
+              "color": "#FFFFFF00",
+              "overlay": {
+                "enabled": false,
+                "color": "rgba(255,255,255,0.72)",
+                "blur": 3
+              }
+            }
+          },
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "water_low",
+                  "label": "Water Low Alert",
+                  "type": "timeseries",
+                  "decimals": 0,
+                  "color": "#FFA726",
+                  "settings": {
+                    "yAxisId": "default",
+                    "type": "line",
+                    "lineSettings": {
+                      "step": true,
+                      "stepType": "end",
+                      "pointShape": "circle",
+                      "pointSize": 12
+                    }
+                  }
+                }
+              ],
+              "entityAliasId": "61b167aa-f35a-4c3b-a47f-b29b36e8012c"
+            }
+          ],
+          "tbAiTimeRanges": [
+            "900000",
+            "3600000",
+            "21600000",
+            "86400000",
+            "604800000"
+          ],
+          "timewindowStyle": {
+            "showIcon": true,
+            "icon": "date_range",
+            "iconSize": "16px",
+            "iconPosition": "left",
+            "displayTypePrefix": false
+          }
+        },
+        "id": "04368486-0e87-427e-9e98-73211f2a39c6",
+        "typeFullFqn": "system.state_chart",
+        "type": "timeseries"
+      },
+      "de312f76-6b21-4c79-a993-1ed4c4c607eb": {
+        "sizeX": 0,
+        "sizeY": 0,
+        "row": 0,
+        "col": 0,
+        "config": {
+          "configMode": "basic",
+          "title": "Environment History",
+          "titleFont": {
+            "size": 21,
+            "sizeUnit": "px",
+            "weight": "500",
+            "lineHeight": "22px"
+          },
+          "titleIcon": "thermostat",
+          "showTitle": true,
+          "showTitleIcon": true,
+          "iconSize": "20px",
+          "dropShadow": false,
+          "useDashboardTimewindow": false,
+          "displayTimewindow": true,
+          "timewindow": {
+            "selectedTab": 0,
+            "realtime": {
+              "interval": 1800000,
+              "timewindowMs": 604800000,
+              "advancedParams": {
+                "lastAggIntervalsConfig": {
+                  "900000": {
+                    "defaultAggInterval": 5000
+                  },
+                  "3600000": {
+                    "defaultAggInterval": 10000
+                  },
+                  "21600000": {
+                    "defaultAggInterval": 60000
+                  },
+                  "86400000": {
+                    "defaultAggInterval": 300000
+                  },
+                  "604800000": {
+                    "defaultAggInterval": 1800000
+                  }
+                }
+              },
+              "realtimeType": 0
+            },
+            "aggregation": {
+              "type": "AVG",
+              "limit": 25000
+            }
+          },
+          "padding": "0px",
+          "margin": "0px",
+          "borderRadius": "8px",
+          "widgetStyle": {
+            "box-shadow": "0px 2px 4px 0px #00000024;"
+          },
+          "actions": {},
+          "settings": {
+            "dataZoom": false,
+            "showLegend": false,
+            "yAxes": {
+              "default": {
+                "id": "default",
+                "order": 0,
+                "position": "left",
+                "show": true,
+                "label": "Temperature",
+                "units": "°C",
+                "decimals": 1,
+                "tickLabelFont": {
+                  "family": "'Inter',sans-serif",
+                  "size": 12,
+                  "sizeUnit": "px",
+                  "style": "normal",
+                  "weight": "400",
+                  "lineHeight": "1"
+                },
+                "labelFont": {
+                  "family": "'Inter',sans-serif",
+                  "size": 12,
+                  "sizeUnit": "px",
+                  "style": "normal",
+                  "weight": "600",
+                  "lineHeight": "1"
+                }
+              },
+              "humAxis": {
+                "id": "humAxis",
+                "order": 1,
+                "position": "right",
+                "show": true,
+                "label": "Humidity",
+                "units": "%",
+                "decimals": 1,
+                "tickLabelFont": {
+                  "family": "'Inter',sans-serif",
+                  "size": 12,
+                  "sizeUnit": "px",
+                  "style": "normal",
+                  "weight": "400",
+                  "lineHeight": "1"
+                },
+                "labelFont": {
+                  "family": "'Inter',sans-serif",
+                  "size": 12,
+                  "sizeUnit": "px",
+                  "style": "normal",
+                  "weight": "600",
+                  "lineHeight": "1"
+                }
+              }
+            },
+            "tooltipDateFont": {
+              "family": "'Inter',sans-serif",
+              "size": 11,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "legendValueFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "500",
+              "lineHeight": "16px"
+            },
+            "tooltipValueFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "500",
+              "lineHeight": "16px"
+            },
+            "legendLabelFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "legendColumnTitleFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "tooltipLabelFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "xAxis": {
+              "tickLabelFont": {
+                "family": "'Inter',sans-serif",
+                "size": 10,
+                "sizeUnit": "px",
+                "style": "normal",
+                "weight": "400",
+                "lineHeight": "1"
+              },
+              "labelFont": {
+                "family": "'Inter',sans-serif",
+                "size": 12,
+                "sizeUnit": "px",
+                "style": "normal",
+                "weight": "600",
+                "lineHeight": "1"
+              }
+            },
+            "background": {
+              "type": "color",
+              "imageUrl": null,
+              "color": "#FFFFFF00",
+              "overlay": {
+                "enabled": false,
+                "color": "rgba(255,255,255,0.72)",
+                "blur": 3
+              }
+            }
+          },
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "temperature_c",
+                  "label": "Temperature",
+                  "type": "timeseries",
+                  "units": "°C",
+                  "decimals": 1,
+                  "color": "#FF7043",
+                  "settings": {
+                    "type": "line",
+                    "yAxisId": "default"
+                  }
+                },
+                {
+                  "name": "humidity_pct",
+                  "label": "Humidity",
+                  "type": "timeseries",
+                  "units": "%",
+                  "decimals": 1,
+                  "color": "#29B6F6",
+                  "settings": {
+                    "type": "line",
+                    "yAxisId": "humAxis"
+                  }
+                }
+              ],
+              "entityAliasId": "61b167aa-f35a-4c3b-a47f-b29b36e8012c"
+            }
+          ],
+          "tbAiTimeRanges": [
+            "900000",
+            "3600000",
+            "21600000",
+            "86400000",
+            "604800000"
+          ],
+          "timewindowStyle": {
+            "showIcon": true,
+            "icon": "date_range",
+            "iconSize": "16px",
+            "iconPosition": "left",
+            "displayTypePrefix": false
+          }
+        },
+        "id": "de312f76-6b21-4c79-a993-1ed4c4c607eb",
+        "typeFullFqn": "system.time_series_chart",
+        "type": "timeseries"
+      },
+      "ef4216c0-9e1a-469d-bc42-ef3f10472c3f": {
+        "sizeX": 0,
+        "sizeY": 0,
+        "row": 0,
+        "col": 0,
+        "config": {
+          "configMode": "basic",
+          "title": "Food Bowl Weight History",
+          "titleFont": {
+            "size": 21,
+            "sizeUnit": "px",
+            "weight": "500",
+            "lineHeight": "22px"
+          },
+          "titleIcon": "scale",
+          "showTitle": true,
+          "showTitleIcon": true,
+          "iconSize": "20px",
+          "dropShadow": false,
+          "useDashboardTimewindow": false,
+          "displayTimewindow": true,
+          "timewindow": {
+            "selectedTab": 0,
+            "realtime": {
+              "interval": 1800000,
+              "timewindowMs": 604800000,
+              "advancedParams": {
+                "lastAggIntervalsConfig": {
+                  "900000": {
+                    "defaultAggInterval": 5000
+                  },
+                  "3600000": {
+                    "defaultAggInterval": 10000
+                  },
+                  "21600000": {
+                    "defaultAggInterval": 60000
+                  },
+                  "86400000": {
+                    "defaultAggInterval": 300000
+                  },
+                  "604800000": {
+                    "defaultAggInterval": 1800000
+                  }
+                }
+              },
+              "realtimeType": 0
+            },
+            "aggregation": {
+              "type": "AVG",
+              "limit": 25000
+            }
+          },
+          "padding": "0px",
+          "margin": "0px",
+          "borderRadius": "8px",
+          "widgetStyle": {
+            "box-shadow": "0px 2px 4px 0px #00000024;"
+          },
+          "actions": {},
+          "settings": {
+            "dataZoom": false,
+            "showLegend": false,
+            "yAxes": {
+              "default": {
+                "id": "default",
+                "order": 0,
+                "position": "left",
+                "show": true,
+                "label": "Food Weight",
+                "units": "g",
+                "decimals": 1,
+                "tickLabelFont": {
+                  "family": "'Inter',sans-serif",
+                  "size": 12,
+                  "sizeUnit": "px",
+                  "style": "normal",
+                  "weight": "400",
+                  "lineHeight": "1"
+                },
+                "labelFont": {
+                  "family": "'Inter',sans-serif",
+                  "size": 12,
+                  "sizeUnit": "px",
+                  "style": "normal",
+                  "weight": "600",
+                  "lineHeight": "1"
+                }
+              }
+            },
+            "tooltipDateFont": {
+              "family": "'Inter',sans-serif",
+              "size": 11,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "legendValueFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "500",
+              "lineHeight": "16px"
+            },
+            "tooltipValueFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "500",
+              "lineHeight": "16px"
+            },
+            "legendLabelFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "legendColumnTitleFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "tooltipLabelFont": {
+              "family": "'Inter',sans-serif",
+              "size": 12,
+              "sizeUnit": "px",
+              "style": "normal",
+              "weight": "400",
+              "lineHeight": "16px"
+            },
+            "xAxis": {
+              "tickLabelFont": {
+                "family": "'Inter',sans-serif",
+                "size": 10,
+                "sizeUnit": "px",
+                "style": "normal",
+                "weight": "400",
+                "lineHeight": "1"
+              },
+              "labelFont": {
+                "family": "'Inter',sans-serif",
+                "size": 12,
+                "sizeUnit": "px",
+                "style": "normal",
+                "weight": "600",
+                "lineHeight": "1"
+              }
+            },
+            "background": {
+              "type": "color",
+              "imageUrl": null,
+              "color": "#FFFFFF00",
+              "overlay": {
+                "enabled": false,
+                "color": "rgba(255,255,255,0.72)",
+                "blur": 3
+              }
+            }
+          },
+          "datasources": [
+            {
+              "type": "entity",
+              "dataKeys": [
+                {
+                  "name": "food_weight_g",
+                  "label": "Food Weight",
+                  "type": "timeseries",
+                  "units": "g",
+                  "decimals": 1,
+                  "color": "#8D6E63",
+                  "settings": {
+                    "type": "line",
+                    "yAxisId": "default"
+                  }
+                }
+              ],
+              "entityAliasId": "61b167aa-f35a-4c3b-a47f-b29b36e8012c"
+            }
+          ],
+          "tbAiTimeRanges": [
+            "900000",
+            "3600000",
+            "21600000",
+            "86400000",
+            "604800000"
+          ],
+          "timewindowStyle": {
+            "showIcon": true,
+            "icon": "date_range",
+            "iconSize": "16px",
+            "iconPosition": "left",
+            "displayTypePrefix": false
+          }
+        },
+        "id": "ef4216c0-9e1a-469d-bc42-ef3f10472c3f",
+        "typeFullFqn": "system.time_series_chart",
+        "type": "timeseries"
+      },
+      "f6e4f485-f8a2-4aca-9510-02228dec2a1a": {
+        "sizeX": 0,
+        "sizeY": 0,
+        "row": 0,
+        "col": 0,
+        "config": {
+          "configMode": "basic",
+          "title": "Alarms",
+          "titleFont": {
+            "size": 21,
+            "sizeUnit": "px",
+            "weight": "500",
+            "lineHeight": "22px"
+          },
+          "titleIcon": "notifications",
+          "showTitle": false,
+          "showTitleIcon": true,
+          "iconSize": "20px",
+          "dropShadow": false,
+          "useDashboardTimewindow": false,
+          "displayTimewindow": true,
+          "timewindow": {
+            "selectedTab": 0,
+            "realtime": {
+              "interval": 1800000,
+              "timewindowMs": 604800000,
+              "advancedParams": {
+                "lastAggIntervalsConfig": {
+                  "86400000": {
+                    "defaultAggInterval": 300000
+                  },
+                  "604800000": {
+                    "defaultAggInterval": 1800000
+                  },
+                  "2592000000": {
+                    "defaultAggInterval": 7200000
+                  }
+                }
+              },
+              "realtimeType": 0
+            },
+            "aggregation": {
+              "type": "NONE",
+              "limit": 25000
+            }
+          },
+          "padding": "4px",
+          "borderRadius": "8px",
+          "widgetStyle": {
+            "box-shadow": "0px 2px 4px 0px #00000024;"
+          },
+          "actions": {},
+          "settings": {
+            "alarmsTitle": "Alarms",
+            "enableSelection": true,
+            "enableSearch": true,
+            "background": {
+              "type": "color",
+              "imageUrl": null,
+              "color": "#FFFFFF00",
+              "overlay": {
+                "enabled": false,
+                "color": "rgba(255,255,255,0.72)",
+                "blur": 3
+              }
+            }
+          },
+          "alarmSource": {
+            "type": "entity",
+            "dataKeys": [
+              {
+                "name": "createdTime",
+                "label": "Created time",
+                "type": "alarm",
+                "color": "#2196f3",
+                "settings": {}
+              },
+              {
+                "name": "originator",
+                "label": "Originator",
+                "type": "alarm",
+                "color": "#4caf50",
+                "settings": {}
+              },
+              {
+                "name": "type",
+                "label": "Type",
+                "type": "alarm",
+                "color": "#f44336",
+                "settings": {}
+              },
+              {
+                "name": "severity",
+                "label": "Severity",
+                "type": "alarm",
+                "color": "#ffc107",
+                "settings": {}
+              },
+              {
+                "name": "status",
+                "label": "Status",
+                "type": "alarm",
+                "color": "#9c27b0",
+                "settings": {}
+              }
+            ],
+            "entityAliasId": "61b167aa-f35a-4c3b-a47f-b29b36e8012c"
+          },
+          "alarmFilterConfig": {
+            "statusList": [
+              "ACTIVE"
+            ],
+            "searchPropagatedAlarms": true
+          },
+          "datasources": [],
+          "tbAiTimeRanges": [
+            "86400000",
+            "604800000",
+            "2592000000"
+          ],
+          "timewindowStyle": {
+            "showIcon": true,
+            "icon": "date_range",
+            "iconSize": "16px",
+            "iconPosition": "left",
+            "displayTypePrefix": false
+          }
+        },
+        "id": "f6e4f485-f8a2-4aca-9510-02228dec2a1a",
+        "typeFullFqn": "system.alarm_widgets.alarms_table",
+        "type": "alarm"
+      },
+      "7a655d14-33ae-41ce-6e63-68867dceae1e": {
+        "typeFullFqn": "system.control_widgets.switch_control",
+        "type": "rpc",
+        "sizeX": 4,
+        "sizeY": 2.5,
+        "config": {
+          "targetDeviceAliases": [],
+          "showTitle": false,
+          "backgroundColor": "#e6e7e8",
+          "color": "rgba(0, 0, 0, 0.87)",
+          "padding": "0px",
+          "settings": {
+            "initialValue": false,
+            "retrieveValueMethod": "rpc",
+            "valueKey": "value",
+            "getValueMethod": "getValue",
+            "parseValueFunction": "if (typeof data !== 'boolean') { throw new Error('Light state unknown: await MCU acknowledgement'); }\nreturn data;",
+            "setValueMethod": "setValue",
+            "convertValueFunction": "return value === true;",
+            "requestTimeout": 5000,
+            "requestPersistent": false,
+            "persistentPollingInterval": 5000,
+            "title": "Light request (see confirmed output above)",
+            "showOnOffLabels": true
+          },
+          "title": "Switch Control",
+          "dropShadow": true,
+          "enableFullscreen": false,
+          "widgetStyle": {},
+          "titleStyle": {
+            "fontSize": "16px",
+            "fontWeight": 400
+          },
+          "showLegend": false,
+          "actions": {},
+          "decimals": 2,
+          "datasources": [],
+          "targetDevice": {
+            "type": "entity",
+            "entityAliasId": "61b167aa-f35a-4c3b-a47f-b29b36e8012c"
+          }
+        },
+        "row": 0,
+        "col": 0,
+        "id": "7a655d14-33ae-41ce-6e63-68867dceae1e"
+      }
+    },
+    "states": {
+      "default": {
+        "name": "pet-care-test Dashboard",
+        "root": true,
+        "layouts": {
+          "main": {
+            "widgets": {},
+            "gridSettings": {
+              "layoutType": "html",
+              "htmlPageConfig": {
+                "settings": {
+                  "type": "ANGULAR",
+                  "html": "<div class=\"device-page\">\n  <header class=\"top-bar\">\n    <div class=\"top-bar__left\">\n      <div class=\"device-title\">\n        <tb-icon class=\"device-icon\">mdi:paw</tb-icon>\n        <span class=\"device-name\">{{ deviceName || 'pet-care-test' }}</span>\n      </div>\n      <span class=\"status-badge\" [class.status-badge--online]=\"online\" [class.status-badge--offline]=\"!online\">\n        <i class=\"status-dot\"></i>\n        {{ online ? 'Online' : 'Offline / stale' }}\n      </span>\n      <span class=\"last-updated\" [attr.title]=\"lastUpdatedTitle\">{{ lastUpdatedText }}</span>\n    </div>\n    <div class=\"top-bar__right\">\n      <button type=\"button\" class=\"theme-toggle-btn\" data-tb-ai-theme-toggle title=\"Toggle theme\">\n        <tb-icon style=\"display: var(--tb-ai-show-when-light, inline-block)\">dark_mode</tb-icon>\n        <tb-icon style=\"display: var(--tb-ai-show-when-dark, none)\">light_mode</tb-icon>\n      </button>\n    </div>\n  </header>\n\n  <div class=\"alarm-banner\" [class.alarm-banner--ok]=\"!hasActiveAlarms\" [class.alarm-banner--warning]=\"hasActiveAlarms\">\n    <tb-icon class=\"alarm-banner__icon\">{{ hasActiveAlarms ? 'warning' : 'check_circle' }}</tb-icon>\n    <div class=\"alarm-banner__text\">\n      <div class=\"alarm-banner__headline\">{{ alarmMessage }}</div>\n      <div class=\"alarm-banner__sub\">{{ !online ? 'Unavailable after 15 seconds without telemetry; historical charts remain available' : 'Food / water: ' + (mcuCurrent ? 'current' : 'stale') + ' · Environment: ' + (envCurrent ? 'current' : 'unavailable') }}</div>\n    </div>\n  </div>\n\n  <div class=\"kpi-grid\">\n    <div class=\"kpi-card\">\n      <div class=\"kpi-card__head\">\n        <span class=\"kpi-card__label\">Food Bowl</span>\n        <tb-icon class=\"kpi-card__icon\">mdi:bowl-mix-outline</tb-icon>\n      </div>\n      <div class=\"kpi-card__body\">\n        <span class=\"kpi-card__value\">{{ foodWeight != null ? (foodWeight | number:'1.0-0') : '—' }}</span>\n        <span class=\"kpi-card__unit\">g</span>\n      </div>\n      <div class=\"kpi-card__footer\">\n        <span class=\"pill-info\">{{ mcuCurrent ? 'Current bowl weight' : 'Stale / unavailable' }}</span>\n      </div>\n    </div>\n\n    <div class=\"kpi-card\" [class.kpi-card--alert]=\"tempHigh\">\n      <div class=\"kpi-card__head\">\n        <span class=\"kpi-card__label\">Ambient Temp</span>\n        <tb-icon class=\"kpi-card__icon\">mdi:thermometer</tb-icon>\n      </div>\n      <div class=\"kpi-card__body\">\n        <span class=\"kpi-card__value\">{{ temp != null ? (temp | number:'1.1-1') : '—' }}</span>\n        <span class=\"kpi-card__unit\">°C</span>\n      </div>\n      <div class=\"kpi-card__footer\">\n        @if (tempHigh) {\n          <span class=\"pill-alert pill-alert--warn\"><tb-icon>warning</tb-icon> High Temperature</span>\n        } @else {\n          <span class=\"pill-info\">{{ envCurrent ? 'Within range' : 'Stale / unavailable' }}</span>\n        }\n      </div>\n    </div>\n\n    <div class=\"kpi-card\" [class.kpi-card--alert]=\"humHigh\">\n      <div class=\"kpi-card__head\">\n        <span class=\"kpi-card__label\">Ambient Humidity</span>\n        <tb-icon class=\"kpi-card__icon\">mdi:water-percent</tb-icon>\n      </div>\n      <div class=\"kpi-card__body\">\n        <span class=\"kpi-card__value\">{{ humidity != null ? (humidity | number:'1.1-1') : '—' }}</span>\n        <span class=\"kpi-card__unit\">%</span>\n      </div>\n      <div class=\"kpi-card__footer\">\n        @if (humHigh) {\n          <span class=\"pill-alert pill-alert--warn\"><tb-icon>warning</tb-icon> High Humidity</span>\n        } @else {\n          <span class=\"pill-info\">{{ envCurrent ? 'Within range' : 'Stale / unavailable' }}</span>\n        }\n      </div>\n    </div>\n\n    <div class=\"kpi-card\" [class.kpi-card--alert]=\"waterLow\">\n      <div class=\"kpi-card__head\">\n        <span class=\"kpi-card__label\">Water Supply</span>\n        <tb-icon class=\"kpi-card__icon\">mdi:cup-water</tb-icon>\n      </div>\n      <div class=\"kpi-card__body\">\n        <span class=\"kpi-card__value kpi-card__value--status\">{{ !mcuCurrent ? 'Unknown' : (waterLow ? 'Low' : (waterEnough ? 'Adequate' : 'Unknown')) }}</span>\n      </div>\n      <div class=\"kpi-card__footer\">\n        @if (waterLow) {\n          <span class=\"pill-alert pill-alert--crit\"><tb-icon>error_outline</tb-icon> Refill Required</span>\n        } @else if (waterEnough) {\n          <span class=\"pill-alert pill-alert--ok\"><tb-icon>check</tb-icon> Sufficient</span>\n        } @else {\n          <span class=\"pill-info\">Stale / unavailable</span>\n        }\n      </div>\n    </div>\n  </div>\n\n  <div class=\"kpi-grid\" style=\"margin-bottom:20px\">\n    <div class=\"kpi-card\"><div class=\"kpi-card__head\"><span class=\"kpi-card__label\">Pet button presses</span></div><div class=\"kpi-card__body\"><span class=\"kpi-card__value\">{{ buttonPresses != null ? buttonPresses : '—' }}</span></div><div class=\"kpi-card__footer\">Cumulative since ESP32 boot · {{ online ? 'current' : 'historical / stale' }}</div><div>Last press: {{ lastButtonText }}</div></div>\n    <div class=\"kpi-card\"><div class=\"kpi-card__head\"><span class=\"kpi-card__label\">Confirmed station light</span></div><div class=\"kpi-card__body\"><span class=\"kpi-card__value kpi-card__value--status\">{{ lightConfirmed }}</span></div><div class=\"kpi-card__footer\">{{ lightPending ? 'Request pending MCU acknowledgement' : 'MCU-confirmed output · unknown until light_known' }}</div></div>\n  </div>\n  <div class=\"info-strip\">\n    <div class=\"info-strip__item\">\n      <span class=\"info-strip__label\">Device Entity:</span>\n      <span class=\"info-strip__val\">{{ deviceName || 'pet-care-test' }}</span>\n    </div>\n    <div class=\"info-strip__divider\"></div>\n    <div class=\"info-strip__item\">\n      <span class=\"info-strip__label\">Server Status:</span>\n      <span class=\"info-strip__val\">{{ active === true ? 'Active' : (active === false ? 'Inactive' : 'Unknown') }}</span>\n    </div>\n    <div class=\"info-strip__divider\"></div>\n    <div class=\"info-strip__item\">\n      <span class=\"info-strip__label\">Feeder State:</span>\n      <span class=\"info-strip__val\">{{ foodWeight == null ? 'Unavailable' : (foodWeight > 10 ? 'Available' : 'Low food') }}</span>\n    </div>\n  </div>\n\n  <div class=\"tabs-section\">\n    <div class=\"tabs-bar-row\">\n      <nav class=\"tabs-bar\">\n        @for (tab of tabs; track tab.id) {\n          <button type=\"button\" class=\"tab-btn\" [class.is-active]=\"activeTab === tab.id\" (click)=\"selectTab(tab.id)\">\n            <tb-icon>{{ tab.icon }}</tb-icon>\n            <span>{{ tab.label }}</span>\n          </button>\n        }\n      </nav>\n      @if (activeTab === 'monitoring') {\n        <div data-tb-ai-time-range=\"monitoring\" class=\"shared-time-range-slot\"></div>\n      }\n    </div>\n\n    <div class=\"tab-content\">\n      @switch (activeTab) {\n        @case ('monitoring') {\n          <div class=\"embed-wrapper\">\n            <tb-dashboard-state [ctx]=\"ctx\" stateId=\"monitoring\" [syncParentStateParams]=\"true\"></tb-dashboard-state>\n          </div>\n        }\n        @case ('alarms') {\n          <div class=\"embed-wrapper\">\n            <tb-dashboard-state [ctx]=\"ctx\" stateId=\"alarms\" [syncParentStateParams]=\"true\"></tb-dashboard-state>\n          </div>\n        }\n      }\n    </div>\n  </div>\n</div>",
+                  "css": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400%3B500%3B600%3B700&display=swap');\n\n/* tb-ai-palette */ .device-page { --canvas: var(--tb-ai-canvas, #F7F8FA); --surface: var(--tb-ai-surface, #FFFFFF); --text: var(--tb-ai-text, rgba(0,0,0,0.87)); --text-secondary: var(--tb-ai-text-secondary, rgba(0,0,0,0.54)); --border: var(--tb-ai-border, rgba(0,0,0,0.12)); --primary: var(--tb-ai-primary, var(--tb-primary-500, #00695C)); --on-primary: var(--tb-ai-on-primary, var(--tb-primary-contrast-500, #FFFFFF)); --accent: var(--tb-ai-accent, var(--tb-accent-500, #FF5722)); }\n\ntb-icon {\n  width: 1em;\n  height: 1em;\n  min-width: 1em;\n  min-height: 1em;\n  font-size: 24px;\n  line-height: 1;\n}\n\n.device-page {\n  --tb-ai-font: 'Inter',sans-serif;\n  font-family: var(--tb-ai-font);\n  --tb-ai-card-border: 1px solid var(--border);\n  --tb-ai-card-radius: 12px;\n  --tb-ai-card-shadow: 0 1px 3px rgba(0,0,0,0.05);\n  --tb-ai-card-padding: 16px;\n  --tb-ai-card-title-size: 14px;\n  --tb-ai-card-title-weight: 600;\n  --tb-ai-card-title-color: var(--text);\n  --tb-ai-card-title-line-height: 20px;\n  --tb-ai-table-header-size: 12px;\n  --tb-ai-table-header-weight: 600;\n  --tb-ai-table-header-color: var(--text-secondary);\n  --tb-ai-table-cell-size: 13px;\n  --tb-ai-table-cell-weight: 400;\n  --tb-ai-table-cell-color: var(--text);\n  --tb-ai-table-divider-color: var(--border);\n  height: 100%;\n  box-sizing: border-box;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  padding: 16px;\n  background: var(--canvas);\n  color: var(--text);\n  overflow-y: auto;\n  container: page/inline-size;\n}\n\n.top-bar {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  flex-wrap: wrap;\n  gap: 12px;\n}\n\n.top-bar__left {\n  display: flex;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 12px;\n}\n\n.top-bar__right {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-left: auto;\n}\n\n.device-title {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n\n.device-icon {\n  font-size: 24px;\n  color: var(--primary);\n}\n\n.device-name {\n  font-size: 20px;\n  font-weight: 700;\n  letter-spacing: -0.02em;\n}\n\n.status-badge {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 3px 10px;\n  border-radius: 999px;\n  font-size: 12px;\n  font-weight: 600;\n  background: color-mix(in srgb,var(--text-secondary) 12%,transparent);\n  color: var(--text-secondary); white-space: nowrap; flex: none;\n}\n\n.status-badge .status-dot {\n  width: 8px;\n  height: 8px;\n  border-radius: 50%;\n  background: currentColor;\n}\n\n.status-badge--online {\n  background: color-mix(in srgb,#4CAF50 15%,transparent);\n  color: #4CAF50;\n}\n\n.status-badge--offline {\n  background: color-mix(in srgb,#EF5350 15%,transparent);\n  color: #EF5350;\n}\n\n.last-updated {\n  font-size: 12px;\n  color: var(--text-secondary);\n}\n\n.theme-toggle-btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  width: 36px;\n  height: 36px;\n  border-radius: 10px;\n  border: 1px solid var(--border);\n  background: var(--surface);\n  color: var(--text);\n  cursor: pointer;\n}\n\n.alarm-banner {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  border-radius: 12px;\n  border: 1px solid transparent;\n}\n\n.alarm-banner--ok {\n  background: color-mix(in srgb,#4CAF50 10%,transparent);\n  border-color: color-mix(in srgb,#4CAF50 25%,transparent);\n  color: var(--text);\n}\n\n.alarm-banner--ok .alarm-banner__icon {\n  color: #4CAF50;\n  font-size: 24px;\n}\n\n.alarm-banner--warning {\n  background: color-mix(in srgb,#FFA726 12%,transparent);\n  border-color: color-mix(in srgb,#FFA726 30%,transparent);\n  color: var(--text);\n}\n\n.alarm-banner--warning .alarm-banner__icon {\n  color: #FFA726;\n  font-size: 24px;\n}\n\n.alarm-banner__headline {\n  font-size: 14px;\n  font-weight: 600;\n}\n\n.alarm-banner__sub {\n  font-size: 12px;\n  color: var(--text-secondary);\n}\n\n.kpi-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit,minmax(210px,1fr));\n  gap: 14px;\n}\n\n.kpi-card {\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  padding: 16px;\n  background: var(--surface);\n  border: var(--tb-ai-card-border);\n  border-radius: var(--tb-ai-card-radius);\n  box-shadow: var(--tb-ai-card-shadow);\n}\n\n.kpi-card--alert {\n  border-color: color-mix(in srgb,#FFA726 40%,transparent);\n}\n\n.kpi-card__head {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  color: var(--text-secondary); flex-wrap: wrap;\n}\n\n.kpi-card__label {\n  font-size: 12px;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.04em;\n}\n\n.kpi-card__icon {\n  font-size: 20px;\n  color: var(--primary);\n}\n\n.kpi-card__body {\n  display: flex;\n  align-items: baseline;\n  gap: 4px;\n}\n\n.kpi-card__value {\n  font-size: 28px;\n  font-weight: 700;\n  line-height: 1.1;\n  color: var(--text);\n  font-variant-numeric: tabular-nums;\n}\n\n.kpi-card__value--status {\n  font-size: 20px;\n  font-weight: 600;\n}\n\n.kpi-card__unit {\n  font-size: 14px;\n  font-weight: 500;\n  color: var(--text-secondary);\n}\n\n.kpi-card__footer {\n  display: flex;\n  align-items: center;\n  margin-top: auto;\n}\n\n.pill-info {\n  font-size: 11px;\n  font-weight: 500;\n  color: var(--text-secondary);\n}\n\n.pill-alert {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  font-size: 11px;\n  font-weight: 600;\n  padding: 2px 8px;\n  border-radius: 999px; white-space: nowrap; flex: none;\n}\n\n.pill-alert tb-icon {\n  font-size: 14px;\n}\n\n.pill-alert--ok {\n  color: #4CAF50;\n  background: color-mix(in srgb,#4CAF50 15%,transparent);\n}\n\n.pill-alert--warn {\n  color: #FFA726;\n  background: color-mix(in srgb,#FFA726 15%,transparent);\n}\n\n.pill-alert--crit {\n  color: #EF5350;\n  background: color-mix(in srgb,#EF5350 15%,transparent);\n}\n\n.info-strip {\n  display: flex;\n  flex-wrap: wrap;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 16px;\n  background: var(--surface);\n  border: var(--tb-ai-card-border);\n  border-radius: var(--tb-ai-card-radius);\n}\n\n.info-strip__item {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  font-size: 12px;\n}\n\n.info-strip__label {\n  color: var(--text-secondary);\n  font-weight: 500;\n}\n\n.info-strip__val {\n  color: var(--text);\n  font-weight: 600;\n}\n\n.info-strip__divider {\n  width: 1px;\n  height: 14px;\n  background: var(--border);\n}\n\n.tabs-section {\n  display: flex;\n  flex-direction: column;\n  gap: 14px;\n  flex: 1;\n  min-height: 0;\n}\n\n.tabs-bar-row {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  flex-wrap: wrap;\n  gap: 12px;\n}\n\n.tabs-bar {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  overflow-x: auto;\n  max-width: 100%;\n  flex: none; min-width: 0; overflow-y: hidden; padding-bottom: 2px; margin-bottom: -2px;\n}\n\n.tab-btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 16px;\n  border-radius: 8px;\n  border: 1px solid transparent;\n  background: transparent;\n  color: var(--text-secondary);\n  font-size: 13px;\n  font-weight: 600;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n\n.tab-btn:hover {\n  background: color-mix(in srgb,var(--primary) 6%,transparent);\n  color: var(--text);\n}\n\n.tab-btn.is-active {\n  background: color-mix(in srgb,var(--primary) 12%,transparent);\n  border-color: color-mix(in srgb,var(--primary) 20%,transparent);\n  color: var(--primary);\n}\n\n.tab-content {\n  flex: 1;\n  min-height: 480px;\n}\n\n.embed-wrapper {\n  width: 100%;\n  height: 100%;\n  min-height: 500px;\n  height: 650px;\n}\n\n.embed-wrapper tb-dashboard-state {\n  display: block;\n  width: 100%;\n  height: 100%;\n}\n\n/* tb-ai-toggle-pinned */\n.top-bar { flex-wrap: wrap; align-items: flex-start; }\n.top-bar > * { min-width: 0; flex: 1 1 240px; }\n.top-bar > .top-bar__right { flex: none; width: auto; max-width: 100%; margin-left: auto; }\n.top-bar { position: relative; padding-right: calc(0px + 48px); }\n.top-bar :has([data-tb-ai-theme-toggle]) { position: static; }\n.top-bar [data-tb-ai-theme-toggle] { position: absolute; top: 0px; right: 0px; margin: 0; z-index: 1; }\n\n/* tb-ai-whole-sections */\n.tabs-section { flex: 1 0 auto; min-height: auto; }\n\n/* tb-ai-fill */\n.tabs-section { flex: 1 0 auto; display: flex; flex-direction: column; }\n.tab-content { flex: 1 0 auto; display: flex; flex-direction: column; }\n.embed-wrapper { flex: 1 0 auto; height: auto; min-height: 650px; }\n\n/* tb-ai-responsive */\n@media (max-width: 1279px) {\n  .embed-wrapper:has(> tb-dashboard-state[stateid=\"monitoring\"]) { height: 1930px; min-height: 1930px; }\n}\n@media (max-width: 959px) {\n  .embed-wrapper:has(> tb-dashboard-state[stateid=\"alarms\"]) { height: 570px; min-height: 570px; }\n}",
+                  "js": "(function (key, fallbackDark) {\n  var page = document.querySelector('.tb-dashboard-page');\n  if (!page) { return; }\n  var stored = null;\n  try { stored = localStorage.getItem(key); } catch (e) {}\n  page.classList.toggle('dark', stored ? stored === 'dark' : fallbackDark);\n  page.setAttribute('data-tb-ai-theme-key', key);\n  window.tbAiThemeOverlays = function () {\n    var main = document.querySelector('.tb-dashboard-page');\n    var themed = main && main.hasAttribute('data-tb-ai-theme-key');\n    var dark = themed && main.classList.contains('dark');\n    var styles = main ? getComputedStyle(main) : null;\n    var surface = dark ? (styles.getPropertyValue('--tb-ai-surface').trim() || '#2A2C2F') : '';\n    var muted = dark ? (styles.getPropertyValue('--tb-ai-text-secondary').trim() || '#94969C') : '';\n    document.querySelectorAll('.cdk-overlay-container .tb-popover').forEach(function (popover) {\n      var inner = popover.querySelector('.tb-dashboard-page');\n      if (!inner || !themed) { return; }\n      inner.classList.toggle('dark', dark);\n      popover.querySelectorAll('.tb-popover-inner').forEach(function (el) {\n        el.style.backgroundColor = surface;\n        el.style.boxShadow = dark ? 'none' : '';\n      });\n      if (popover.parentElement) {\n        var edge = 'rgba(255, 255, 255, 0.24)';\n        popover.parentElement.style.filter = dark ? ['1px 0', '-1px 0', '0 1px', '0 -1px'].map(function (offset) {\n          return 'drop-shadow(' + offset + ' 0 ' + edge + ')';\n        }).join(' ') + ' drop-shadow(0 8px 24px rgba(255, 255, 255, 0.08))' : '';\n      }\n      popover.querySelectorAll('.tb-popover-arrow').forEach(function (arrow) {\n        ['Top', 'Right', 'Bottom', 'Left'].forEach(function (side) {\n          arrow.style['border' + side + 'Color'] = '';\n          if (dark && getComputedStyle(arrow)['border' + side + 'Color'] !== 'rgba(0, 0, 0, 0)') {\n            arrow.style['border' + side + 'Color'] = surface;\n          }\n        });\n        arrow.style.boxShadow = dark ? 'none' : '';\n      });\n      popover.querySelectorAll('.tb-popover-close-button').forEach(function (el) { el.style.color = muted; });\n    });\n    var container = document.querySelector('.cdk-overlay-container');\n    if (!container) { return; }\n    var host = main && main.closest('tb-dashboard-page');\n    var scope = host && Array.prototype.find.call(host.classList, function (name) {\n      return name.indexOf('tb-dashboard-page-css-') === 0;\n    });\n    var canvas = dark ? (styles.getPropertyValue('--tb-ai-canvas').trim() || '#1E1F21') : '';\n    var fullscreen = false;\n    container.querySelectorAll('.tb-fullscreen-parent').forEach(function (pane) {\n      if (!themed) { return; }\n      pane.querySelectorAll('.tb-dashboard-page').forEach(function (page) { page.classList.toggle('dark', dark); });\n      if (!scope || !pane.querySelector(':scope > .tb-widget') || !pane.parentElement) { return; }\n      fullscreen = true;\n      if (!pane.parentElement.classList.contains('tb-dashboard-page')) { pane.parentElement.classList.add('tb-dashboard-page'); }\n      pane.parentElement.classList.toggle('dark', dark);\n      if (!pane.classList.contains('tb-widget-container')) { pane.classList.add('tb-widget-container'); }\n      if (!pane.hasAttribute('data-tb-ai-background')) { pane.setAttribute('data-tb-ai-background', pane.style.backgroundColor || ''); }\n      pane.style.backgroundColor = dark ? canvas : pane.getAttribute('data-tb-ai-background');\n    });\n    var scoped = container.getAttribute('data-tb-ai-scope');\n    if (scoped && (!fullscreen || scoped !== scope)) {\n      container.classList.remove(scoped);\n      container.removeAttribute('data-tb-ai-scope');\n    }\n    if (fullscreen && !container.classList.contains(scope)) {\n      container.classList.add(scope);\n      container.setAttribute('data-tb-ai-scope', scope);\n    }\n  };\n  if (!window.tbAiThemeOverlayWatch) {\n    window.tbAiThemeOverlayWatch = true;\n    var watchOverlay = function () {\n      var overlay = document.querySelector('.cdk-overlay-container');\n      if (!overlay) { return false; }\n      new MutationObserver(function () { window.tbAiThemeOverlays(); }).observe(overlay, { childList: true, subtree: true, attributes: true, attributeFilter: ['class'] });\n      window.tbAiThemeOverlays();\n      return true;\n    };\n    if (!watchOverlay()) {\n      var bodyWatch = new MutationObserver(function () { if (watchOverlay()) { bodyWatch.disconnect(); } });\n      bodyWatch.observe(document.body, { childList: true });\n    }\n  }\n  window.tbAiThemeOverlays();\n  if (window.tbAiThemeToggle) { return; }\n  window.tbAiThemeToggle = function (event) {\n    var toggle = event.target && event.target.closest && event.target.closest('[data-tb-ai-theme-toggle]');\n    var current = document.querySelector('.tb-dashboard-page');\n    if (!toggle || !current) { return; }\n    var dark = !current.classList.contains('dark');\n    current.classList.toggle('dark', dark);\n    try { localStorage.setItem(current.getAttribute('data-tb-ai-theme-key'), dark ? 'dark' : 'light'); } catch (e) {}\n    if (window.tbAiThemeOverlays) { window.tbAiThemeOverlays(); }\n  };\n  document.addEventListener('click', window.tbAiThemeToggle);\n})('tb-ai-theme-6be342f1-90e3-4124-95f5-0fa37bc16b01', false);\n(function tbAiTimeRanges(ctx) {\n  var api = window.tbAiTimeRanges;\n  if (!api || api.version !== 7) {\n    if (api) { api.sync = api.schedule = function () {}; }\n    api = window.tbAiTimeRanges = { version: 7, contexts: [], timer: null };\n    var MAX_BUCKETS = 500;\n    var style = document.createElement('style');\n    style.textContent = [\n      '.tb-ai-range { display: inline-flex; align-items: center; flex: none; gap: 2px; padding: 3px; border-radius: 10px;',\n      '  max-width: 100%; box-sizing: border-box; overflow-x: auto; scrollbar-width: thin;',\n      '  text-transform: none; letter-spacing: normal;',\n      '  background: color-mix(in srgb, var(--tb-ai-text, rgba(0, 0, 0, 0.87)) 6%, transparent); }',\n      '.tb-ai-range__btn { min-width: 40px; padding: 3px 10px; border: none; border-radius: 7px; background: transparent;',\n      '  color: var(--tb-ai-text-secondary, rgba(0, 0, 0, 0.54)); font: inherit; font-size: 12px; font-weight: 500;',\n      '  line-height: 18px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease; }',\n      '.tb-ai-range__btn:hover { color: var(--tb-ai-text, rgba(0, 0, 0, 0.87)); }',\n      '.tb-ai-range__btn--active, .tb-ai-range__btn--active:hover { background: var(--tb-ai-primary, var(--tb-primary-500, #00695C));',\n      '  color: var(--tb-ai-on-primary, var(--tb-primary-contrast-500, #FFFFFF)); }',\n      '.tb-ai-range > * { flex: none; }',\n      '.tb-ai-range--widget { margin-top: 6px; }',\n      '.tb-widget-title:has(.tb-ai-range--widget) { min-width: 0 !important; max-height: none !important; overflow: visible !important; }',\n      '.tb-ai-range__custom { display: inline-flex; align-items: center; min-width: 0; }',\n      '.tb-ai-range__custom .tb-timewindow { display: inline-flex !important; align-items: center; gap: 4px; margin: 0 !important;',\n      '  padding: 3px 10px !important; border-radius: 7px; cursor: pointer; transition: background 0.15s ease, color 0.15s ease;',\n      '  color: var(--tb-ai-text-secondary, rgba(0, 0, 0, 0.54)) !important; font-size: 12px !important; font-weight: 500 !important;',\n      '  line-height: 18px !important; }',\n      '.tb-ai-range__custom .tb-timewindow:hover { color: var(--tb-ai-text, rgba(0, 0, 0, 0.87)) !important; }',\n      '.tb-ai-range__custom tb-icon { font-size: 16px !important; width: 16px !important; height: 16px !important;',\n      '  min-width: 16px; line-height: 16px !important; color: inherit !important; }',\n      '.tb-ai-range__custom .tb-timewindow-label { font: inherit !important; color: inherit !important; max-width: 220px;',\n      '  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }',\n      '.tb-ai-range__custom:not(.tb-ai-range__custom--active) .tb-timewindow-label { display: none !important; }',\n      '.tb-ai-range__custom:not(.tb-ai-range__custom--active) .tb-timewindow::after { content: \"Custom\"; }',\n      '.tb-ai-range__custom--active .tb-timewindow, .tb-ai-range__custom--active .tb-timewindow:hover {',\n      '  background: var(--tb-ai-primary, var(--tb-primary-500, #00695C));',\n      '  color: var(--tb-ai-on-primary, var(--tb-primary-contrast-500, #FFFFFF)) !important; }',\n      '[data-tb-ai-time-range]:empty { display: none; }',\n      '*:has(> [data-tb-ai-time-range]:not(:empty)) { flex-wrap: wrap !important; row-gap: 8px; overflow-x: visible !important; }',\n      '*:has(> [data-tb-ai-time-range]:not(:empty)) > :not([data-tb-ai-time-range]) { min-width: 0; max-width: 100%;',\n      '  overflow-x: auto; scrollbar-width: thin; }'\n    ].join('\\n');\n    document.head.appendChild(style);\n    var QUICK = {\n      CURRENT_HOUR: ['This hour', 1], CURRENT_DAY: ['Today', 24], CURRENT_DAY_SO_FAR: ['Today', 24],\n      YESTERDAY: ['Yesterday', 24], DAY_BEFORE_YESTERDAY: ['Day before', 24], THIS_DAY_LAST_WEEK: ['Day last week', 24],\n      CURRENT_WEEK: ['This week', 168], CURRENT_WEEK_ISO: ['This week', 168],\n      CURRENT_WEEK_SO_FAR: ['Week to date', 168], CURRENT_WEEK_ISO_SO_FAR: ['Week to date', 168],\n      PREVIOUS_WEEK: ['Last week', 168], PREVIOUS_WEEK_ISO: ['Last week', 168],\n      CURRENT_MONTH: ['This month', 744], CURRENT_MONTH_SO_FAR: ['Month to date', 744], PREVIOUS_MONTH: ['Last month', 744],\n      CURRENT_QUARTER: ['This quarter', 2208], CURRENT_QUARTER_SO_FAR: ['Quarter to date', 2208], PREVIOUS_QUARTER: ['Last quarter', 2208],\n      CURRENT_HALF_YEAR: ['This half-year', 4392], CURRENT_HALF_YEAR_SO_FAR: ['Half-year to date', 4392], PREVIOUS_HALF_YEAR: ['Last half-year', 4392],\n      CURRENT_YEAR: ['This year', 8760], CURRENT_YEAR_SO_FAR: ['Year to date', 8760], PREVIOUS_YEAR: ['Last year', 8760]\n    };\n    var label = function (key) {\n      if (QUICK[key]) { return QUICK[key][0]; }\n      var ms = Number(key);\n      var minute = 60000, hour = 3600000, day = 86400000, year = 365 * day;\n      if (ms % year === 0) { return (ms / year) + 'y'; }\n      if (ms % day === 0 && ms > day) { return (ms / day) + 'd'; }\n      if (ms % hour === 0) { return (ms / hour) + 'h'; }\n      return Math.max(1, Math.round(ms / minute)) + 'm';\n    };\n    var spanMs = function (key) {\n      return QUICK[key] ? QUICK[key][1] * 3600000 : Number(key);\n    };\n    var order = function (a, b) {\n      var quickA = QUICK[a] ? 1 : 0, quickB = QUICK[b] ? 1 : 0;\n      if (quickA !== quickB) { return quickA - quickB; }\n      if (spanMs(a) !== spanMs(b)) { return spanMs(a) - spanMs(b); }\n      var pastA = quickA && a.indexOf('CURRENT_') !== 0 ? 1 : 0, pastB = quickB && b.indexOf('CURRENT_') !== 0 ? 1 : 0;\n      return pastA - pastB || (a < b ? -1 : a > b ? 1 : 0);\n    };\n    var rootView = function () {\n      for (var i = api.contexts.length - 1; i >= 0; i--) {\n        var context = api.contexts[i];\n        var ref = context.changeDetectorValue || context.containerChangeDetectorValue;\n        if (ref && ref._lView) { return ref._lView; }\n      }\n      return null;\n    };\n    var widgets = function () {\n      var found = [];\n      var seen = new Set();\n      var stack = [rootView()];\n      while (stack.length) {\n        var node = stack.pop();\n        if (!Array.isArray(node) || seen.has(node)) { continue; }\n        seen.add(node);\n        for (var i = 0; i < node.length; i++) {\n          var item = node[i];\n          if (Array.isArray(item)) {\n            stack.push(item);\n          } else if (item && typeof item.onTimewindowChanged === 'function' && item.widget && item.widgetContext\n              && item.elementRef && found.indexOf(item) < 0) {\n            found.push(item);\n          }\n        }\n      }\n      return found;\n    };\n    var ranges = function (widget) {\n      var config = widget.widget.config || {};\n      var tw = config.useDashboardTimewindow === false && config.timewindow;\n      if (!tw) { return null; }\n      var realtime = (tw.realtime && tw.realtime.advancedParams) || {};\n      var history = (tw.history && tw.history.advancedParams) || {};\n      var options = [];\n      var add = function (key) {\n        key = String(key);\n        if ((QUICK[key] || Number(key) > 0) && options.indexOf(key) < 0) { options.push(key); }\n      };\n      if (Array.isArray(config.tbAiTimeRanges) && config.tbAiTimeRanges.length) {\n        config.tbAiTimeRanges.forEach(add);\n      } else {\n        (realtime.allowedLastIntervals || []).forEach(add);\n        (realtime.allowedQuickIntervals || []).concat(history.allowedQuickIntervals || []).forEach(add);\n      }\n      options.sort(order);\n      return options.length > 1 ? options : null;\n    };\n    var current = function (widget) {\n      var tw = widget.widget.config.timewindow || {};\n      if (tw.selectedTab === 1) {\n        var history = tw.history || {};\n        return history.historyType === 2 ? history.quickInterval : 'custom';\n      }\n      var realtime = tw.realtime || {};\n      if (realtime.realtimeType === 1) { return realtime.quickInterval; }\n      return realtime.realtimeType === 0 || realtime.realtimeType === undefined ? String(realtime.timewindowMs) : 'custom';\n    };\n    var bucket = function (window, key, configName) {\n      var params = window.advancedParams || {};\n      var agg = params[configName] && params[configName][key];\n      return Math.max((agg && agg.defaultAggInterval) || 1000, Math.ceil(spanMs(key) / MAX_BUCKETS));\n    };\n    var clone = function (value) {\n      return value === undefined ? undefined : JSON.parse(JSON.stringify(value));\n    };\n    var remember = function (widget) {\n      if (!widget.tbAiOwn) {\n        var own = widget.widget.config.timewindow || {};\n        widget.tbAiOwn = { aggregation: clone(own.aggregation), window: clone(own.realtime), history: clone(own.history) };\n      }\n    };\n    var spanOf = function (tw) {\n      if (tw.selectedTab === 1) {\n        var history = tw.history || {};\n        if (history.historyType === 2) { return spanMs(history.quickInterval); }\n        if (history.historyType === 1 && history.fixedTimewindow) {\n          return history.fixedTimewindow.endTimeMs - history.fixedTimewindow.startTimeMs;\n        }\n        return history.timewindowMs || 0;\n      }\n      var realtime = tw.realtime || {};\n      return realtime.realtimeType === 1 ? spanMs(realtime.quickInterval) : realtime.timewindowMs || 0;\n    };\n    var ownParams = function (widget, tw) {\n      [['realtime', widget.tbAiOwn.window], ['history', widget.tbAiOwn.history]].forEach(function (pair) {\n        if (pair[1] && pair[1].advancedParams) {\n          tw[pair[0]] = Object.assign({}, tw[pair[0]], { advancedParams: clone(pair[1].advancedParams) });\n        }\n      });\n    };\n    var customBucket = function (widget, tw) {\n      var span = spanOf(tw);\n      var config = (((widget.tbAiOwn.window || {}).advancedParams) || {}).lastAggIntervalsConfig || {};\n      var keys = Object.keys(config).map(Number).filter(function (ms) { return ms > 0; }).sort(function (a, b) { return a - b; });\n      var preset = keys.filter(function (ms) { return ms >= span; })[0] || keys[keys.length - 1];\n      var bucket = preset ? config[String(preset)].defaultAggInterval : 0;\n      return Math.max(Math.min(bucket || 0, Math.floor(span / 2)), Math.ceil(span / MAX_BUCKETS), 1000);\n    };\n    var apply = function (widget, key) {\n      remember(widget);\n      var tw = JSON.parse(JSON.stringify(widget.widget.config.timewindow || {}));\n      if (widget.tbAiOwn.aggregation) { tw.aggregation = clone(widget.tbAiOwn.aggregation); }\n      ownParams(widget, tw);\n      if (!QUICK[key]) {\n        tw.selectedTab = 0;\n        tw.realtime = Object.assign({}, tw.realtime, { realtimeType: 0, timewindowMs: Number(key) });\n        tw.realtime.interval = bucket(tw.realtime, key, 'lastAggIntervalsConfig');\n      } else if (key.indexOf('CURRENT_') === 0) {\n        tw.selectedTab = 0;\n        tw.realtime = Object.assign({}, tw.realtime, { realtimeType: 1, quickInterval: key });\n        tw.realtime.interval = bucket(tw.realtime, key, 'quickAggIntervalsConfig');\n      } else {\n        tw.selectedTab = 1;\n        tw.history = Object.assign({}, tw.history, { historyType: 2, quickInterval: key });\n        tw.history.interval = bucket(tw.history, key, 'quickAggIntervalsConfig');\n      }\n      widget.widget.config.timewindow = tw;\n      widget.onTimewindowChanged(tw);\n    };\n    var anchorOf = function (widget) {\n      if (widget.tbAiAnchor && widget.tbAiAnchor.isConnected) { return widget.tbAiAnchor; }\n      var element = widget.elementRef.nativeElement;\n      var container = element.closest('tb-widget-container') || element.parentElement;\n      widget.tbAiAnchor = container && container.querySelector('tb-timewindow');\n      return widget.tbAiAnchor;\n    };\n    var hide = function (anchor) {\n      var control = anchor.parentElement;\n      if (control && control.classList.contains('tb-ai-range')) {\n        control.insertAdjacentElement('beforebegin', anchor);\n        if (control.classList.contains('tb-ai-range--widget')) { control.remove(); }\n      }\n      anchor.classList.remove('tb-ai-range__custom', 'tb-ai-range__custom--active');\n      anchor.style.display = 'none';\n    };\n    var render = function (control, targets, options, anchor) {\n      control.tbAiRangeWidgets = targets;\n      var active = current(targets[0]);\n      var custom = options.indexOf(active) < 0;\n      if (anchor) {\n        anchor.style.display = '';\n        anchor.classList.add('tb-ai-range__custom');\n        anchor.classList.toggle('tb-ai-range__custom--active', custom);\n        if (anchor.parentElement !== control || control.lastElementChild !== anchor) { control.appendChild(anchor); }\n      }\n      var key = options.join(',') + '|' + active;\n      if (control.getAttribute('data-key') === key) { return; }\n      control.setAttribute('data-key', key);\n      control.querySelectorAll('.tb-ai-range__btn').forEach(function (button) { button.remove(); });\n      options.forEach(function (key) {\n        var button = document.createElement('button');\n        button.type = 'button';\n        button.className = 'tb-ai-range__btn' + (key === active ? ' tb-ai-range__btn--active' : '');\n        button.setAttribute('data-range', key);\n        button.textContent = label(key);\n        control.insertBefore(button, anchor && anchor.parentElement === control ? anchor : null);\n      });\n    };\n    var follow = function (marker, members) {\n      members.forEach(remember);\n      var leader = JSON.stringify(members[0].widget.config.timewindow || {});\n      if (marker.tbAiLeader !== undefined && marker.tbAiLeader !== leader) {\n        members.slice(1).forEach(function (widget) {\n          var tw = JSON.parse(leader);\n          var own = widget.tbAiOwn.aggregation;\n          ownParams(widget, tw);\n          if (own) {\n            tw.aggregation = clone(own);\n            var window = tw.selectedTab === 1 ? tw.history : tw.realtime;\n            if (window && own.type && own.type !== 'NONE') {\n              window.interval = customBucket(widget, tw);\n            }\n          }\n          widget.widget.config.timewindow = tw;\n          widget.onTimewindowChanged(tw);\n        });\n      }\n      marker.tbAiLeader = leader;\n    };\n    var shared = function (ranged) {\n      var groups = [];\n      document.querySelectorAll('[data-tb-ai-time-range]').forEach(function (marker) {\n        var stateId = marker.getAttribute('data-tb-ai-time-range');\n        var embeds = Array.prototype.filter.call(document.querySelectorAll('tb-dashboard-state'), function (embed) {\n          return embed.getAttribute('stateId') === stateId;\n        });\n        var members = ranged.filter(function (widget) {\n          var element = widget.elementRef.nativeElement;\n          return embeds.some(function (embed) { return embed.contains(element); });\n        });\n        groups.push({ marker: marker, widgets: members });\n      });\n      return groups;\n    };\n    api.sync = function () {\n      api.timer = null;\n      document.querySelectorAll('.tb-ai-range--widget').forEach(function (control) {\n        if (!control.querySelector('tb-timewindow')) { control.remove(); }\n      });\n      if (!rootView()) { return; }\n      var ranged = widgets().filter(function (widget) {\n        var element = widget.elementRef.nativeElement;\n        return ranges(widget) && element && element.isConnected;\n      });\n      var grouped = [];\n      shared(ranged).forEach(function (group) {\n        var marker = group.marker;\n        if (!group.widgets.length) {\n          marker.querySelectorAll('.tb-ai-range__btn').forEach(function (button) { button.remove(); });\n          marker.removeAttribute('data-key');\n          return;\n        }\n        var options = [];\n        group.widgets.forEach(function (widget) {\n          grouped.push(widget);\n          ranges(widget).forEach(function (key) { if (options.indexOf(key) < 0) { options.push(key); } });\n        });\n        options.sort(order);\n        group.widgets.slice(1).forEach(function (widget) {\n          var anchor = anchorOf(widget);\n          if (anchor) { hide(anchor); }\n        });\n        marker.classList.add('tb-ai-range');\n        follow(marker, group.widgets);\n        render(marker, group.widgets, options, anchorOf(group.widgets[0]));\n      });\n      ranged.forEach(function (widget) {\n        remember(widget);\n        if (grouped.indexOf(widget) >= 0) { return; }\n        var anchor = anchorOf(widget);\n        if (!anchor) { return; }\n        var control = anchor.parentElement;\n        if (!control || !control.classList.contains('tb-ai-range--widget')) {\n          control = document.createElement('div');\n          control.className = 'tb-ai-range tb-ai-range--widget';\n          anchor.insertAdjacentElement('beforebegin', control);\n        }\n        render(control, [widget], ranges(widget), anchor);\n      });\n    };\n    api.schedule = function () {\n      if (!api.timer) { api.timer = setTimeout(api.sync, 120); }\n    };\n    document.addEventListener('click', function (event) {\n      if (event.target && event.target.closest && event.target.closest('.cdk-overlay-container')) {\n        setTimeout(api.schedule, 300);\n      }\n      var button = event.target && event.target.closest && event.target.closest('.tb-ai-range__btn');\n      var control = button && button.closest('.tb-ai-range');\n      if (!control || !control.tbAiRangeWidgets) { return; }\n      event.stopPropagation();\n      var key = button.getAttribute('data-range');\n      control.tbAiRangeWidgets.forEach(function (widget) { apply(widget, key); });\n      if (control.hasAttribute('data-tb-ai-time-range')) {\n        control.tbAiLeader = JSON.stringify(control.tbAiRangeWidgets[0].widget.config.timewindow || {});\n      }\n      api.sync();\n    }, true);\n    new MutationObserver(function (mutations) {\n      for (var i = 0; i < mutations.length; i++) {\n        var added = mutations[i].addedNodes;\n        for (var j = 0; j < added.length; j++) {\n          var node = added[j];\n          if (node.nodeType === 1 && (node.tagName === 'TB-TIMEWINDOW' || node.querySelector('tb-timewindow')\n              || node.hasAttribute('data-tb-ai-time-range') || node.querySelector('[data-tb-ai-time-range]'))) {\n            api.schedule();\n            return;\n          }\n        }\n      }\n    }).observe(document.body, { childList: true, subtree: true });\n  }\n  api.contexts.push(ctx);\n  if (typeof ctx.registerDestroyCallback === 'function') {\n    ctx.registerDestroyCallback(function () {\n      var index = api.contexts.indexOf(ctx);\n      if (index >= 0) { api.contexts.splice(index, 1); }\n    });\n  }\n  api.schedule();\n})(ctx);\nthis.ctx = ctx;\nthis.deviceName = 'pet-care-test';\nthis.active = null;\nthis.foodWeight = this.temp = this.humidity = this.waterEnough = null;\nthis.tempHigh = this.humHigh = this.waterLow = false;\nthis.mcuCurrent = this.envCurrent = this.online = false;\nthis.buttonPresses = null; this.lastButtonText = 'No timestamp available';\nthis.lightConfirmed = 'Unknown'; this.lightPending = false;\nthis.hasActiveAlarms = false; this.alarmMessage = 'Waiting for live telemetry';\nthis.lastUpdatedText = 'Connecting...'; this.lastUpdatedTitle = '';\nthis.tabs = [\n { id: 'monitoring', label: 'Monitoring & Trends', icon: 'mdi:chart-timeline-variant' },\n { id: 'alarms', label: 'Alarms & Events', icon: 'mdi:bell-outline' }\n];\nconst stateParams = ctx.stateController.getStateParams() || {};\nthis.activeTab = this.tabs.some(t => t.id === stateParams.devicePageTab) ? stateParams.devicePageTab : this.tabs[0].id;\nthis.selectTab = (id) => { this.activeTab = id; ctx.detectChanges(); ctx.stateController.updateState(null, Object.assign({}, ctx.stateController.getStateParams(), {devicePageTab:id})); };\nconst raw = {}; let latestTs = 0;\nconst bool = v => v === true || v === 'true' || v === 1 || v === '1';\nconst num = key => raw[key] && Number.isFinite(Number(raw[key].value)) ? Number(raw[key].value) : null;\nconst flag = key => raw[key] && bool(raw[key].value);\nconst refresh = () => {\n const age = latestTs ? Date.now() - latestTs : Infinity;\n this.online = age >= -5000 && age <= 15000 && this.active !== false;\n this.mcuCurrent = this.online && flag('mcu_data_fresh');\n this.envCurrent = this.online && flag('environment_valid');\n this.foodWeight = this.mcuCurrent ? num('food_weight_g') : null;\n this.temp = this.envCurrent ? num('temperature_c') : null;\n this.humidity = this.envCurrent ? num('humidity_pct') : null;\n this.waterEnough = this.mcuCurrent && raw.water_enough ? bool(raw.water_enough.value) : null;\n this.waterLow = this.mcuCurrent && flag('water_low');\n this.tempHigh = this.envCurrent && flag('temperature_high'); this.humHigh = this.envCurrent && flag('humidity_high');\n this.buttonPresses = num('button_presses');\n const buttonTs = num('last_button_ts');\n this.lastButtonText = buttonTs && buttonTs > 1000000000000 ? new Date(buttonTs).toLocaleString() : 'No clock-confirmed press timestamp';\n this.lightConfirmed = this.online && flag('light_known') && raw.light_on ? (bool(raw.light_on.value) ? 'On' : 'Off') : 'Unknown';\n this.lightPending = this.online && flag('light_pending');\n this.lastUpdatedText = latestTs ? (age <= 15000 ? 'Updated just now' : 'Stale · ' + Math.max(1,Math.floor(age/1000)) + 's since telemetry') : 'Waiting for telemetry';\n this.lastUpdatedTitle = latestTs ? new Date(latestTs).toLocaleString() : '';\n const alerts = [];\n if (this.foodWeight != null && this.foodWeight <= 10) alerts.push('Low food');\n if (this.waterLow) alerts.push('Low water');\n if (this.tempHigh) alerts.push('High temperature');\n if (this.humHigh) alerts.push('High humidity');\n this.hasActiveAlarms = alerts.length > 0;\n this.alarmMessage = !this.online ? 'Telemetry unavailable / offline' : !this.mcuCurrent || !this.envCurrent ? 'Source data stale / unavailable' : alerts.length ? alerts.join(' · ') : 'All current readings within range';\n ctx.detectChanges();\n};\nlet subId = null;\nctx.subscriptionApi.createSubscription({type:'latest',datasources:[{type:'entity',entityAliasId:ctx.aliasController.getEntityAliasId('Device'),dataKeys:[\n {type:'attribute',name:'active',settings:{}},\n ...['food_weight_g','temperature_c','humidity_pct','temperature_high','humidity_high','water_enough','water_low','mcu_data_fresh','environment_valid','button_presses','last_button_ts','light_on','light_known','light_pending'].map(name => ({type:'timeseries',name,settings:{}}))\n]}],callbacks:{onDataUpdated:(sub)=>{\n for (const e of sub.data || []) {\n  if (e.datasource && e.datasource.entityName) this.deviceName=e.datasource.entityName;\n  const pair=e.data && e.data.length ? e.data[e.data.length-1] : null;\n  if (!pair) continue;\n  if(e.dataKey.name==='active') this.active=bool(pair[1]);\n  else {raw[e.dataKey.name]={ts:pair[0],value:pair[1]}; latestTs=Math.max(latestTs,pair[0]);}\n }\n refresh();\n}}},true).subscribe(sub=>{subId=sub.id;});\nconst liveTimer=setInterval(refresh,1000);\nctx.registerDestroyCallback(()=>{if(subId)ctx.subscriptionApi.removeSubscription(subId);clearInterval(liveTimer);});",
+                  "resources": []
+                },
+                "actions": {}
+              },
+              "outerMargin": true,
+              "margin": 10
+            }
+          }
+        }
+      },
+      "monitoring": {
+        "name": "Monitoring & Trends",
+        "root": false,
+        "layouts": {
+          "main": {
+            "widgets": {
+              "26e36636-68ce-48d7-b256-22d9d141c4a9": {
+                "sizeX": 12,
+                "sizeY": 3,
+                "col": 12,
+                "row": 5,
+                "mobileHeight": 6
+              },
+              "04368486-0e87-427e-9e98-73211f2a39c6": {
+                "sizeX": 12,
+                "sizeY": 3,
+                "col": 0,
+                "row": 5,
+                "mobileHeight": 6
+              },
+              "de312f76-6b21-4c79-a993-1ed4c4c607eb": {
+                "sizeX": 16,
+                "sizeY": 5,
+                "col": 0,
+                "row": 0,
+                "mobileHeight": 6
+              },
+              "ef4216c0-9e1a-469d-bc42-ef3f10472c3f": {
+                "sizeX": 8,
+                "sizeY": 5,
+                "col": 16,
+                "row": 0,
+                "mobileHeight": 6
+              },
+              "7a655d14-33ae-41ce-6e63-68867dceae1e": {
+                "sizeX": 4,
+                "sizeY": 2,
+                "row": 8,
+                "col": 0
+              }
+            },
+            "gridSettings": {
+              "layoutType": "default",
+              "backgroundColor": "rgba(0,0,0,0)",
+              "columns": 24,
+              "margin": 10,
+              "outerMargin": false,
+              "backgroundSizeMode": "100%",
+              "autoFillHeight": true,
+              "mobileAutoFillHeight": false,
+              "mobileRowHeight": 70
+            },
+            "breakpoints": {
+              "md": {
+                "gridSettings": {
+                  "layoutType": "default",
+                  "backgroundColor": "rgba(0,0,0,0)",
+                  "columns": 24,
+                  "margin": 10,
+                  "outerMargin": false,
+                  "backgroundSizeMode": "100%",
+                  "autoFillHeight": false,
+                  "mobileAutoFillHeight": false,
+                  "mobileRowHeight": 70,
+                  "viewFormat": "list",
+                  "rowHeight": 70
+                },
+                "widgets": {
+                  "de312f76-6b21-4c79-a993-1ed4c4c607eb": {
+                    "sizeX": 16,
+                    "sizeY": 5,
+                    "col": 0,
+                    "row": 0,
+                    "mobileHeight": 6,
+                    "mobileOrder": 0
+                  },
+                  "ef4216c0-9e1a-469d-bc42-ef3f10472c3f": {
+                    "sizeX": 8,
+                    "sizeY": 5,
+                    "col": 16,
+                    "row": 0,
+                    "mobileHeight": 6,
+                    "mobileOrder": 1
+                  },
+                  "04368486-0e87-427e-9e98-73211f2a39c6": {
+                    "sizeX": 12,
+                    "sizeY": 3,
+                    "col": 0,
+                    "row": 5,
+                    "mobileHeight": 6,
+                    "mobileOrder": 2
+                  },
+                  "26e36636-68ce-48d7-b256-22d9d141c4a9": {
+                    "sizeX": 12,
+                    "sizeY": 3,
+                    "col": 12,
+                    "row": 5,
+                    "mobileHeight": 6,
+                    "mobileOrder": 3
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "alarms": {
+        "name": "Alarms & Events",
+        "root": false,
+        "layouts": {
+          "main": {
+            "widgets": {
+              "f6e4f485-f8a2-4aca-9510-02228dec2a1a": {
+                "sizeX": 24,
+                "sizeY": 8,
+                "col": 0,
+                "row": 0,
+                "mobileHeight": 7
+              }
+            },
+            "gridSettings": {
+              "layoutType": "default",
+              "backgroundColor": "rgba(0,0,0,0)",
+              "columns": 24,
+              "margin": 10,
+              "outerMargin": false,
+              "backgroundSizeMode": "100%",
+              "autoFillHeight": true,
+              "mobileAutoFillHeight": false,
+              "mobileRowHeight": 70
+            }
+          }
+        }
+      }
+    },
+    "entityAliases": {
+      "61b167aa-f35a-4c3b-a47f-b29b36e8012c": {
+        "id": "61b167aa-f35a-4c3b-a47f-b29b36e8012c",
+        "alias": "Device",
+        "filter": {
+          "resolveMultiple": false,
+          "singleEntity": {
+            "entityType": "DEVICE",
+            "id": "0598a640-d841-11f1-abc4-373280129aee"
+          },
+          "type": "singleEntity"
+        }
+      }
+    },
+    "additionalInfo": {
+      "aiGenerated": true,
+      "aiGeneratedBy": "Device Dashboard Assistant"
+    },
+    "filters": {}
+  },
+  "resources": []
+}

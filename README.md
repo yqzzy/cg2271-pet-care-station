@@ -13,6 +13,7 @@ CG2271 group project: monitor food, water and environmental conditions, notify a
 - [Hardware: components and pin worksheet](docs/hardware.md)
 - [UART protocol agreement](protocol/README.md)
 - [Dashboard requirements](dashboard/README.md)
+- [ESP32: required fixes before the Week 13 demo](docs/esp32-required-fixes.md)
 - [Integration order](docs/team-guide.md#integration-order) and [test checklist](tests/README.md)
 
 ## Board responsibilities
@@ -47,7 +48,7 @@ firmware/mcxc444/              Local-controller code and unfinished module templ
 firmware/esp32/                Arduino C++ templates
   pet_care_station/            Sketch, environment, bridge and cloud modules
 protocol/                     Cross-board message contract
-dashboard/                    ThingsBoard setup and future exports
+dashboard/                    ThingsBoard setup, dashboard and alarm-rule exports
 hardware/dispenser/           Future CAD, wiring photos and assembly notes
 tests/                        Manual subsystem and integration checks
 ```

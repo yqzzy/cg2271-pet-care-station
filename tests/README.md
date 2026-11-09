@@ -78,6 +78,34 @@ Follow the [integrated setup](../firmware/esp32/README.md#thingsboard-connectivi
 - Confirm dashboard widgets and alarms honor validity flags instead of showing previously stored values as current.
 - Measure stack margins, sensor sampling jitter and UART overflow/frame loss during TLS connection and DHT reads. Hardware results remain pending until recorded.
 
+## Bidirectional button and light checks
+
+Run `python tests/esp32/run_tests.py` after installing ArduinoJson 7.4.2 (set `ARDUINOJSON_INCLUDE` to its `src` folder if it is outside `~/Documents/Arduino/libraries/ArduinoJson/src`). All eight suites use warnings as errors. The new bridge suite covers cumulative button state, ACK-only light confirmation, transient dispatch retry, cancellation during dispatch, queue expiry and timer wraparound. RPC suites cover aliases, exact Boolean params, malformed/oversize/deep/trailing JSON, request-ID preservation, repeated requests and session reset. The UART suite executes the production parser and task bodies with host Arduino/FreeRTOS substitutes, checking checksums, queue-full retention, duplicate/next button events, nonblocking control access, matching light ACKs, retries and timeout. These substitutes do not measure actual scheduling or electrical signals.
+
+Upload the integrated sketch after reinstalling the changed PetStationUart library for Arduino IDE. Retain the current ignored `secrets.h`. Reset both boards together, then record each bench result:
+
+1. Press five times, allowing each press to be acknowledged. Expect five distinct `CONSUME BUTTON` sequences, five matching MCU ACK logs/cues and `button_presses=5` on the dashboard. Duplicate UART retries must not increment the count.
+2. Turn Wi-Fi off, press again, and verify local ACK/cue still arrives within the MCU's roughly 600 ms retry window. After reconnection the absolute count must include the offline presses. Count resets only when the ESP32 resets; it is not a persistent lifetime counter.
+3. In ThingsBoard Latest telemetry verify `button_presses`, `last_button_ts`, `light_known`, `light_pending` and `light_status`. Before a light ACK, `light_on` is omitted and the confirmed indicator must show unknown. Last button wall time is approximate and only sent with synchronized time.
+4. Use the nonpersistent legacy switch (`getValue` / `setValue`, Boolean params, five-second timeout). Set ON then OFF, separately. Match the RPC request, `LIGHT` sequence, `LIGHT_ACK`, Boolean reply and `light_on`. Inspect the physical LED too: an ACK is evidence of command consumption, not an optical measurement.
+5. Disconnect MCU RX or power to prevent a light ACK. Expect bounded retries, an error RPC response and `light_known=false`; an older stored `light_on` must not be shown as current. Reconnect and explicitly issue a new command to establish a known state.
+6. Send two overlapping set requests. One may proceed; the other must receive a busy error without changing the first request's correlation. Test malformed/string params and unsupported methods: no UART light command should result.
+7. Lose cloud connectivity during a request. Queued, unclaimed requests are cancelled; a request already claimed by the UART owner may complete its bounded attempts. Reconnect must not replay old commands or send old RPC replies. Verify the RPC subscription is restored by issuing a new command.
+8. Trigger low food (<=10 g), low water and both configured environment alerts using real controlled readings. Verify invalid source data does not create a threshold alarm or clear an active threshold alarm; stale sources get separate alarms. With all telemetry offline, verify the dashboard stops presenting frozen values as current. Follow [dashboard setup](../dashboard/README.md).
+9. In the demo room, verify the exact configured SSID and 2.4 GHz hotspot, then capture Wi-Fi IP, validated MQTT connection and current source values. Measure UART ACK latency during TLS reconnect, DHT reads and concurrent traffic. Record physical results using the template below.
+
+### Recorded software validation - 2026-11-09
+
+Implementation revision: `fcd6170` on `codex/esp32-bidirectional-control`. Subsequent documentation updates do not change the compiled sources.
+
+- `python tests/esp32/run_tests.py`: all eight host suites passed in the working repository and again in a clean local clone. Environment suite: 15 tests, zero failures; the other suites cover reconnects, payloads, bridge control/integration, RPC parsing/session handling and the UART driver. Compiler: g++ 13.2.0 with C++11 and warnings as errors.
+- Configured integrated sketch: compiled for `esp32:esp32:esp32s2`, **985704 bytes flash / 43084 bytes global memory**. The existing constant-CA-marker `-Waddress` warnings were reported; no compile errors.
+- Clean local clone: `git clone --no-hardlinks --single-branch --branch codex/esp32-bidirectional-control . build/esp32-clean-clone`. Verified the required library, telemetry files, tests and dashboard export exist and `secrets.h` does not. A fresh build directory was used, so no configured header could remain from a previous build.
+- Clean-clone compile command: `arduino-cli compile --fqbn esp32:esp32:esp32s2 --library build/esp32-clean-clone/firmware/esp32/libraries/PetStationUart --build-path build/esp32-clean-build --jobs 4 --warnings all build/esp32-clean-clone/firmware/esp32/pet_care_station`; result: **556717 bytes flash / 26560 bytes global memory**. Its dependency scan referenced `secrets.example.h`, not private `secrets.h`; networking is disabled by the placeholder configuration at runtime.
+- Toolchain/dependencies: Arduino CLI 1.5.1, ESP32 Arduino core 3.3.11, Adafruit DHT 1.4.7, Unified Sensor 1.1.15, PubSubClient 2.8, ArduinoJson 7.4.2 and the repository's PetStationUart source. The updated UART library was also installed for Arduino IDE, and its installed source hash matched the repository copy.
+- Documentation/export checks: relative links exist; Git whitespace checks passed; all six dashboard/alarm exports parse as JSON without credential fields. Switch settings and all five alarm trigger/clear expressions were checked. See [dashboard UI evidence and limitations](../dashboard/README.md).
+- No board upload, physical button/cue or LED measurement, source calibration, demo-hotspot run, real alarm trigger/recovery, stack-margin measurement or concurrency timing test was performed during this change. The dashboard device was offline. These remain bench acceptance work.
+
 ## Evidence record template
 
 - Scenario / tester / date:
