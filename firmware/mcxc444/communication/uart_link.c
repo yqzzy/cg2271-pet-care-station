@@ -13,8 +13,7 @@
  *   3. Other telemetry types are dropped for now: the UART protocol has no wire message for
  *      light results (the module ACKs consumeLight() itself) or dispense results.
  *
- * Light commands are NOT handled here: the ACTUATOR task polls consumeLight() (see
- * test_tasks.c, and Member 1's Actuator_Task later).
+ * Light commands are NOT handled here: Actuator_Task polls consumeLight().
  */
 #include "uart_link.h"
 #include "mcxc_uart.h"

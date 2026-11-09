@@ -11,6 +11,9 @@
  *                                                              -> Actuator_Task (Member 1)
  *   telemetryQueue Button_Task                                 -> UartLink_Task (adapter in
  *                  communication/uart_link.c, calls sendButton() of Member 4's UART module)
+ *   dispenseDoneSem (binary semaphore) Actuator_Task gives it when a gate cycle ends or a
+ *                  dispense request is rejected -> FoodSensor_Task takes it before checking
+ *                  whether the bowl is full
  *
  * Remote LIGHT commands do NOT use actuatorQueue. Member 4's UART module delivers them with
  * consumeLight(&on), which the actuator task must poll regularly; the module sends the ACK
@@ -30,6 +33,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "semphr.h"
 
 /* Milliseconds since scheduler start. Wraps after ~49 days: compare with
  * (int32_t)(now - deadline) >= 0, never with plain < or >. */
@@ -76,6 +80,9 @@ typedef struct {
 extern QueueHandle_t buttonQueue;
 extern QueueHandle_t actuatorQueue;
 extern QueueHandle_t telemetryQueue;
+
+/* ---- Semaphore (created in rtos_setup.c) ---- */
+extern SemaphoreHandle_t dispenseDoneSem;
 
 /* ---- Queue depths (proposed, tune after testing) ---- */
 #define BUTTON_QUEUE_LEN     8

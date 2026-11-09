@@ -32,9 +32,11 @@
 
 /* ---- Gate positions and timing (TODO: calibrate on the built mechanism) ----
  * SG90: about 0.5 ms to 2.4 ms pulse for its full ~180 degrees; 1.5 ms is the centre. */
-#define SERVO_CLOSED_US     1000u         /* pulse width with the gate closed               */
-#define SERVO_OPEN_US       2000u         /* pulse width with the gate open                 */
-#define DISPENSE_OPEN_MS    500u          /* time held open = portion size                  */
+#define SERVO_CLOSED_US     500u          /* gate closed: 0 deg                             */
+#define SERVO_OPEN_US       1450u         /* gate open: 90 deg                              */
+#define DISPENSE_OPEN_MS    500u          /* time held open = portion size. Tune with the     */
+                                          /* [feed] log so every portion adds >= 7 g (2+    */
+                                          /* candies): an empty bowl must pass 20 g in 3    */
 #define SERVO_MOVE_MS       300u          /* time for the servo to swing open -> closed     */
 
 /* TPM count rate with prescaler 64 on the 8 MHz clock = 125 kHz, i.e. 8 us per count.
@@ -55,6 +57,11 @@ static bool           initialised = false;
 static Phase          phase       = PHASE_IDLE;
 static uint32_t       phaseEndMs  = 0;
 static DispenseStatus status      = DISPENSE_IDLE;
+
+/* Gate settings: start from the #defines above; the bench tool may change them at run time */
+static uint32_t closedUs = SERVO_CLOSED_US;
+static uint32_t openUs   = SERVO_OPEN_US;
+static uint32_t openMs   = DISPENSE_OPEN_MS;
 
 static void servoSetPulse(uint32_t pulse_us) {
     SERVO_TPM->CONTROLS[SERVO_CH].CnV = SERVO_COUNTS(pulse_us);
@@ -78,7 +85,7 @@ bool Dispenser_Init(void) {
     /* Channel: edge-aligned PWM, high-true (MS = 10, ELS = 10), start at the closed position */
     SERVO_TPM->CONTROLS[SERVO_CH].CnSC &= ~(TPM_CnSC_MSA_MASK | TPM_CnSC_ELSA_MASK);
     SERVO_TPM->CONTROLS[SERVO_CH].CnSC |= (TPM_CnSC_MSB(1) | TPM_CnSC_ELSB(1));
-    servoSetPulse(SERVO_CLOSED_US);
+    servoSetPulse(closedUs);
 
     /* Pin to the TPM function */
     SERVO_PORT->PCR[SERVO_PIN] &= ~PORT_PCR_MUX_MASK;
@@ -100,9 +107,9 @@ DispenseStartResult Dispenser_Start(uint32_t now_ms) {
     if (phase != PHASE_IDLE) {
         return DISPENSE_REJECTED_BUSY;      /* never restart or extend the cycle */
     }
-    servoSetPulse(SERVO_OPEN_US);
+    servoSetPulse(openUs);
     phase      = PHASE_OPEN;
-    phaseEndMs = now_ms + DISPENSE_OPEN_MS;
+    phaseEndMs = now_ms + openMs;
     status     = DISPENSE_BUSY;
     return DISPENSE_STARTED;
 }
@@ -114,7 +121,7 @@ void Dispenser_Update(uint32_t now_ms) {
     }
 
     if (phase == PHASE_OPEN) {
-        servoSetPulse(SERVO_CLOSED_US);
+        servoSetPulse(closedUs);
         phase      = PHASE_CLOSING;
         phaseEndMs = now_ms + SERVO_MOVE_MS;
     } else {                                /* PHASE_CLOSING: gate is back at CLOSED */
@@ -127,7 +134,7 @@ void Dispenser_Stop(void) {
     if (!initialised) {
         return;
     }
-    servoSetPulse(SERVO_CLOSED_US);
+    servoSetPulse(closedUs);
     if (phase != PHASE_IDLE) {
         status = DISPENSE_FAILED;
     }
@@ -143,5 +150,32 @@ bool Dispenser_GetNextDeadlineMs(uint32_t *deadline_ms) {
         return false;
     }
     *deadline_ms = phaseEndMs;
+    return true;
+}
+
+static uint32_t clampPulse(uint32_t us) {
+    return (us < 500u) ? 500u : (us > 2500u) ? 2500u : us;
+}
+
+void Dispenser_SetTuning(uint32_t closed_us, uint32_t open_us, uint32_t open_ms) {
+    closedUs = clampPulse(closed_us);
+    openUs   = clampPulse(open_us);
+    openMs   = open_ms;
+    if (initialised && phase == PHASE_IDLE) {
+        servoSetPulse(closedUs);            /* show the new closed position at once */
+    }
+}
+
+void Dispenser_GetTuning(uint32_t *closed_us, uint32_t *open_us, uint32_t *open_ms) {
+    *closed_us = closedUs;
+    *open_us   = openUs;
+    *open_ms   = openMs;
+}
+
+bool Dispenser_HoldPulse(uint32_t pulse_us) {
+    if (!initialised || phase != PHASE_IDLE) {
+        return false;
+    }
+    servoSetPulse(clampPulse(pulse_us));
     return true;
 }

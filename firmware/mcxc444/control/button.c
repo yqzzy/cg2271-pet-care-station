@@ -9,10 +9,11 @@
  *        -> Button_Task (debounce) -> actuatorQueue: ACT_BEEP_ACK
  *                                  -> telemetryQueue: TEL_BUTTON_PRESSED
  *
- * TODO(pins): docs/hardware.md has no button pin yet. The defaults below use the
- * on-board SW2 (PTC3, active low) so it can be tested with no wiring. When the real
- * button pin is agreed, change ONLY the block of #defines below. The button must be on
- * Port A, C or D (the only ports with GPIO interrupts).
+ * Pin: 3-pin push button module, S -> PTD4 (J2-6, Arduino D10), middle (+) -> 3.3 V (J3-8,
+ * never 5 V), - -> GND (J2-14). The module pulls S up to + and the button shorts S to GND, so
+ * it is active low; the internal pull-up is also enabled. To move it, change ONLY the block
+ * of #defines below. The button must be on Port A, C or D (the only ports with GPIO
+ * interrupts). On-board SW2 (PTC3) is no longer used.
  */
 #include "button.h"
 #include "../app/rtos_types.h"
@@ -23,10 +24,10 @@
 #include "queue.h"
 
 /* ---- Pin configuration: change these when the pin worksheet is filled in ---- */
-#define BUTTON_PORT         PORTC                    /* SW2 is PTC3                       */
-#define BUTTON_GPIO         GPIOC
-#define BUTTON_PIN          3u
-#define BUTTON_PORT_CLOCK   SIM_SCGC5_PORTC_MASK
+#define BUTTON_PORT         PORTD                    /* external button on PTD4 (J2-6)    */
+#define BUTTON_GPIO         GPIOD
+#define BUTTON_PIN          4u
+#define BUTTON_PORT_CLOCK   SIM_SCGC5_PORTD_MASK
 #define BUTTON_IRQn         PORTC_PORTD_IRQn         /* Port A: PORTA_IRQn                 */
 #define BUTTON_ISR          PORTC_PORTD_IRQHandler   /* Port A: PORTA_IRQHandler           */
 

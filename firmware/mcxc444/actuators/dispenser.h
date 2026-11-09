@@ -51,4 +51,11 @@ DispenseStatus Dispenser_GetStatus(void);
  * so the actuator task can wake for it. False if no cycle is running. */
 bool Dispenser_GetNextDeadlineMs(uint32_t *deadline_ms);
 
+/* Bench tuning, used only by the calibration tool (food_calibration.c): change the gate
+ * settings at run time instead of rebuilding. Pulses are clamped to 500-2500 us. */
+void Dispenser_SetTuning(uint32_t closed_us, uint32_t open_us, uint32_t open_ms);
+void Dispenser_GetTuning(uint32_t *closed_us, uint32_t *open_us, uint32_t *open_ms);
+/* Holds the gate at any pulse width while no cycle runs. False while busy. */
+bool Dispenser_HoldPulse(uint32_t pulse_us);
+
 #endif /* DISPENSER_H */

@@ -38,12 +38,15 @@
  * Centre-aligned PWM counts up AND down, so frequency = 1 MHz / (2 * MOD). */
 #define BUZZER_MOD          (1000000u / (2u * BUZZER_TONE_HZ))
 
-/* ---- Station light configuration (TODO: external LED pin; default = on-board red LED) ---- */
-#define LIGHT_PORT          PORTE
-#define LIGHT_GPIO          GPIOE
-#define LIGHT_PORT_CLOCK    SIM_SCGC5_PORTE_MASK
-#define LIGHT_PIN           31u           /* PTE31 = red LED, active low */
-#define LIGHT_ACTIVE_LOW    1
+/* ---- Station light configuration: external RGB LED module (common cathode) ----
+ * One colour pin (R, G or B) -> PTD6 (J2-8, Arduino D11), module - -> GND (J2-14). Add a
+ * 220-330 ohm series resistor if the module has none. Active high. The on-board red LED
+ * (PTE31) is no longer used. */
+#define LIGHT_PORT          PORTD
+#define LIGHT_GPIO          GPIOD
+#define LIGHT_PORT_CLOCK    SIM_SCGC5_PORTD_MASK
+#define LIGHT_PIN           6u            /* PTD6 = external LED, active high */
+#define LIGHT_ACTIVE_LOW    0
 
 static bool     cueActive = false;
 static uint32_t cueEndMs  = 0;

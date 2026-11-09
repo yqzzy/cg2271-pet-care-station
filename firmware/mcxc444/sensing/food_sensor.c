@@ -18,16 +18,13 @@
 #include "../app/shared_state.h"
 #include "../app/rtos_types.h"
 #include "queue.h"
+#include "semphr.h"
 
 /* TODO (lab): Check the sampling period against the HX711's output rate. */
 #define FOOD_SAMPLE_PERIOD_MS  250u
 
 /* TODO (lab): Set to 1 temporarily to record raw calibration readings. */
 #define FOOD_DEBUG_LOG  0u
-
-#if FOOD_DEBUG_LOG
-#include "fsl_debug_console.h"
-#endif
 
 /*
  * TODO (team): Confirm PTB1 and PTB3 are available for the HX711.
@@ -41,13 +38,14 @@
 #define HX711_CLOCK_PIN   3u
 
 /*
- * Measured with the bowl mounted (80 g reference, 2026-11-06); redo after remounting.
- * The cell is mounted so counts fall as weight is added; the conversion handles the sign.
+ * Measured with the bench tool (food_calibration.c) after the excitation wiring fix, bowl
+ * mounted, 36 g reference (2026-11-09). Redo after remounting the bowl or load cell.
+ * Counts fall as weight is added (about 682 counts per gram); the conversion handles the sign.
  */
 #define FOOD_CALIBRATED          1u
-#define FOOD_EMPTY_RAW           64436  // raw count with the empty bowl (measured 2026-11-06).
-#define FOOD_REFERENCE_RAW       7132   // raw count with the empty bowl plus 80 g; counts fall as weight is added.
-#define FOOD_REFERENCE_MASS_MG   80000
+#define FOOD_EMPTY_RAW           58613  // raw count with the empty bowl
+#define FOOD_REFERENCE_RAW       34048  // raw count with the empty bowl plus 36 g
+#define FOOD_REFERENCE_MASS_MG   36000
 
 /*
  * Reject weights substantially below the empty-bowl baseline.
@@ -57,15 +55,31 @@
 #define FOOD_MIN_VALID_MG  (-5000)
 
 /*
- * TODO (Members 1 and 3): Agree on thresholds, confirmation count,
- * minimum interval and what happens when the dispenser is busy.
- * TODO (lab): Choose thresholds from measured bowl weights.
+ * Feeding policy: top the bowl up in portions until it is above the full threshold.
+ *   WATCHING    weight <= FOOD_LOW_THRESHOLD_MG for FOOD_LOW_CONFIRM_SAMPLES readings
+ *               -> request one portion
+ *   DISPENSING  wait for the actuator task to give dispenseDoneSem (gate cycle ended)
+ *   SETTLING    wait FOOD_SETTLE_MS so the food lands and the filter catches up, then
+ *               weight > FOOD_FULL_THRESHOLD_MG -> LOCKOUT, otherwise request another portion
+ *   LOCKOUT     no top-up for FOOD_EATING_TIME_MS (time for the pet to eat) -> WATCHING
+ * The portion size (DISPENSE_OPEN_MS in dispenser.c) is tuned so that a top-up from an empty
+ * bowl needs at most three portions. An invalid reading (bowl removed, sensor fault) never
+ * starts or continues a top-up.
  */
 #define FOOD_FEEDING_ENABLED          1u
-#define FOOD_LOW_THRESHOLD_MG         10000   /* 10 g or less: request one portion */
-#define FOOD_REARM_THRESHOLD_MG       20000   /* must reach 20 g before the next request */
+#define FOOD_LOW_THRESHOLD_MG         10000   /* 10 g or less: start a top-up             */
+#define FOOD_FULL_THRESHOLD_MG        20000   /* top up until the bowl is above 20 g      */
 #define FOOD_LOW_CONFIRM_SAMPLES      3u
-#define FOOD_MIN_INTERVAL_MS          10000u
+#define FOOD_SETTLE_MS                1500u   /* food lands, 4-sample filter catches up   */
+#define FOOD_EATING_TIME_MS           10000u  /* no top-up for 10 s after a full bowl     */
+#define FOOD_DISPENSE_TIMEOUT_MS      5000u   /* longest wait for the gate cycle to end   */
+
+/* 1 = print each portion and the end of each top-up (used to tune DISPENSE_OPEN_MS). */
+#define FOOD_PORTION_LOG  1u
+
+#if FOOD_DEBUG_LOG || FOOD_PORTION_LOG
+#include "fsl_debug_console.h"
+#endif
 
 /* Configure the HX711 data and clock pins. */
 bool FoodSensor_Init(void)
@@ -153,6 +167,21 @@ static bool FoodSensor_TryReadRaw(int32_t *raw)
     return true;
 }
 
+/* Raw HX711 access for the calibration tool (food_calibration.c). */
+bool FoodSensor_ReadRaw(int32_t *raw)
+{
+    return FoodSensor_TryReadRaw(raw);
+}
+
+/* The compiled calibration, so the calibration tool can start from it. False if uncalibrated. */
+bool FoodSensor_GetCalibration(int32_t *empty_raw, int32_t *reference_raw, int32_t *reference_mg)
+{
+    *empty_raw = FOOD_EMPTY_RAW;
+    *reference_raw = FOOD_REFERENCE_RAW;
+    *reference_mg = FOOD_REFERENCE_MASS_MG;
+    return FOOD_CALIBRATED != 0u && FOOD_REFERENCE_RAW != FOOD_EMPTY_RAW;
+}
+
 /* Convert a raw HX711 reading to food weight in milligrams. */
 static bool FoodSensor_ConvertToMilligrams(int32_t raw, int32_t *milligrams)
 {
@@ -227,73 +256,126 @@ static bool FoodSensor_Filter(FoodFilter *filter, int32_t weight, int32_t *filte
     return true;
 }
 
+typedef enum {
+    FEED_WATCHING,
+    FEED_DISPENSING,
+    FEED_SETTLING,
+    FEED_LOCKOUT
+} FeedPhase;
+
 typedef struct {
-    uint32_t low_count;
-    bool waiting_for_rearm;
-    bool has_requested;
-    TickType_t last_request;
+    FeedPhase  phase;
+    TickType_t since;       /* when the current phase started            */
+    uint32_t   low_count;   /* consecutive low readings while WATCHING   */
+    uint32_t   portions;    /* portions requested in this top-up         */
+    int32_t    before_mg;   /* filtered weight before the latest portion */
 } FeedingState;
 
-/* Request one portion after food has remained low for several readings. */
-static void FoodSensor_CheckFeeding(FeedingState *state, bool valid, int32_t weight, TickType_t now)
+static void FoodSensor_Enter(FeedingState *state, FeedPhase phase, TickType_t now)
 {
-    TickType_t min_interval = pdMS_TO_TICKS(FOOD_MIN_INTERVAL_MS);
+    state->phase = phase;
+    state->since = now;
+}
 
-    if (min_interval == 0u) {
-        min_interval = 1u;
-    }
-
-    if (FOOD_FEEDING_ENABLED == 0u ||
-        FOOD_LOW_CONFIRM_SAMPLES == 0u ||
-        FOOD_LOW_THRESHOLD_MG >= FOOD_REARM_THRESHOLD_MG) {
-        return;
-    }
-
-    if (!valid) {
-        state->low_count = 0u;
-        return;
-    }
-
-    if (state->waiting_for_rearm) {
-        if (weight >= FOOD_REARM_THRESHOLD_MG) {
-            state->waiting_for_rearm = false;
-        } else {
-            return;
-        }
-    }
-
-    if (weight > FOOD_LOW_THRESHOLD_MG) {
-        state->low_count = 0u;
-        return;
-    }
-
-    if (state->low_count < FOOD_LOW_CONFIRM_SAMPLES) {
-        state->low_count++;
-    }
-
-    if (state->low_count < FOOD_LOW_CONFIRM_SAMPLES) {
-        return;
-    }
-
-    if (state->has_requested && (TickType_t)(now - state->last_request) < min_interval) {
-        return;
-    }
-
-    /*
-     * TODO (Member 1): Confirm the command value and handling when busy.
-     * Value 1 currently means a request for one portion.
-     */
+/* Queue one portion (value 1) for the actuator task. False if the queue is full. */
+static bool FoodSensor_RequestPortion(void)
+{
     ActuatorCmd command = {
         .type = ACT_DISPENSE,
-        .value = 1u, // request one portion
+        .value = 1u,
         .request_id = 0u
     };
 
-    if (xQueueSend(actuatorQueue, &command, 0u) == pdPASS) {
-        state->waiting_for_rearm = true;
-        state->has_requested = true;
-        state->last_request = now;
-        state->low_count = 0u;
+    /* Drop a stale "done" left by a dispense this task did not request (bench test). */
+    (void)xSemaphoreTake(dispenseDoneSem, 0);
+    return xQueueSend(actuatorQueue, &command, 0) == pdPASS;
+}
+
+#if FOOD_PORTION_LOG
+/* Splits milligrams into sign, whole grams and tenths for PRINTF (no float printing). */
+static const char *FoodSensor_Grams(int32_t mg, unsigned *whole, unsigned *tenth)
+{
+    uint32_t a = (mg < 0) ? (uint32_t)(-(int64_t)mg) : (uint32_t)mg;
+    *whole = (unsigned)(a / 1000u);
+    *tenth = (unsigned)((a % 1000u) / 100u);
+    return (mg < 0) ? "-" : "";
+}
+
+static void FoodSensor_LogPortion(const FeedingState *state, int32_t weight, bool full)
+{
+    unsigned aw, at, bw, bt;
+    const char *as = FoodSensor_Grams(weight - state->before_mg, &aw, &at);
+    const char *bs = FoodSensor_Grams(weight, &bw, &bt);
+    PRINTF("[feed] portion %u added %s%u.%u g, bowl %s%u.%u g%s\r\n",
+           (unsigned)state->portions, as, aw, at, bs, bw, bt,
+           full ? " -> full, eating time" : " -> another portion");
+}
+#endif
+
+/* Feeding state machine; see the policy comment at the top of the file. Runs once per sample. */
+static void FoodSensor_CheckFeeding(FeedingState *state, bool valid, int32_t weight, TickType_t now)
+{
+    if (FOOD_FEEDING_ENABLED == 0u ||
+        FOOD_LOW_CONFIRM_SAMPLES == 0u ||
+        FOOD_LOW_THRESHOLD_MG >= FOOD_FULL_THRESHOLD_MG) {
+        return;
+    }
+
+    TickType_t elapsed = (TickType_t)(now - state->since);
+
+    switch (state->phase) {
+    case FEED_WATCHING:
+        if (!valid || weight > FOOD_LOW_THRESHOLD_MG) {
+            state->low_count = 0u;
+            break;
+        }
+        if (state->low_count < FOOD_LOW_CONFIRM_SAMPLES) {
+            state->low_count++;
+        }
+        /* A full queue keeps the count, so the request is retried on the next sample. */
+        if (state->low_count >= FOOD_LOW_CONFIRM_SAMPLES && FoodSensor_RequestPortion()) {
+            state->low_count = 0u;
+            state->portions = 1u;
+            state->before_mg = weight;
+            FoodSensor_Enter(state, FEED_DISPENSING, now);
+        }
+        break;
+
+    case FEED_DISPENSING:
+        /* Given by the actuator task when the gate cycle ends or the request is rejected.
+         * The timeout only guards against a lost signal. */
+        if (xSemaphoreTake(dispenseDoneSem, 0) == pdTRUE ||
+            elapsed >= pdMS_TO_TICKS(FOOD_DISPENSE_TIMEOUT_MS)) {
+            FoodSensor_Enter(state, FEED_SETTLING, now);
+        }
+        break;
+
+    case FEED_SETTLING:
+        if (elapsed < pdMS_TO_TICKS(FOOD_SETTLE_MS) || !valid) {
+            break;          /* still landing, or no valid weight yet (bowl lifted) */
+        }
+        if (weight > FOOD_FULL_THRESHOLD_MG) {
+#if FOOD_PORTION_LOG
+            FoodSensor_LogPortion(state, weight, true);
+#endif
+            FoodSensor_Enter(state, FEED_LOCKOUT, now);
+        } else if (FoodSensor_RequestPortion()) {
+#if FOOD_PORTION_LOG
+            FoodSensor_LogPortion(state, weight, false);
+#endif
+            state->portions++;
+            state->before_mg = weight;
+            FoodSensor_Enter(state, FEED_DISPENSING, now);
+        }
+        break;
+
+    case FEED_LOCKOUT:
+    default:
+        if (elapsed >= pdMS_TO_TICKS(FOOD_EATING_TIME_MS)) {
+            state->low_count = 0u;
+            FoodSensor_Enter(state, FEED_WATCHING, now);
+        }
+        break;
     }
 }
 

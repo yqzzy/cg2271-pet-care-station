@@ -11,8 +11,8 @@ Use a logging-only actuator queue receiver to test feeding requests without a mo
 | Dispenser request | Motor runs for bounded operation and stops; busy requests do not restart the deadline |
 | Motor timeout | Stops at configured maximum even with no cloud/UART response |
 | Food calibration/tare | Known masses are reasonable; empty bowl is excluded without zeroing food at boot |
-| Low food/noisy weight | Stable-low condition produces one request, not a request every sample; rearm/interval follows agreed policy |
-| Food rearm and interval | No repeat while food stays low; after recovery, a new confirmed-low request respects the interval since the last accepted queue send |
+| Low food/noisy weight | A stable low weight starts one top-up, not a request every sample; each portion waits for the gate to close and the weight to settle |
+| Top-up and eating time | Portions repeat until the bowl is above 20 g (at most three from empty), then no top-up for 10 s |
 | Food queue full | Failed enqueue does not latch the request or advance its timestamp; later valid low readings can retry |
 | Bowl removal or implausible negative weight | Values below the configured plausibility limit are invalid; measure and tune the provisional -5000 mg limit on the actual fixture |
 | HX711 DOUT stuck low | Missing DOUT-high completion is rejected; a genuine zero sample with valid completion is still accepted by the raw-read function |
