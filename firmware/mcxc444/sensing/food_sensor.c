@@ -38,14 +38,15 @@
 #define HX711_CLOCK_PIN   3u
 
 /*
- * Measured with the bench tool (food_calibration.c) after the excitation wiring fix, bowl
- * mounted, 36 g reference (2026-11-09). Redo after remounting the bowl or load cell.
- * Counts fall as weight is added (about 682 counts per gram); the conversion handles the sign.
+ * Measured with the bench tool (food_calibration.c) on 2026-11-11 after the mechanical rework:
+ * 47 g reference, zero taken with the 47 g bowl mounted, so an empty bowl reads 0 g.
+ * Redo after remounting the bowl or load cell. Counts fall as weight is added (about 717
+ * counts per gram); the conversion handles the sign.
  */
 #define FOOD_CALIBRATED          1u
-#define FOOD_EMPTY_RAW           58613  // raw count with the empty bowl
-#define FOOD_REFERENCE_RAW       34048  // raw count with the empty bowl plus 36 g
-#define FOOD_REFERENCE_MASS_MG   36000
+#define FOOD_EMPTY_RAW           64806  // raw count with the empty bowl mounted
+#define FOOD_REFERENCE_RAW       31127  // raw count with 47 g more on the cell
+#define FOOD_REFERENCE_MASS_MG   47000
 
 /*
  * Reject weights substantially below the empty-bowl baseline.
