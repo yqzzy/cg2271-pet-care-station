@@ -1,0 +1,265 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1130" role="img" aria-label="Circuit diagram of the pet care station: load cell with HX711, water sensor and button module into the FRDM-MCXC444; servo, buzzer and RGB LED driven by it; UART link to an ESP32-S2 that reads a DHT11 and connects to ThingsBoard over Wi-Fi.">
+<defs><marker id="ah-hx" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1f8a52"/></marker><marker id="ah-water" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0e8ca1"/></marker><marker id="ah-btn" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#c2417f"/></marker><marker id="ah-servo" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d0661a"/></marker><marker id="ah-buzz" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7d4fc4"/></marker><marker id="ah-led" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#a87a00"/></marker><marker id="ah-uart" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2f68d0"/></marker><marker id="ah-dht" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#4a6fa5"/></marker><marker id="ah-v33" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#cf3434"/></marker><marker id="ah-v5" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b0351c"/></marker><marker id="ah-gnd" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1b2420"/></marker><marker id="ah-red" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#d23c3c"/></marker><marker id="ah-black" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#222222"/></marker><marker id="ah-white" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9aa3a0"/></marker><marker id="ah-green" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#2e9d4f"/></marker></defs>
+<rect x="0" y="0" width="1500" height="1130" fill="#ffffff"/>
+<text x="40" y="46" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#1b2420" text-anchor="start">Pet Care Station: circuit diagram</text>
+<text x="40" y="72" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="14" font-weight="400" fill="#5a6660" text-anchor="start">FRDM-MCXC444 + ESP32-S2. Pins as configured in the firmware (repo main). Power symbols connect by name.</text>
+<rect x="560" y="110" width="380" height="820" rx="14" fill="#eef5f1" stroke="#1d4a41" stroke-width="3"/>
+<text x="750.0" y="146" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="20" font-weight="700" fill="#1d4a41" text-anchor="middle">FRDM-MCXC444</text>
+<text x="750.0" y="168" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="14" font-weight="400" fill="#5a6660" text-anchor="middle">Cortex-M0+, FreeRTOS</text>
+<rect x="690" y="570" width="120" height="90" rx="6" fill="#ffffff" stroke="#1d4a41" stroke-width="2"/>
+<text x="750" y="610" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#1d4a41" text-anchor="middle">MCXC444</text>
+<text x="750" y="630" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#5a6660" text-anchor="middle">MCU</text>
+<rect x="725" y="96" width="50" height="22" rx="3" fill="#ffffff" stroke="#1d4a41" stroke-width="2"/>
+<text x="750" y="88" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#5a6660" text-anchor="middle">J13 USB to PC: 5 V power, flashing, debug console</text>
+<circle cx="560" cy="220" r="4.5" fill="#1d4a41"/>
+<text x="574" y="217" font-family="Consolas, Menlo, monospace" font-size="15" font-weight="700" fill="#1d4a41" text-anchor="start">PTB1 · J4-4</text>
+<text x="574" y="235" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5a6660" text-anchor="start">GPIO input (HX711 data)</text>
+<circle cx="560" cy="270" r="4.5" fill="#1d4a41"/>
+<text x="574" y="267" font-family="Consolas, Menlo, monospace" font-size="15" font-weight="700" fill="#1d4a41" text-anchor="start">PTB3 · J4-8</text>
+<text x="574" y="285" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5a6660" text-anchor="start">GPIO output (HX711 clock)</text>
+<circle cx="560" cy="510" r="4.5" fill="#1d4a41"/>
+<text x="574" y="507" font-family="Consolas, Menlo, monospace" font-size="15" font-weight="700" fill="#1d4a41" text-anchor="start">PTB2 · J4-6</text>
+<text x="574" y="525" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5a6660" text-anchor="start">ADC0 channel 12, polled</text>
+<circle cx="560" cy="745" r="4.5" fill="#1d4a41"/>
+<text x="574" y="742" font-family="Consolas, Menlo, monospace" font-size="15" font-weight="700" fill="#1d4a41" text-anchor="start">PTD4 · J2-6</text>
+<text x="574" y="760" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5a6660" text-anchor="start">GPIO in, falling-edge IRQ</text>
+<circle cx="940" cy="190" r="4.5" fill="#1d4a41"/>
+<text x="926" y="187" font-family="Consolas, Menlo, monospace" font-size="15" font-weight="700" fill="#1d4a41" text-anchor="end">PTE22 · J4-5</text>
+<text x="926" y="205" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5a6660" text-anchor="end">UART2 TX</text>
+<circle cx="940" cy="240" r="4.5" fill="#1d4a41"/>
+<text x="926" y="237" font-family="Consolas, Menlo, monospace" font-size="15" font-weight="700" fill="#1d4a41" text-anchor="end">PTE23 · J4-7</text>
+<text x="926" y="255" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5a6660" text-anchor="end">UART2 RX (pull-up)</text>
+<circle cx="940" cy="500" r="4.5" fill="#1d4a41"/>
+<text x="926" y="497" font-family="Consolas, Menlo, monospace" font-size="15" font-weight="700" fill="#1d4a41" text-anchor="end">PTD2 · J2-4</text>
+<text x="926" y="515" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5a6660" text-anchor="end">TPM0 ch2 PWM</text>
+<circle cx="940" cy="665" r="4.5" fill="#1d4a41"/>
+<text x="926" y="662" font-family="Consolas, Menlo, monospace" font-size="15" font-weight="700" fill="#1d4a41" text-anchor="end">PTE21 · J4-3</text>
+<text x="926" y="680" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5a6660" text-anchor="end">TPM1 ch1 PWM</text>
+<circle cx="940" cy="785" r="4.5" fill="#1d4a41"/>
+<text x="926" y="782" font-family="Consolas, Menlo, monospace" font-size="15" font-weight="700" fill="#1d4a41" text-anchor="end">PTD6 · J2-8</text>
+<text x="926" y="800" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5a6660" text-anchor="end">GPIO output</text>
+<circle cx="620" cy="930" r="4.5" fill="#1d4a41"/>
+<text x="620" y="916" font-family="Consolas, Menlo, monospace" font-size="14" font-weight="700" fill="#1d4a41" text-anchor="middle">J3-8</text>
+<circle cx="720" cy="930" r="4.5" fill="#1d4a41"/>
+<text x="720" y="916" font-family="Consolas, Menlo, monospace" font-size="14" font-weight="700" fill="#1d4a41" text-anchor="middle">J3-10</text>
+<circle cx="820" cy="930" r="4.5" fill="#1d4a41"/>
+<text x="820" y="916" font-family="Consolas, Menlo, monospace" font-size="14" font-weight="700" fill="#1d4a41" text-anchor="middle">J3-12</text>
+<line x1="620" y1="930" x2="620" y2="960" stroke="#cf3434" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="610" y1="960" x2="630" y2="960" stroke="#cf3434" stroke-width="2.5" stroke-linecap="round"/>
+<text x="620" y="980" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#cf3434" text-anchor="middle">3V3 out</text>
+<line x1="720" y1="930" x2="720" y2="960" stroke="#b0351c" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="710" y1="960" x2="730" y2="960" stroke="#b0351c" stroke-width="2.5" stroke-linecap="round"/>
+<text x="720" y="980" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#b0351c" text-anchor="middle">5V (from USB)</text>
+<line x1="820" y1="930" x2="820" y2="948" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="820" y1="948" x2="820" y2="960" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="809" y1="960" x2="831" y2="960" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="813" y1="964" x2="827" y2="964" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="817" y1="968" x2="823" y2="968" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<text x="820" y="992" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#1b2420" text-anchor="middle">GND</text>
+<text x="750.0" y="886" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="400" fill="#5a6660" text-anchor="middle">other GND pins: J3-4, J3-14, J2-14</text>
+<rect x="40" y="180" width="120" height="150" rx="8" fill="#ffffff" stroke="#1b2420" stroke-width="2"/>
+<text x="100.0" y="204" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1b2420" text-anchor="middle">Load cell</text>
+<text x="100.0" y="223" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#5a6660" text-anchor="middle">1 kg, under bowl</text>
+<circle cx="160" cy="220" r="4.5" fill="#d23c3c"/>
+<line x1="160" y1="220" x2="230" y2="220" stroke="#d23c3c" stroke-width="3" stroke-linecap="round"/>
+<circle cx="160" cy="250" r="4.5" fill="#222222"/>
+<line x1="160" y1="250" x2="230" y2="250" stroke="#222222" stroke-width="3" stroke-linecap="round"/>
+<circle cx="160" cy="280" r="4.5" fill="#9aa3a0"/>
+<line x1="160" y1="280" x2="230" y2="280" stroke="#9aa3a0" stroke-width="3" stroke-linecap="round"/>
+<circle cx="160" cy="310" r="4.5" fill="#2e9d4f"/>
+<line x1="160" y1="310" x2="230" y2="310" stroke="#2e9d4f" stroke-width="3" stroke-linecap="round"/>
+<rect x="230" y="150" width="160" height="190" rx="8" fill="#ffffff" stroke="#1b2420" stroke-width="2"/>
+<text x="310.0" y="174" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1b2420" text-anchor="middle">HX711</text>
+<text x="310.0" y="193" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#5a6660" text-anchor="middle">24-bit ADC, gain 128</text>
+<circle cx="230" cy="220" r="4.5" fill="#d23c3c"/>
+<text x="240" y="225" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">E+</text>
+<circle cx="230" cy="250" r="4.5" fill="#222222"/>
+<text x="240" y="255" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">E−</text>
+<circle cx="230" cy="280" r="4.5" fill="#9aa3a0"/>
+<text x="240" y="285" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">A−</text>
+<circle cx="230" cy="310" r="4.5" fill="#2e9d4f"/>
+<text x="240" y="315" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">A+</text>
+<circle cx="390" cy="200" r="4.5" fill="#1b2420"/>
+<text x="380" y="205" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">VCC</text>
+<circle cx="390" cy="220" r="4.5" fill="#1f8a52"/>
+<text x="380" y="225" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">DT</text>
+<circle cx="390" cy="270" r="4.5" fill="#1f8a52"/>
+<text x="380" y="275" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">SCK</text>
+<circle cx="390" cy="320" r="4.5" fill="#1b2420"/>
+<text x="380" y="325" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">GND</text>
+<line x1="390" y1="220" x2="554" y2="220" stroke="#1f8a52" stroke-width="3" stroke-linecap="round" marker-end="url(#ah-hx)"/>
+<text x="495" y="212" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#1f8a52" text-anchor="middle">data out</text>
+<line x1="560" y1="270" x2="396" y2="270" stroke="#1f8a52" stroke-width="3" stroke-linecap="round" marker-end="url(#ah-hx)"/>
+<text x="495" y="262" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#1f8a52" text-anchor="middle">clock (bit-banged)</text>
+<path d="M390,200 H430 V185" fill="none" stroke="#cf3434" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="430" y1="185" x2="430" y2="169" stroke="#cf3434" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="420" y1="169" x2="440" y2="169" stroke="#cf3434" stroke-width="2.5" stroke-linecap="round"/>
+<text x="430" y="163" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#cf3434" text-anchor="middle">3V3</text>
+<path d="M390,320 H430 V327" fill="none" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="430" y1="327" x2="430" y2="339" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="419" y1="339" x2="441" y2="339" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="423" y1="343" x2="437" y2="343" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="427" y1="347" x2="433" y2="347" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<text x="40" y="360" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#5a6660" text-anchor="start">E+ red, E− black, A− white, A+ green</text>
+<text x="40" y="376" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#5a6660" text-anchor="start">(usual colours; check your cell)</text>
+<rect x="230" y="440" width="160" height="115" rx="8" fill="#ffffff" stroke="#1b2420" stroke-width="2"/>
+<text x="310.0" y="464" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1b2420" text-anchor="middle">Water sensor</text>
+<text x="310.0" y="483" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#5a6660" text-anchor="middle">probe in the dish</text>
+<circle cx="390" cy="490" r="4.5" fill="#1b2420"/>
+<text x="380" y="495" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">+</text>
+<circle cx="390" cy="510" r="4.5" fill="#0e8ca1"/>
+<text x="380" y="515" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">S</text>
+<circle cx="390" cy="535" r="4.5" fill="#1b2420"/>
+<text x="380" y="540" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">−</text>
+<line x1="390" y1="510" x2="554" y2="510" stroke="#0e8ca1" stroke-width="3" stroke-linecap="round" marker-end="url(#ah-water)"/>
+<text x="495" y="502" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#0e8ca1" text-anchor="middle">analog 0-3.3 V</text>
+<path d="M390,490 H430 V475" fill="none" stroke="#cf3434" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="430" y1="475" x2="430" y2="459" stroke="#cf3434" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="420" y1="459" x2="440" y2="459" stroke="#cf3434" stroke-width="2.5" stroke-linecap="round"/>
+<text x="430" y="453" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#cf3434" text-anchor="middle">3V3</text>
+<path d="M390,535 H430 V542" fill="none" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="430" y1="542" x2="430" y2="554" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="419" y1="554" x2="441" y2="554" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="423" y1="558" x2="437" y2="558" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="427" y1="562" x2="433" y2="562" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<text x="230" y="580" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#5a6660" text-anchor="start">3.3 V only: keeps the output</text>
+<text x="230" y="596" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#5a6660" text-anchor="start">within the ADC's range</text>
+<rect x="230" y="675" width="160" height="115" rx="8" fill="#ffffff" stroke="#1b2420" stroke-width="2"/>
+<text x="310.0" y="699" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1b2420" text-anchor="middle">Button module</text>
+<text x="310.0" y="718" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#5a6660" text-anchor="middle">pet button, 3-pin</text>
+<circle cx="390" cy="725" r="4.5" fill="#1b2420"/>
+<text x="380" y="730" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">+</text>
+<circle cx="390" cy="745" r="4.5" fill="#c2417f"/>
+<text x="380" y="750" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">S</text>
+<circle cx="390" cy="770" r="4.5" fill="#1b2420"/>
+<text x="380" y="775" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">−</text>
+<line x1="390" y1="745" x2="554" y2="745" stroke="#c2417f" stroke-width="3" stroke-linecap="round" marker-end="url(#ah-btn)"/>
+<text x="495" y="737" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#c2417f" text-anchor="middle">low when pressed</text>
+<path d="M390,725 H430 V710" fill="none" stroke="#cf3434" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="430" y1="710" x2="430" y2="694" stroke="#cf3434" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="420" y1="694" x2="440" y2="694" stroke="#cf3434" stroke-width="2.5" stroke-linecap="round"/>
+<text x="430" y="688" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#cf3434" text-anchor="middle">3V3</text>
+<path d="M390,770 H430 V777" fill="none" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="430" y1="777" x2="430" y2="789" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="419" y1="789" x2="441" y2="789" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="423" y1="793" x2="437" y2="793" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="427" y1="797" x2="433" y2="797" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<text x="230" y="815" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#5a6660" text-anchor="start">Never 5 V: MCX pins are</text>
+<text x="230" y="831" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#5a6660" text-anchor="start">not 5 V tolerant</text>
+<rect x="1160" y="130" width="190" height="230" rx="8" fill="#ffffff" stroke="#1b2420" stroke-width="2"/>
+<text x="1255.0" y="154" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1b2420" text-anchor="middle">ESP32-S2</text>
+<text x="1255.0" y="173" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#5a6660" text-anchor="middle">Wi-Fi, FreeRTOS</text>
+<rect x="1230" y="118" width="50" height="22" rx="3" fill="#ffffff" stroke="#1b2420" stroke-width="2"/>
+<text x="1255" y="108" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#5a6660" text-anchor="middle">USB to PC / charger</text>
+<circle cx="1160" cy="190" r="4.5" fill="#2f68d0"/>
+<text x="1170" y="195" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">GPIO2 (RX)</text>
+<circle cx="1160" cy="240" r="4.5" fill="#2f68d0"/>
+<text x="1170" y="245" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">GPIO1 (TX)</text>
+<circle cx="1160" cy="300" r="4.5" fill="#1b2420"/>
+<text x="1170" y="305" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">GND</text>
+<line x1="940" y1="190" x2="1154" y2="190" stroke="#2f68d0" stroke-width="3" stroke-linecap="round" marker-end="url(#ah-uart)"/>
+<text x="1050" y="182" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#2f68d0" text-anchor="middle">TX → RX</text>
+<line x1="1160" y1="240" x2="946" y2="240" stroke="#2f68d0" stroke-width="3" stroke-linecap="round" marker-end="url(#ah-uart)"/>
+<text x="1050" y="232" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#2f68d0" text-anchor="middle">RX ← TX</text>
+<text x="1050" y="262" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#5a6660" text-anchor="middle">9600 8N1, frames BODY*HH</text>
+<path d="M1160,300 H1120 V310" fill="none" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="1120" y1="310" x2="1120" y2="322" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1109" y1="322" x2="1131" y2="322" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1113" y1="326" x2="1127" y2="326" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1117" y1="330" x2="1123" y2="330" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<text x="1112" y="355" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="700" fill="#1b2420" text-anchor="end">common GND</text>
+<text x="1112" y="371" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#5a6660" text-anchor="end">with the MCX</text>
+<circle cx="1350" cy="235" r="4.5" fill="#4a6fa5"/>
+<text x="1340" y="240" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">GPIO4</text>
+<line x1="1350" y1="235" x2="1385" y2="235" stroke="#4a6fa5" stroke-width="3" stroke-linecap="round"/>
+<circle cx="1350" cy="270" r="4.5" fill="#cf3434"/>
+<text x="1340" y="275" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">3V3</text>
+<line x1="1350" y1="270" x2="1385" y2="270" stroke="#cf3434" stroke-width="3" stroke-linecap="round"/>
+<circle cx="1350" cy="305" r="4.5" fill="#1b2420"/>
+<text x="1340" y="310" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">GND</text>
+<line x1="1350" y1="305" x2="1385" y2="305" stroke="#1b2420" stroke-width="3" stroke-linecap="round"/>
+<rect x="1385" y="175" width="105" height="150" rx="8" fill="#ffffff" stroke="#1b2420" stroke-width="2"/>
+<text x="1437.5" y="199" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1b2420" text-anchor="middle">DHT11</text>
+<circle cx="1385" cy="235" r="4.5" fill="#4a6fa5"/>
+<text x="1395" y="240" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">DATA</text>
+<circle cx="1385" cy="270" r="4.5" fill="#cf3434"/>
+<text x="1395" y="275" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">VCC</text>
+<circle cx="1385" cy="305" r="4.5" fill="#1b2420"/>
+<text x="1395" y="310" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">GND</text>
+<text x="1367" y="226" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11" font-weight="600" fill="#4a6fa5" text-anchor="middle">1-wire</text>
+<text x="1450" y="380" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="600" fill="#2f68d0" text-anchor="end">Wi-Fi 2.4 GHz → phone hotspot →</text>
+<text x="1450" y="398" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="600" fill="#2f68d0" text-anchor="end">ThingsBoard (MQTT over TLS)</text>
+<rect x="1030" y="430" width="160" height="135" rx="8" fill="#ffffff" stroke="#1b2420" stroke-width="2"/>
+<text x="1110.0" y="454" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1b2420" text-anchor="middle">SG90 servo</text>
+<text x="1110.0" y="473" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#5a6660" text-anchor="middle">food gate</text>
+<circle cx="1030" cy="500" r="4.5" fill="#d0661a"/>
+<text x="1040" y="505" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">signal</text>
+<circle cx="1190" cy="500" r="4.5" fill="#1b2420"/>
+<text x="1180" y="505" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">+5V</text>
+<circle cx="1190" cy="545" r="4.5" fill="#1b2420"/>
+<text x="1180" y="550" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">GND</text>
+<line x1="940" y1="500" x2="1024" y2="500" stroke="#d0661a" stroke-width="3" stroke-linecap="round" marker-end="url(#ah-servo)"/>
+<text x="985" y="492" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#d0661a" text-anchor="middle">50 Hz</text>
+<text x="985" y="520" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="400" fill="#5a6660" text-anchor="middle">0.5 ms = 0°</text>
+<text x="985" y="534" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="400" fill="#5a6660" text-anchor="middle">1.45 ms = 90°</text>
+<path d="M1190,500 H1230 V485" fill="none" stroke="#b0351c" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="1230" y1="485" x2="1230" y2="469" stroke="#b0351c" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1220" y1="469" x2="1240" y2="469" stroke="#b0351c" stroke-width="2.5" stroke-linecap="round"/>
+<text x="1230" y="463" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="700" fill="#b0351c" text-anchor="middle">5V</text>
+<path d="M1190,545 H1230 V552" fill="none" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="1230" y1="552" x2="1230" y2="564" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1219" y1="564" x2="1241" y2="564" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1223" y1="568" x2="1237" y2="568" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1227" y1="572" x2="1233" y2="572" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M1230,500 H1265 V516" fill="none" stroke="#b0351c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="1253" y1="516" x2="1277" y2="516" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1253" y1="524" x2="1277" y2="524" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<path d="M1265,524 V545 H1230" fill="none" stroke="#1b2420" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="1230" cy="500" r="4.5" fill="#b0351c"/>
+<circle cx="1230" cy="545" r="4.5" fill="#1b2420"/>
+<text x="1287" y="516" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#1b2420" text-anchor="start">470 µF</text>
+<text x="1287" y="532" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="400" fill="#5a6660" text-anchor="start">(recommended)</text>
+<rect x="1030" y="605" width="160" height="95" rx="8" fill="#ffffff" stroke="#1b2420" stroke-width="2"/>
+<text x="1110.0" y="629" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1b2420" text-anchor="middle">Passive buzzer</text>
+<text x="1110.0" y="648" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#5a6660" text-anchor="middle">module</text>
+<circle cx="1030" cy="665" r="4.5" fill="#7d4fc4"/>
+<text x="1040" y="670" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">S</text>
+<circle cx="1190" cy="665" r="4.5" fill="#1b2420"/>
+<text x="1180" y="670" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">−</text>
+<line x1="940" y1="665" x2="1024" y2="665" stroke="#7d4fc4" stroke-width="3" stroke-linecap="round" marker-end="url(#ah-buzz)"/>
+<text x="985" y="657" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12.5" font-weight="600" fill="#7d4fc4" text-anchor="middle">2 kHz</text>
+<path d="M1190,665 H1230 V672" fill="none" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="1230" y1="672" x2="1230" y2="684" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1219" y1="684" x2="1241" y2="684" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1223" y1="688" x2="1237" y2="688" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1227" y1="692" x2="1233" y2="692" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<rect x="1030" y="720" width="160" height="130" rx="8" fill="#ffffff" stroke="#1b2420" stroke-width="2"/>
+<text x="1110.0" y="744" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1b2420" text-anchor="middle">RGB LED module</text>
+<text x="1110.0" y="763" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13" font-weight="400" fill="#5a6660" text-anchor="middle">common −, station light</text>
+<circle cx="1030" cy="785" r="4.5" fill="#a87a00"/>
+<text x="1040" y="790" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">G</text>
+<circle cx="1030" cy="810" r="4.5" fill="#5a6660"/>
+<text x="1040" y="815" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">R</text>
+<circle cx="1030" cy="830" r="4.5" fill="#5a6660"/>
+<text x="1040" y="835" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">B</text>
+<circle cx="1190" cy="830" r="4.5" fill="#1b2420"/>
+<text x="1180" y="835" font-family="Consolas, Menlo, monospace" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="end">−</text>
+<line x1="940" y1="785" x2="962" y2="785" stroke="#a87a00" stroke-width="3" stroke-linecap="round"/>
+<rect x="962" y="776" width="38" height="18" rx="3" fill="#ffffff" stroke="#a87a00" stroke-width="2.5"/>
+<line x1="1000" y1="785" x2="1024" y2="785" stroke="#a87a00" stroke-width="3" stroke-linecap="round" marker-end="url(#ah-led)"/>
+<text x="981" y="769" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="11.5" font-weight="600" fill="#a87a00" text-anchor="middle">220-330 Ω*</text>
+<path d="M1190,830 H1230 V837" fill="none" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+<line x1="1230" y1="837" x2="1230" y2="849" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1219" y1="849" x2="1241" y2="849" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1223" y1="853" x2="1237" y2="853" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="1227" y1="857" x2="1233" y2="857" stroke="#1b2420" stroke-width="2.5" stroke-linecap="round"/>
+<text x="1030" y="875" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#5a6660" text-anchor="start">R and B not connected (one colour used).</text>
+<text x="1030" y="891" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="12" font-weight="400" fill="#5a6660" text-anchor="start">* only if the module has no resistors on it.</text>
+<rect x="40" y="1020" width="1410" height="88" rx="8" fill="#f6f8f7" stroke="#d6ddd8" stroke-width="1.5"/>
+<text x="60" y="1044" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13.5" font-weight="700" fill="#1b2420" text-anchor="start">Power:</text>
+<text x="122" y="1044" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">every 3V3 symbol on the MCX side → J3-8; 5V → J3-10 (USB 5 V, about 500 mA); GND → any GND pin. The DHT11 takes 3V3 and GND from the ESP32's own pins.</text>
+<text x="60" y="1066" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13.5" font-weight="700" fill="#1b2420" text-anchor="start">Signals:</text>
+<text x="122" y="1066" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">arrows show direction. Polled: HX711 (every 250 ms), water ADC (250 ms), DHT11 (5 s). Interrupt-driven: button (PTD4), UART2 receive and transmit.</text>
+<text x="60" y="1088" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13.5" font-weight="700" fill="#1b2420" text-anchor="start">Not used:</text>
+<text x="132" y="1088" font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="13.5" font-weight="400" fill="#1b2420" text-anchor="start">on-board LEDs, switches and light sensor; DAC; I2C and SPI. Both boards are powered from USB.</text>
+</svg>
